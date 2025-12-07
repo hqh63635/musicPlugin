@@ -19,7 +19,7 @@ onMounted(() => {
 
 // 获取推荐数据
 const fetchRecommendData = async () => {
-  const topListResult = await api.getTopList()
+  const topListResult = await api.getTopLists()
 
   if (topListResult.success) {
     playlists.value = topListResult.data
@@ -79,7 +79,7 @@ const addToPlaylist = (song) => {
       <div class="playlist-list">
         <div v-for="playlist in playlists" :key="playlist.id" class="playlist-card" @click="viewPlaylist(playlist.id)">
           <div class="playlist-cover">
-            <img :src="playlist.picUrl" :alt="playlist.topTitleß" />
+            <img :src="playlist.picUrl" :alt="playlist.topTitle" />
             <div class="play-count">
               <img src="@/assets/icons/play.svg" alt="播放" />
               <!-- <span>{{ playlist.playCount > 10000 ? (playlist.playCount / 10000).toFixed(1) + '万' : playlist.playCount }}</span> -->

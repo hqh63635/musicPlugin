@@ -23,7 +23,7 @@ onMounted(() => {
 const fetchTopLists = async () => {
   try {
     loading.value = true
-    const result = await api.getTopList()
+    const result = await api.getTopLists()
     if (result.success) {
       topLists.value = result.data
     }
@@ -57,7 +57,7 @@ const selectList = (list) => {
   selectedList.value = null
   listSongs.value = []
   // 然后获取排行榜详情
-  fetchListDetail(list.id)
+  fetchListDetail(list)
 }
 
 // 播放歌曲
