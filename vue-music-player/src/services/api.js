@@ -1,185 +1,193 @@
-import qqDecoded from '@/utils/qq-decoded.js'
+// 音乐API服务
+// 导入插件包装器
+import plugin from '../utils/plugin-wrapper.js';
 
-// 创建安全的函数执行环境
-function createFunctionFromCode(code) {
-  // 提取函数体内容
-  const functionBody = code.replace(/^async\s+(function\s+\w+|\w+)\s*\([^)]*\)\s*\{/, '').replace(/}$/, '').trim();
-
-  // 创建函数，模拟plugin-wrapper.js中的环境
-  return async function(...args) {
-    const require = (module) => {
-      if (module === 'axios') return request;
-      throw new Error(`Module ${module} not supported`);
-    };
-
-    const console = { log: (...args) => {}, error: (...args) => {} };
-    const env = { getUserVariables: () => ({}) };
-    const process = { platform: 'win32', env };
-    const module = { exports: {} };
-    const exports = module.exports;
-
-    // 定义qq-decoded.js中使用的辅助函数
-    const _0x2d9c31 = (num, str) => str; // 模拟混淆函数
-    const CryptoJs = { enc: { Utf8: {} }, AES: { decrypt: () => ({ toString: () => '' }) } };
-    const he = { decode: (str) => str };
-
+/**
+ * 搜索音乐相关内容
+ * @param {string} keyword - 搜索关键词
+ * @param {number} page - 页码
+ * @param {string} type - 搜索类型：music(歌曲), album(专辑), artist(艺术家), sheet(歌单), lyric(歌词)
+ * @returns {Promise<Object>} 搜索结果
+ */
+export async function search(keyword, page = 1, type = 'music') {
     try {
-      // 使用Function构造器创建函数
-      const func = new Function('require', '__musicfree_require', 'module', 'exports', 'console', 'env', 'process', '_0x2d9c31', 'CryptoJs', 'he',
-        `return async function() { ${functionBody} };`
-      )(require, require, module, exports, console, env, process, _0x2d9c31, CryptoJs, he);
-
-      return await func(...args);
+        if (!keyword || typeof keyword !== 'string') {
+            console.error('搜索失败: 关键词不能为空且必须是字符串');
+            return { total: 0, data: [] };
+        }
+        return await plugin.search(keyword, page, type);
     } catch (error) {
-      console.error('函数执行失败:', error);
-      throw error;
+        console.error('搜索失败:', error);
+        return { total: 0, data: [] };
     }
-  };
 }
 
-// 解析qq-decoded.js中的方法
-const qqMethods = {
-  search: createFunctionFromCode(qqDecoded.search),
-  getMediaSource: createFunctionFromCode(qqDecoded.getMediaSource),
-  getLyric: createFunctionFromCode(qqDecoded.getLyric),
-  getAlbumInfo: createFunctionFromCode(qqDecoded.getAlbumInfo),
-  getArtistWorks: createFunctionFromCode(qqDecoded.getArtistWorks),
-  importMusicSheet: createFunctionFromCode(qqDecoded.importMusicSheet),
-  getTopLists: createFunctionFromCode(qqDecoded.getTopLists),
-  getTopListDetail: createFunctionFromCode(qqDecoded.getTopListDetail),
-  getRecommendSheetTags: createFunctionFromCode(qqDecoded.getRecommendSheetTags),
-  getRecommendSheetsByTag: createFunctionFromCode(qqDecoded.getRecommendSheetsByTag),
-  getMusicSheetInfo: createFunctionFromCode(qqDecoded.getMusicSheetInfo)
-};
+/**
+ * 获取媒体源（播放链接）
+ * @param {Object} song - 歌曲对象，包含id和songmid
+ * @param {string} quality - 音质
+ * @returns {Promise<Object>} 媒体源信息
+ */
+export async function getMediaSource(song, quality = 'standard') {
+    try {
+        if (!song || !song.id || !song.songmid) {
+            console.error('获取媒体源失败: 歌曲对象无效或缺少必要属性');
+            return null;
+        }
+        return await plugin.getMediaSource(song.id, song.songmid, quality);
+    } catch (error) {
+        console.error('获取媒体源失败:', error);
+        return null;
+    }
+}
 
+/**
+ * 获取歌词
+ * @param {Object} song - 歌曲对象，包含id和songmid
+ * @returns {Promise<Object>} 歌词信息
+ */
+export async function getLyric(song) {
+    try {
+        if (!song || !song.id || !song.songmid) {
+            console.error('获取歌词失败: 歌曲对象无效或缺少必要属性');
+            return null;
+        }
+        return await plugin.getLyric(song.id, song.songmid);
+    } catch (error) {
+        console.error('获取歌词失败:', error);
+        return null;
+    }
+}
 
-// 获取排行榜列表
+/**
+ * 获取专辑信息
+ * @param {Object} album - 专辑对象，包含albumid和albummid
+ * @returns {Promise<Object>} 专辑信息
+ */
+export async function getAlbumInfo(album) {
+    try {
+        if (!album || !album.albumid || !album.albummid) {
+            console.error('获取专辑信息失败: 专辑对象无效或缺少必要属性');
+            return null;
+        }
+        return await plugin.getAlbumInfo(album.albumid, album.albummid);
+    } catch (error) {
+        console.error('获取专辑信息失败:', error);
+        return null;
+    }
+}
+
+/**
+ * 获取排行榜列表
+ * @returns {Promise<Array>} 排行榜列表
+ */
 export async function getTopLists() {
-  try {
-    const result = await qqMethods.getTopLists();
-    return {success: true, data: result };
-  } catch (error) {
-    console.error('获取排行榜列表失败:', error);
-    return { success: false, error: error.message };
-  }
+    try {
+        return await plugin.getTopLists();
+    } catch (error) {
+        console.error('获取排行榜失败:', error);
+        return [];
+    }
 }
 
-// 获取排行榜详情
-export async function getTopListDetail(toplistId) {
-  try {
-    const result = await qqMethods.getTopListDetail({ id: toplistId });
-    return { success: true, data: result };
-  } catch (error) {
-    console.error('获取排行榜详情失败:', error);
-    return { success: false, error: error.message };
-  }
+/**
+ * 获取排行榜详情
+ * @param {Object} topList - 排行榜对象，包含id
+ * @returns {Promise<Object>} 排行榜详情
+ */
+export async function getTopListDetail(topList) {
+    try {
+        if (!topList || !topList.id) {
+            console.error('获取排行榜详情失败: 排行榜对象无效或缺少id属性');
+            return null;
+        }
+        return await plugin.getTopListDetail(topList);
+    } catch (error) {
+        console.error('获取排行榜详情失败:', error);
+        return null;
+    }
 }
 
-// 获取推荐歌单标签
+/**
+ * 获取艺术家作品
+ * @param {Object} artist - 艺术家对象
+ * @param {number} page - 页码
+ * @param {string} type - 作品类型：music(歌曲), album(专辑)
+ * @returns {Promise<Object>} 艺术家作品
+ */
+export async function getArtistWorks(artist, page = 1, type = 'music') {
+    try {
+        if (!artist) {
+            console.error('获取艺术家作品失败: 艺术家对象不能为空');
+            return { isEnd: true, data: [] };
+        }
+        return await plugin.getArtistWorks(artist, page, type);
+    } catch (error) {
+        console.error('获取艺术家作品失败:', error);
+        return { isEnd: true, data: [] };
+    }
+}
+
+/**
+ * 导入歌单
+ * @param {string} url - 歌单链接或ID
+ * @returns {Promise<Array>} 歌单歌曲列表
+ */
+export async function importMusicSheet(url) {
+    try {
+        if (!url || typeof url !== 'string') {
+            console.error('导入歌单失败: 歌单链接或ID不能为空且必须是字符串');
+            return [];
+        }
+        return await plugin.importMusicSheet(url);
+    } catch (error) {
+        console.error('导入歌单失败:', error);
+        return [];
+    }
+}
+
+/**
+ * 获取推荐歌单标签
+ * @returns {Promise<Object>} 推荐歌单标签
+ */
 export async function getRecommendSheetTags() {
-  try {
-    const result = await qqMethods.getRecommendSheetTags();
-    return { success: true, data: result };
-  } catch (error) {
-    console.error('获取推荐歌单标签失败:', error);
-    return { success: false, error: error.message };
-  }
+    try {
+        return await plugin.getRecommendSheetTags();
+    } catch (error) {
+        console.error('获取推荐歌单标签失败:', error);
+        return { pinned: [], data: [] };
+    }
 }
 
-// 根据标签获取推荐歌单
-export async function getRecommendSheetsByTag(tagId, page = 1, pageSize = 20) {
-  try {
-    const result = await qqMethods.getRecommendSheetsByTag(tagId, page, pageSize);
-    return { success: true, data: result };
-  } catch (error) {
-    console.error('根据标签获取推荐歌单失败:', error);
-    return { success: false, error: error.message };
-  }
+/**
+ * 根据标签获取推荐歌单
+ * @param {Object} tag - 标签对象
+ * @param {number} page - 页码
+ * @returns {Promise<Object>} 推荐歌单
+ */
+export async function getRecommendSheetsByTag(tag, page = 1) {
+    try {
+        if (!tag) {
+            console.error('获取推荐歌单失败: 标签对象不能为空');
+            return { isEnd: true, data: [] };
+        }
+        return await plugin.getRecommendSheetsByTag(tag, page);
+    } catch (error) {
+        console.error('获取推荐歌单失败:', error);
+        return { isEnd: true, data: [] };
+    }
 }
 
-// 获取歌单信息
-export async function getMusicSheetInfo(sheetId) {
-  try {
-    const result = await qqMethods.getMusicSheetInfo({ id: sheetId });
-    return { success: true, data: result };
-  } catch (error) {
-    console.error('获取歌单信息失败:', error);
-    return { success: false, error: error.message };
-  }
-}
-
-// 实现搜索方法
-export async function search(keyword, page = 1, pageSize = 20) {
-  try {
-    const result = await qqMethods.search(keyword, page, pageSize, 'music');
-    return { success: true, data: result };
-  } catch (error) {
-    console.error('搜索音乐失败:', error);
-    return { success: false, error: error.message };
-  }
-}
-
-// 获取媒体资源
-export async function getMediaSource(songId, quality = 'standard') {
-  try {
-    const result = await qqMethods.getMediaSource({ songmid: songId }, quality);
-    return { success: true, data: result };
-  } catch (error) {
-    console.error('获取媒体资源失败:', error);
-    return { success: false, error: error.message };
-  }
-}
-
-// 获取歌词
-export async function getLyric(songId) {
-  try {
-    const result = await qqMethods.getLyric({ songmid: songId });
-    return { success: true, data: result };
-  } catch (error) {
-    console.error('获取歌词失败:', error);
-    return { success: false, error: error.message };
-  }
-}
-
-// 获取专辑信息
-export async function getAlbumInfo(albumId) {
-  try {
-    const result = await qqMethods.getAlbumInfo({ albummid: albumId });
-    return { success: true, data: result };
-  } catch (error) {
-    console.error('获取专辑信息失败:', error);
-    return { success: false, error: error.message };
-  }
-}
-// 获取歌手作品
-export async function getArtistWorks(artistId, page = 1, pageSize = 20) {
-  try {
-    const result = await qqMethods.getArtistWorks(artistId, page, pageSize);
-    return { success: true, data: result };
-  } catch (error) {
-    console.error('获取歌手作品失败:', error);
-    return { success: false, error: error.message };
-  }
-}
-
-// 导入歌单
-export async function importMusicSheet(sheetUrl) {
-  try {
-    const result = await qqMethods.importMusicSheet(sheetUrl);
-    return { success: true, data: result };
-  } catch (error) {
-    console.error('导入歌单失败:', error);
-    return { success: false, error: error.message };
-  }
-}
+// 导出所有API方法
 export default {
-  search,
-  getMediaSource,
-  getLyric,
-  getAlbumInfo,
-  getArtistWorks,
-  importMusicSheet,
-  getRecommendSheetTags,
-  getRecommendSheetsByTag,
-  getMusicSheetInfo
+    search,
+    getMediaSource,
+    getLyric,
+    getAlbumInfo,
+    getTopLists,
+    getTopListDetail,
+    getArtistWorks,
+    importMusicSheet,
+    getRecommendSheetTags,
+    getRecommendSheetsByTag
 };

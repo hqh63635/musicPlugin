@@ -14,11 +14,23 @@ export default defineConfig({
   server: {
     // 配置代理解决跨域问题
     proxy: {
-      // 通用QQ音乐API代理
+      // 通用QQ音乐API代理 - c.y.qq.com
       '/api': {
         target: 'https://c.y.qq.com',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '')
+      },
+      // QQ Music API proxy for u.y.qq.com (musicu.fcg)
+      '/musicu': {
+        target: 'https://u.y.qq.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/musicu/, '/cgi-bin/musicu.fcg')
+      },
+      // Fallback proxy for any other QQ domains
+      '/qqapi': {
+        target: 'https://u.y.qq.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/qqapi/, '')
       }
     }
   }

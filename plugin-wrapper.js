@@ -1,37 +1,15 @@
 // 插件包装器
-import CryptoJS from 'crypto-js';
-import dayjs from 'dayjs';
-import axios from 'axios';
-import bigInt from 'big-integer';
-import qs from 'qs';
-import * as cheerioModule from 'cheerio';
-import he from 'he';
-import qqJsContent from './qq.js?raw';
+const fs = require('fs');
+const path = require('path');
+const CryptoJS = require('crypto-js');
+const dayjs = require('dayjs');
+const axios = require('axios');
+const bigInt = require('big-integer');
+const qs = require('qs');
+const cheerio = require('cheerio');
+const he = require('he');
 
-// Handle cheerio export structure (common issue with cheerio)
-const cheerio = cheerioModule.default || cheerioModule;
-
-// 设置axios默认配置
 axios.defaults.timeout = 15000;
-
-// 配置axios请求拦截器，自动代理QQ音乐API请求
-axios.interceptors.request.use(config => {
-    // 如果请求URL包含u.y.qq.com或c.y.qq.com，自动转换为代理路径
-    if (config.url.includes('u.y.qq.com/cgi-bin/musicu.fcg')) {
-        // 转换为 /musicu 代理路径
-        const params = config.url.split('?')[1];
-        config.url = `/musicu?${params}`;
-    } else if (config.url.includes('u.y.qq.com')) {
-        // 转换为 /qqapi 代理路径
-        config.url = config.url.replace('https://u.y.qq.com', '/qqapi');
-    } else if (config.url.includes('c.y.qq.com')) {
-        // 转换为 /api 代理路径
-        config.url = config.url.replace('https://c.y.qq.com', '/api');
-    }
-    return config;
-}, error => {
-    return Promise.reject(error);
-});
 
 // 定义可用的包
 const packages = {
@@ -53,7 +31,8 @@ const _require = (packageName) => {
     return null;
 };
 
-// 原始插件代码通过import qqJsContent from './qq.js?raw'导入
+// 读取原始插件代码
+const qqJsContent = fs.readFileSync(path.join(__dirname, 'qq.js'), 'utf8');
 
 // 定义插件状态码
 const PluginStateCode = {
@@ -76,13 +55,13 @@ class Plugin {
                 // 插件的环境变量
                 const env = {
                     getUserVariables: () => ({}),
-                    os: 'browser',
+                    os: process.platform,
                     appVersion: '1.0.0',
                     lang: 'zh-CN',
                 };
                 
                 const _process = {
-                    platform: 'browser',
+                    platform: process.platform,
                     version: '1.0.0',
                     env,
                     ensurePluginInitialized,
@@ -145,8 +124,11 @@ class Plugin {
 
 // 创建沙箱函数
 async function createSandbox() {
+    // 读取插件代码
+    const pluginContent = fs.readFileSync(path.join(__dirname, 'qq.js'), 'utf8');
+    
     // 创建插件实例
-    const plugin = new Plugin(qqJsContent, './qq.js');
+    const plugin = new Plugin(pluginContent, './qq.js');
     
     // 返回插件实例
     return plugin.instance;
@@ -156,7 +138,7 @@ async function createSandbox() {
 const defaultPlugin = new Plugin(qqJsContent, './qq.js');
 
 // 导出默认插件实例和createSandbox函数
-export default {
+module.exports = {
     ...defaultPlugin.instance,
     createSandbox
 };

@@ -32,13 +32,7 @@ onMounted(() => {
   
   // 初始化歌曲信息
   if (!musicStore.currentSong) {
-    musicStore.playSong({
-      id: '001JZkTF2XZ8lH',
-      name: '晴天',
-      artist: ['周杰伦'],
-      album: '叶惠美',
-      cover: albumCover
-    })
+    musicStore.playSong({"rank":1,"rankType":1,"rankValue":"3","recType":0,"songId":618289357,"vid":"","albumMid":"002C2NgC2SlrSy","title":"第57次取消发送","singerName":"休眠火山","singerMid":"004XwjRp4f8rWR","songType":0,"uuidCnt":0,"cover":"https://y.gtimg.cn/music/photo_new/T002R300x300M000002C2NgC2SlrSy_2.jpg","mvid":0})
   }
 })
 
