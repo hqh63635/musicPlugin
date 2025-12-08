@@ -103,7 +103,7 @@ export const useMusicStore = defineStore('music', () => {
       const currentQuality = 'standard' // 这里可以从用户设置中获取，暂时使用默认值
       
       // 获取音乐资源 - 传入歌曲ID和音质参数
-      const result = await api.getMediaSource(song.songId, currentQuality)
+      const result = await api.getMediaSource(song, currentQuality)
       if (result.success && result.data && audioElement.value) {
         audioElement.value.src = result.data.url
         

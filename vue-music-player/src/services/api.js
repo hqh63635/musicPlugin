@@ -30,11 +30,59 @@ export async function search(keyword, page = 1, type = 'music') {
  */
 export async function getMediaSource(song, quality = 'standard') {
     try {
-        if (!song || !song.id || !song.songmid) {
-            console.error('获取媒体源失败: 歌曲对象无效或缺少必要属性');
+        if (!song || typeof song !== 'object') {
+            console.error('获取媒体源失败: 歌曲对象必须是有效的对象');
             return null;
         }
-        return await plugin.getMediaSource(song.id, song.songmid, quality);
+        
+        // 验证音质参数，确保是有效的字符串
+        if (typeof quality !== 'string' || quality.trim() === '') {
+            quality = 'standard';
+            console.warn('音质参数无效，使用默认值: standard');
+        } else {
+            quality = quality.trim();
+        }
+        
+        // Handle property name differences (songId vs id, songmid vs songMid/singerMid)
+        const songId = song.songId || song.id;
+        const songmid = song.songmid || song.songMid || song.singerMid;
+        
+        // 更严格的参数验证：确保songId和songmid是有效的非空值
+        if (songId === undefined || songId === null || (typeof songId === 'string' && songId.trim() === '') ||
+            songmid === undefined || songmid === null || (typeof songmid === 'string' && songmid.trim() === '')) {
+            console.error('获取媒体源失败: 歌曲对象缺少必要的ID属性');
+            console.error('可用属性:', Object.keys(song));
+            console.error('songId:', songId, 'songmid:', songmid);
+            return null;
+        }
+        
+        // 将songId和songmid转换为字符串，确保格式一致
+        const normalizedSongId = String(songId).trim();
+        const normalizedSongmid = String(songmid).trim();
+        const normalizedQuality = quality.toLowerCase();
+        
+        console.log('获取媒体源参数:', { songId: normalizedSongId, songmid: normalizedSongmid, quality: normalizedQuality });
+        
+        // 验证plugin实例和getMediaSource方法的有效性
+        if (!plugin || typeof plugin !== 'object') {
+            console.error('获取媒体源失败: plugin实例无效');
+            return null;
+        }
+        
+        if (typeof plugin.getMediaSource !== 'function') {
+            console.error('获取媒体源失败: plugin.getMediaSource不是有效的函数');
+            console.error('plugin的可用方法:', Object.keys(plugin).filter(key => typeof plugin[key] === 'function'));
+            return null;
+        }
+        
+        try {
+            const result = await plugin.getMediaSource(normalizedSongId, normalizedSongmid, normalizedQuality);
+            console.log('plugin.getMediaSource返回结果:', result);
+            return result;
+        } catch (pluginError) {
+            console.error('调用plugin.getMediaSource时发生错误:', pluginError);
+            return null;
+        }
     } catch (error) {
         console.error('获取媒体源失败:', error);
         return null;
@@ -48,11 +96,21 @@ export async function getMediaSource(song, quality = 'standard') {
  */
 export async function getLyric(song) {
     try {
-        if (!song || !song.id || !song.songmid) {
-            console.error('获取歌词失败: 歌曲对象无效或缺少必要属性');
+        if (!song) {
+            console.error('获取歌词失败: 歌曲对象不能为空');
             return null;
         }
-        return await plugin.getLyric(song.id, song.songmid);
+        // Handle property name differences (songId vs id, songmid vs songMid)
+        const songId = song.songId || song.id;
+        const songmid = song.songmid || song.songMid || song.singerMid;
+        
+        if (!songId || !songmid) {
+            console.error('获取歌词失败: 歌曲对象缺少必要的ID属性');
+            console.error('可用属性:', Object.keys(song));
+            return null;
+        }
+        
+        return await plugin.getLyric(songId, songmid);
     } catch (error) {
         console.error('获取歌词失败:', error);
         return null;
@@ -66,11 +124,21 @@ export async function getLyric(song) {
  */
 export async function getAlbumInfo(album) {
     try {
-        if (!album || !album.albumid || !album.albummid) {
-            console.error('获取专辑信息失败: 专辑对象无效或缺少必要属性');
+        if (!album) {
+            console.error('获取专辑信息失败: 专辑对象不能为空');
             return null;
         }
-        return await plugin.getAlbumInfo(album.albumid, album.albummid);
+        // Handle property name differences (albumId vs albumid, albumMid vs albummid)
+        const albumid = album.albumId || album.albumid;
+        const albummid = album.albumMid || album.albummid;
+        
+        if (!albumid || !albummid) {
+            console.error('获取专辑信息失败: 专辑对象缺少必要的ID属性');
+            console.error('可用属性:', Object.keys(album));
+            return null;
+        }
+        
+        return await plugin.getAlbumInfo(albumid, albummid);
     } catch (error) {
         console.error('获取专辑信息失败:', error);
         return null;

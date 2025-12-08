@@ -31,6 +31,12 @@ export default defineConfig({
         target: 'https://u.y.qq.com',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/qqapi/, '')
+      },
+      // 海棠音乐API代理
+      '/haitang': {
+        target: 'http://musicapi.haitangw.net',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/haitang/, '')
       }
     }
   }
