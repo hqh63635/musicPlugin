@@ -118,7 +118,7 @@ const togglePlayMode = () => {
 <template>
   <div class="music-bar-container">
     <!-- 音频元素 -->
-    <audio ref="audioRef" url="https://lv-sycdn.kuwo.cn/27602873ff00ab3b26d7bf4f2bf61417/6936f511/resource/30106/trackmedia/M800004Yi5BD3ksoAN.mp3"/>
+    <audio ref="audioRef" src="https://lv-sycdn.kuwo.cn/27602873ff00ab3b26d7bf4f2bf61417/6936f511/resource/30106/trackmedia/M800004Yi5BD3ksoAN.mp3"/>
 
     <!-- 当前播放歌曲信息 -->
     <div class="music-info">
