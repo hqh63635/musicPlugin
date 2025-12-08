@@ -107,6 +107,7 @@ export const useMusicStore = defineStore('music', () => {
       if (result.success && result.data && audioElement.value) {
         audioElement.value.src = result.data.url
         
+        debugger
         // 设置请求头（如果有）
         if (result.data.headers) {
           // 注意：浏览器的audio元素不支持直接设置请求头

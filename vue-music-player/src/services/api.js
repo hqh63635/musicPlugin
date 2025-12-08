@@ -57,28 +57,58 @@ export async function getMediaSource(song, quality = 'standard') {
         }
         
         // 将songId和songmid转换为字符串，确保格式一致
-        const normalizedSongId = String(songId).trim();
-        const normalizedSongmid = String(songmid).trim();
+        const normalizedSong = {
+            ...song,
+            id: String(songId).trim(),
+            songmid: String(songmid).trim()
+        };
         const normalizedQuality = quality.toLowerCase();
         
-        console.log('获取媒体源参数:', { songId: normalizedSongId, songmid: normalizedSongmid, quality: normalizedQuality });
+        console.log('获取媒体源参数:', { song: normalizedSong, quality: normalizedQuality });
         
         // 验证plugin实例和getMediaSource方法的有效性
         if (!plugin || typeof plugin !== 'object') {
             console.error('获取媒体源失败: plugin实例无效');
+            // 尝试返回原始URL作为后备
+            if (song.url || song.qualities?.[normalizedQuality]?.url) {
+                return {
+                    url: song.url || song.qualities?.[normalizedQuality]?.url,
+                    headers: {},
+                    userAgent: ''
+                };
+            }
             return null;
         }
         
         if (typeof plugin.getMediaSource !== 'function') {
             console.error('获取媒体源失败: plugin.getMediaSource不是有效的函数');
             console.error('plugin的可用方法:', Object.keys(plugin).filter(key => typeof plugin[key] === 'function'));
+            // 尝试返回原始URL作为后备
+            if (song.url || song.qualities?.[normalizedQuality]?.url) {
+                return {
+                    url: song.url || song.qualities?.[normalizedQuality]?.url,
+                    headers: {},
+                    userAgent: ''
+                };
+            }
             return null;
         }
         
         try {
-            const result = await plugin.getMediaSource(normalizedSongId, normalizedSongmid, normalizedQuality);
+            // 根据TypeScript参考，应该传递整个歌曲对象和音质字符串
+            const result = await plugin.getMediaSource(normalizedSong, normalizedQuality);
             console.log('plugin.getMediaSource返回结果:', result);
-            return result;
+            
+            if (!result || !result.url) {
+                throw new Error('NOT RETRY');
+            }
+            
+            // 格式化返回结果以匹配预期格式
+            return {
+                url: result.url,
+                headers: result.headers || {},
+                userAgent: result.headers?.['user-agent'] || ''
+            };
         } catch (pluginError) {
             console.error('调用plugin.getMediaSource时发生错误:', pluginError);
             return null;
@@ -96,21 +126,57 @@ export async function getMediaSource(song, quality = 'standard') {
  */
 export async function getLyric(song) {
     try {
-        if (!song) {
-            console.error('获取歌词失败: 歌曲对象不能为空');
+        if (!song || typeof song !== 'object') {
+            console.error('获取歌词失败: 歌曲对象必须是有效的对象');
             return null;
         }
-        // Handle property name differences (songId vs id, songmid vs songMid)
-        const songId = song.songId || song.id;
-        const songmid = song.songmid || song.songMid || song.singerMid;
         
-        if (!songId || !songmid) {
+        // Handle property name differences and normalize properties
+        const normalizedSong = {
+            ...song,
+            // 确保id和songmid属性存在且有效
+            id: song.songId || song.id,
+            songmid: song.songmid || song.songMid || song.singerMid
+        };
+        
+        // 更严格的参数验证：确保id和songmid是有效的非空值
+        if (normalizedSong.id === undefined || normalizedSong.id === null || 
+            (typeof normalizedSong.id === 'string' && normalizedSong.id.trim() === '') ||
+            normalizedSong.songmid === undefined || normalizedSong.songmid === null || 
+            (typeof normalizedSong.songmid === 'string' && normalizedSong.songmid.trim() === '')) {
             console.error('获取歌词失败: 歌曲对象缺少必要的ID属性');
             console.error('可用属性:', Object.keys(song));
+            console.error('id:', normalizedSong.id, 'songmid:', normalizedSong.songmid);
             return null;
         }
         
-        return await plugin.getLyric(songId, songmid);
+        // 将id和songmid转换为字符串，确保格式一致
+        normalizedSong.id = String(normalizedSong.id).trim();
+        normalizedSong.songmid = String(normalizedSong.songmid).trim();
+        
+        console.log('获取歌词参数:', { song: normalizedSong });
+        
+        // 验证plugin实例和getLyric方法的有效性
+        if (!plugin || typeof plugin !== 'object') {
+            console.error('获取歌词失败: plugin实例无效');
+            return null;
+        }
+        
+        if (typeof plugin.getLyric !== 'function') {
+            console.error('获取歌词失败: plugin.getLyric不是有效的函数');
+            console.error('plugin的可用方法:', Object.keys(plugin).filter(key => typeof plugin[key] === 'function'));
+            return null;
+        }
+        
+        // 根据getMediaSource的模式，传递整个歌曲对象
+        try {
+            const result = await plugin.getLyric(normalizedSong);
+            console.log('plugin.getLyric返回结果:', result);
+            return result;
+        } catch (pluginError) {
+            console.error('调用plugin.getLyric时发生错误:', pluginError);
+            return null;
+        }
     } catch (error) {
         console.error('获取歌词失败:', error);
         return null;
@@ -124,21 +190,57 @@ export async function getLyric(song) {
  */
 export async function getAlbumInfo(album) {
     try {
-        if (!album) {
-            console.error('获取专辑信息失败: 专辑对象不能为空');
+        if (!album || typeof album !== 'object') {
+            console.error('获取专辑信息失败: 专辑对象必须是有效的对象');
             return null;
         }
-        // Handle property name differences (albumId vs albumid, albumMid vs albummid)
-        const albumid = album.albumId || album.albumid;
-        const albummid = album.albumMid || album.albummid;
         
-        if (!albumid || !albummid) {
+        // Handle property name differences and normalize properties
+        const normalizedAlbum = {
+            ...album,
+            // 确保albumid和albummid属性存在且有效
+            albumid: album.albumId || album.albumid,
+            albummid: album.albumMid || album.albummid
+        };
+        
+        // 更严格的参数验证：确保albumid和albummid是有效的非空值
+        if (normalizedAlbum.albumid === undefined || normalizedAlbum.albumid === null || 
+            (typeof normalizedAlbum.albumid === 'string' && normalizedAlbum.albumid.trim() === '') ||
+            normalizedAlbum.albummid === undefined || normalizedAlbum.albummid === null || 
+            (typeof normalizedAlbum.albummid === 'string' && normalizedAlbum.albummid.trim() === '')) {
             console.error('获取专辑信息失败: 专辑对象缺少必要的ID属性');
             console.error('可用属性:', Object.keys(album));
+            console.error('albumid:', normalizedAlbum.albumid, 'albummid:', normalizedAlbum.albummid);
             return null;
         }
         
-        return await plugin.getAlbumInfo(albumid, albummid);
+        // 将albumid和albummid转换为字符串，确保格式一致
+        normalizedAlbum.albumid = String(normalizedAlbum.albumid).trim();
+        normalizedAlbum.albummid = String(normalizedAlbum.albummid).trim();
+        
+        console.log('获取专辑信息参数:', { album: normalizedAlbum });
+        
+        // 验证plugin实例和getAlbumInfo方法的有效性
+        if (!plugin || typeof plugin !== 'object') {
+            console.error('获取专辑信息失败: plugin实例无效');
+            return null;
+        }
+        
+        if (typeof plugin.getAlbumInfo !== 'function') {
+            console.error('获取专辑信息失败: plugin.getAlbumInfo不是有效的函数');
+            console.error('plugin的可用方法:', Object.keys(plugin).filter(key => typeof plugin[key] === 'function'));
+            return null;
+        }
+        
+        // 根据getMediaSource的模式，传递整个专辑对象
+        try {
+            const result = await plugin.getAlbumInfo(normalizedAlbum);
+            console.log('plugin.getAlbumInfo返回结果:', result);
+            return result;
+        } catch (pluginError) {
+            console.error('调用plugin.getAlbumInfo时发生错误:', pluginError);
+            return null;
+        }
     } catch (error) {
         console.error('获取专辑信息失败:', error);
         return null;

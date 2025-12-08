@@ -45,7 +45,7 @@ async function runApiExamples() {
             safeLog('搜索结果总数', searchResults.total);
             
             if (searchResults.data && Array.isArray(searchResults.data)) {
-                console.log('   前3条结果:');
+                console.log('   前3条结果:', searchResults.data);
                 searchResults.data.slice(0, 3).forEach((song, index) => {
                     if (song) {
                         console.log(`   ${index + 1}. ${song.title || '未知歌曲'} - ${song.artist || '未知歌手'}`);

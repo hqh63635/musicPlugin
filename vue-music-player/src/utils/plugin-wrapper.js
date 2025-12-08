@@ -30,39 +30,6 @@ axios.interceptors.request.use(config => {
     } else if (config.url.includes('musicapi.haitangw.net')) {
         // 转换为 /haitang 代理路径
         config.url = config.url.replace('http://musicapi.haitangw.net', '/haitang');
-        
-        // 修复传递给haitang API的undefined参数
-        if (config.url.includes('qq_song_kw.php')) {
-            console.log('修复前的haitang API请求:', config.url);
-            
-            // 解析查询参数
-            const urlParts = config.url.split('?');
-            if (urlParts.length === 2) {
-                const baseUrl = urlParts[0];
-                const params = new URLSearchParams(urlParts[1]);
-                
-                // 修复id和level参数
-                if (params.get('id') === 'undefined' || params.get('id') === undefined) {
-                    params.set('id', '618289357');
-                    // 如果id参数缺失，可以考虑从其他来源获取或使用默认值
-                    console.warn('检测到undefined的id参数，已删除');
-                }
-                
-                if (params.get('level') === 'undefined' || params.get('level') === undefined) {
-                    params.set('level', 'standard'); // 使用默认音质
-                    console.warn('检测到undefined的level参数，已设置为standard');
-                }
-                
-                if (params.get('type') === 'undefined' || params.get('type') === undefined) {
-                    params.set('type', 'json'); // 使用默认类型
-                    console.warn('检测到undefined的type参数，已设置为json');
-                }
-                
-                // 重新构建URL
-                config.url = `${baseUrl}?${params.toString()}`;
-                console.log('修复后的haitang API请求:', config.url);
-            }
-        }
     }
     return config;
 }, error => {
