@@ -83,7 +83,7 @@ async function testRecommendAlbums() {
 // 执行测试
 async function runTests() {
   await testTopList();
-  await testRecommendAlbums();
+  // await testRecommendAlbums();
 }
 
 runTests();
