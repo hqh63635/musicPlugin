@@ -102,16 +102,17 @@ const changeCategory = key => {
 };
 
 // 新增：跳转到歌手详情
-const goToArtistDetail = singerId => {
-  router.push(`/artist/${singerId}`);
+const goToArtistDetail = singer => {
+  router.push(`/artist/${singer?.singerMID}?singer=${encodeURIComponent(JSON.stringify(singer))}`);
 };
 </script>
 
 <template>
   <div class="artist-page">
-    <!-- 分类视图 -->
+    <div class=artist-page-container>
+      <!-- 分类视图 -->
     <div class="page-header">
-      <h1>歌手分类</h1>
+      <h2>歌手分类</h2>
     </div>
 
     <!-- A-Z分类导航 -->
@@ -123,22 +124,23 @@ const goToArtistDetail = singerId => {
 
     <!-- 歌手列表 -->
     <div class="singer-grid">
-      <div v-for="singer in singerList" :key="singer.singer_id" class="singer-card" @click="goToArtistDetail(singer.singer_id)">
+      <div v-for="singer in singerList" :key="singer.singer_id" class="singer-card" @click="goToArtistDetail(singer)">
         <div class="singer-avatar">
           <img :src="singer.avatar || '@/assets/default-avatar.jpg'" :alt="singer.singer_name" />
         </div>
         <h3 class="singer-name">{{ singer.name }}</h3>
       </div>
     </div>
-
+    </div>
   </div>
 </template>
 
 <style scoped>
 .artist-page {
-  padding: 20px;
+  padding: 12px;
   color: #333;
-  background-color: #fff;
+  border-radius: 4px;
+  background-color: #f5f5f5;
 }
 
 /* 艺术家头部信息 */
@@ -415,7 +417,7 @@ const goToArtistDetail = singerId => {
 
 /* 新增：分类视图样式 */
 .page-header {
-  padding: 20px 0;
+  padding: 0;
 }
 
 .category-nav {
@@ -479,7 +481,13 @@ const goToArtistDetail = singerId => {
   text-overflow: ellipsis;
   width: 100%;
 }
+.artist-page-container {
+  height: 100%;
+  padding: 12px;
+  background-color: #fff;
+}
 </style>
+
 
 
 

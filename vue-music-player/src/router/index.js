@@ -4,7 +4,8 @@ import { createRouter, createWebHistory } from 'vue-router';
 // 注意：这里使用了动态导入来实现路由懒加载
 const Recommend = () => import('../views/Recommend.vue');
 const RankList = () => import('../views/RankList.vue');
-const Artist = () => import('../views/Artist.vue');
+import Artist from '../views/Artist.vue';
+import ArtistDetail from '../views/ArtistDetail.vue';
 const Album = () => import('../views/Album.vue');
 const Search = () => import('../views/Search.vue');
 
@@ -30,6 +31,11 @@ const router = createRouter({
       path: '/artist',
       name: 'Artist',
       component: Artist,
+    },
+    {
+      path: '/artist/:id',
+      name: 'ArtistDetail',
+      component: ArtistDetail,
     },
     {
       path: '/album',

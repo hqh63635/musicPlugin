@@ -5,6 +5,7 @@ import { useMusicStore } from '../store/music.js';
 import playIcon from '@/assets/icons/play.svg?url';
 import plusIcon from '@/assets/icons/plus.svg?url';
 import { PlayCircleOutlined } from '@ant-design/icons-vue';
+import SongList from '../components/songList.vue';
 
 const musicStore = useMusicStore();
 
@@ -146,47 +147,7 @@ const formatNumber = value => {
         </div>
 
         <!-- 歌曲列表 -->
-        <div class="song-list">
-          <a-row class="song-header">
-            <a-col :span="4" class="">序号
-            </a-col>
-            <a-col :span="12" class="">
-              歌曲
-            </a-col>
-            <a-col :span="4" class="">歌手
-            </a-col>
-            <a-col :span="4" class="">
-              时长
-            </a-col>
-          </a-row>
-          <a-row v-for="(song, index) in listSongs" :key="index" class="song-item">
-            <a-col :span="4" class="song-rank">{{index + 1}}</a-col>
-            <a-col :span="12">
-              <div class="list-song-info">
-                <div class="song-cover" style="width: 60px; height: 60px;">
-                  <img :src="song.artwork?.replace(/[`\s]/g, '') || '@/assets/default-cover.jpg'" :alt="song.title" width="60px" height="60px" />
-                </div>
-                <div class="list-song-info-title" style="flex: 1; min-width: 0;">
-                  <div style="flex: 1; min-width: 0;">
-                    <span>{{ song.title }}</span>
-                    <!-- <span> {{ song.subtitle }}</span> -->
-                  </div>
-                  <span class="song-actions">
-                    <PlayCircleOutlined font-size="16px" @click="playSong(song, index)" />
-                    <!-- <img :src="playIcon" alt="播放" @click="playSong(song, index)" />
-                <img :src="plusIcon" alt="添加" @click="addToPlaylist(song)" /> -->
-                  </span>
-                </div>
-
-              </div>
-
-            </a-col>
-            <a-col :span="4" class="song-rank">
-              {{song.artist}}
-            </a-col>
-            <a-col :span="4" class="song-rank"></a-col>
-          </a-row>
-        </div>
+        <SongList :listSongs="listSongs" />
       </div>
 
       <!-- 未选择排行榜提示 -->
@@ -319,10 +280,7 @@ const formatNumber = value => {
   min-width: 50px;
 }
 
-.song-item:hover {
-  background-color: #f0f7ff;
-  cursor: pointer;
-}
+
 
 .song-rank {
   text-align: center;
