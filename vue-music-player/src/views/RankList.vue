@@ -17,6 +17,8 @@ const selectedList = ref(null);
 const listSongs = ref([]);
 // 加载状态
 const loading = ref(false);
+const currentPage = ref(1);
+const isEnd = ref(false);
 
 // 页面加载时获取排行榜数据
 onMounted(() => {
@@ -147,7 +149,11 @@ const formatNumber = value => {
         </div>
 
         <!-- 歌曲列表 -->
-        <SongList :listSongs="listSongs" />
+        <SongList
+          :listSongs="listSongs"
+          :isEnd="isEnd"
+          :currentPage="currentPage"
+        />
       </div>
 
       <!-- 未选择排行榜提示 -->

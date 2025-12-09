@@ -33,8 +33,11 @@ const onSearchSubmit = () => {
 
 // 执行搜索
 const search = (keyword) => {
-  // 在实际应用中，这里会导航到搜索页面
-  console.log('搜索关键词:', keyword)
+  // 导航到搜索页面并传递关键词
+  router.push({
+    name: 'Search',
+    query: { keyword: keyword }
+  })
   // 关闭搜索历史
   showSearchHistory.value = false
 }

@@ -12,10 +12,36 @@ const musicStore = useMusicStore();
 const playlist = ref(null);
 // 加载状态
 const loading = ref(false);
+const isEnd = ref(false);
+const currentPage = ref(1);
+// 每页显示的歌曲数量
+const pageSize = ref(20);
 
-const songList = computed(() => {
+// 获取完整的歌曲列表
+const fullSongList = computed(() => {
   return musicStore?.playlist || [];
 });
+
+// 计算当前页的歌曲列表（本地分页）
+const songList = computed(() => {
+  const startIndex = (currentPage.value - 1) * pageSize.value;
+  const endIndex = startIndex + pageSize.value;
+  return fullSongList.value.slice(0, endIndex);
+});
+
+// 计算总页数
+const totalPages = computed(() => {
+  return Math.ceil(fullSongList.value.length / pageSize.value);
+});
+
+// 监听当前页变化，确保不超过总页数
+const handlePageChange = page => {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page;
+    isEnd.value = page >= totalPages.value;
+  }
+};
+
 // 播放全部歌曲
 const playAll = () => {
   if (playlist.value?.songs?.length > 0) {
@@ -39,7 +65,7 @@ const addToPlaylist = song => {
 
     <div class="playlist-detail"><!-- 加载状态 -->
       <div v-if="loading" class="loading">加载中...</div>
-      <SongList :listSongs="songList || []" />
+      <SongList :listSongs="songList || []" :isEnd="isEnd" :currentPage="currentPage" @pageChange="handlePageChange" />
     </div>
 
     <!-- 歌单不存在 -->

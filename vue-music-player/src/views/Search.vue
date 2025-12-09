@@ -1,86 +1,99 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
-import api from '../services/api.js'
+import { ref, onMounted, watch } from 'vue';
+import { useRoute } from 'vue-router';
+import api from '../services/api.js';
+import SongList from '../components/SongList.vue';
 
-const route = useRoute()
-const keyword = ref(route.query.keyword || '')
-const searchResults = ref([])
-const loading = ref(false)
+const route = useRoute();
+const keyword = ref('');
+const searchResults = ref([]);
+const loading = ref(false);
+const currentPage = ref(1);
+const isEnd = ref(false);
 
 // 当路由参数变化时重新搜索
 onMounted(() => {
+  keyword.value = route.query.keyword || '';
   if (keyword.value) {
-    performSearch()
+    performSearch();
   }
-})
+});
 
+watch(
+  () => route.query.keyword,
+  newValue => {
+    keyword.value = newValue || '';
+    if (newValue) {
+      performSearch();
+    }
+  }
+);
 // 执行搜索
 const performSearch = async () => {
-  if (!keyword.value) return
-  
-  loading.value = true
+  if (!keyword.value) return;
+
+  loading.value = true;
   try {
-    const result = await api.search(keyword.value)
-    if (result.success) {
-      searchResults.value = result.data.songs
+    const result = await api.search(keyword.value, currentPage.value, 'music');
+    if (currentPage.value === 1) {
+       searchResults.value = result.data;
+    }else {
+      searchResults.value.push(...result.data);
     }
+    isEnd.value = result.isEnd;
   } catch (error) {
-    console.error('搜索失败:', error)
+    console.error('搜索失败:', error);
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
+
+const handlePageChange = (page) => {
+  currentPage.value = page;
+  performSearch();
+};
 
 // 格式化歌曲时长
-const formatDuration = (seconds) => {
-  const minutes = Math.floor(seconds / 60)
-  const remainingSeconds = seconds % 60
-  return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`
-}
+const formatDuration = seconds => {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+};
 </script>
 
 <template>
-  <div class="search-page">
-    <h2>搜索结果: {{ keyword }}</h2>
-    
-    <div v-if="loading" class="loading">
-      搜索中...
-    </div>
-    
-    <div v-else-if="searchResults.length === 0" class="no-results">
-      没有找到相关结果
-    </div>
-    
-    <div v-else class="search-results">
-      <div 
-        v-for="song in searchResults" 
-        :key="song.id" 
-        class="song-item"
-      >
-        <div class="song-cover">
-          <img :src="song.cover" :alt="song.name" />
-        </div>
-        <div class="song-info">
-          <div class="song-name">{{ song.name }}</div>
-          <div class="song-artist">{{ song.artist.join(', ') }}</div>
-        </div>
-        <div class="song-album">{{ song.album }}</div>
-        <div class="song-duration">{{ formatDuration(song.duration) }}</div>
-        <div class="song-action">
-          <img src="@/assets/icons/play.svg" alt="播放" />
-        </div>
+  <div class="artist-detail-container">
+    <div class="artist-detail-content">
+      <h2>搜索结果: {{ keyword }}</h2>
+
+      <div v-if="loading" class="loading">搜索中...</div>
+
+      <div v-else-if="searchResults.length === 0" class="no-results">没有找到相关结果</div>
+
+      <div v-if="searchResults.length" class="search-results">
+        <SongList
+          :listSongs="searchResults"
+          :isEnd="isEnd"
+          :currentPage="currentPage"
+          @pageChange="handlePageChange"
+        />
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-.search-page {
-  padding: 20px;
-  color: #fff;
+.artist-detail-container {
+  margin: 0 auto;
+  padding: 12px;
+  background-color: #f5f5f5;
 }
 
+.artist-detail-content {
+  height: 100%;
+  padding: 12px;
+  background-color: #fff;
+}
 .loading {
   text-align: center;
   padding: 40px;
@@ -94,9 +107,11 @@ const formatDuration = (seconds) => {
 }
 
 .search-results {
+  height: calc(100% - 55px);
   display: flex;
   flex-direction: column;
   gap: 12px;
+  overflow: auto;
 }
 
 .song-item {

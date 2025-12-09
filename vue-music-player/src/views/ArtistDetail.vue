@@ -1,9 +1,8 @@
 <template>
   <div class="artist-detail-container">
     <div class="artist-detail-content">
-      <h2>{{ artistInfo?.name || '艺术家详情' }}</h2>
+      <h2>{{ singer?.name || '艺术家详情' }}</h2>
       <div v-if="loading" class="loading">加载中...</div>
-      <div v-else-if="error" class="error">获取艺术家信息失败</div>
       <div v-else class="artist-info">
         <img :src="singer?.avatar" :alt="artistInfo?.name" class="artist-avatar" />
         <div class="artist-details">
@@ -15,15 +14,14 @@
           <button @click="playAllSongs">播放全部</button>
         </div>
       </div>
-     <div class="songs-list">
-          <SongList 
-            :listSongs="artistInfo || []"
-            :currentPage="currentPage"
-            :pageSize="20"
-            :total="total"
-            @update:currentPage="(page) => currentPage.value = page"
-          />
-        </div>
+      <div class="songs-list">
+        <SongList
+          :listSongs="artistInfo || []"
+          :isEnd="trueß"
+          :currentPage="currentPage"
+          @pageChange="handlePageChange"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -32,7 +30,7 @@
 import { ref, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import api from '../services/api';
-import SongList from '../components/songList.vue';
+import SongList from '../components/SongList.vue';
 import { useMusicStore } from '../store/music.js';
 
 const musicStore = useMusicStore();
@@ -41,6 +39,10 @@ const artistId = route.params.id;
 // 修复变量声明顺序并添加调试日志
 let singer = ref(null);
 const singerParam = ref('');
+
+const currentPage = ref(1);
+const isEnd = ref(false);
+
 const init = () => {
   console.log('Initializing singer with param:', singerParam.value);
   try {
@@ -57,15 +59,11 @@ const init = () => {
   }
 };
 
-
 // 修改加载状态初始化
 const artistInfo = ref(null);
 const loading = ref(!singer);
 const error = ref(false);
-// Add pagination state
-const currentPage = ref(1);
-const isEnd = ref(false);
-const total = ref(0);
+// Add pagination stat
 
 const playAllSongs = () => {
   musicStore.addSongsToPlaylist(artistInfo.value || [], 0);
@@ -78,10 +76,13 @@ const fetchArtistWorks = async () => {
       loading.value = true;
       const response = await api.getArtistWorks(singer.value, currentPage.value, 'music');
       console.log('API Response:', response);
-      artistInfo.value = response.data;
       isEnd.value = response.isEnd;
-      // Set total based on isEnd status since API doesn't return total
-      total.value = response.total || (response.isEnd ? response.data.length : currentPage.value * 20 + 20);
+      if (currentPage.value === 1) {
+        artistInfo.value = response.data;
+      } else {
+        artistInfo.value.push(...response.data);
+      }
+      isEnd.value = result.isEnd;
     } catch (err) {
       console.error('获取艺术家详情失败:', err);
       error.value = true;
@@ -96,6 +97,11 @@ onMounted(async () => {
   await fetchArtistWorks();
 });
 
+const handlePageChange = (page) => {
+  currentPage.value = page;
+  fetchArtistWorks();
+};
+
 // Watch for currentPage changes to trigger data fetch
 watch(currentPage, fetchArtistWorks);
 </script>
@@ -106,11 +112,13 @@ watch(currentPage, fetchArtistWorks);
   padding: 12px;
   background-color: #f5f5f5;
 }
+
 .artist-detail-content {
   height: 100%;
   padding: 12px;
   background-color: #fff;
 }
+
 .loading,
 .error {
   text-align: center;
@@ -138,6 +146,7 @@ watch(currentPage, fetchArtistWorks);
 .artist-details {
   flex: 1;
 }
+
 .artist-details p {
   margin-bottom: 8px;
   font-size: 14px;

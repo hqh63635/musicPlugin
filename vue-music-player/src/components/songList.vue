@@ -1,52 +1,68 @@
 <template>
-  <!-- 歌曲列表 -->
-  <div class="song-list-container">
-    <div class="song-list">
-      <a-row class="song-header">
-        <a-col :span="2" class="">序号
-        </a-col>
-        <a-col :span="12" class="">
-          歌曲
-        </a-col>
-        <a-col :span="6" class="">歌手
-        </a-col>
-        <a-col :span="4" class="">
-          时长
-        </a-col>
-      </a-row>
-      <a-row v-for="(song, index) in listSongs" :key="index" class="song-item">
-        <a-col :span="2" class="song-rank">{{index + 1}}</a-col>
-        <a-col :span="12">
-          <div class="list-song-info">
-            <div class="song-cover" style="width: 60px; height: 60px;">
-              <img :src="song.artwork?.replace(/[`\s]/g, '') || '@/assets/default-cover.jpg'" :alt="song.title" width="60px" height="60px" />
-            </div>
-            <div class="list-song-info-title" style="flex: 1; min-width: 0;">
-              <div style="flex: 1; min-width: 0;">
-                <span>{{ song.title }}</span>
-                <!-- <span> {{ song.subtitle }}</span> -->
-              </div>
-              <span class="song-actions">
-                <PlayCircleOutlined font-size="16px" @click="playSong(song, index)" />
-                <!-- <img :src="playIcon" alt="播放" @click="playSong(song, index)" />
+  <a-row class="song-header">
+    <a-col :span="2" class="">序号 </a-col>
+    <a-col :span="12" class=""> 歌曲 </a-col>
+    <a-col :span="6" class="">歌手 </a-col>
+    <a-col :span="4" class=""> 时长 </a-col>
+  </a-row>
+  <a-list
+    class="demo-loadmore-list"
+    :loading="initLoading"
+    item-layout="horizontal"
+    :data-source="listSongs"
+  >
+    <template #loadMore>
+      <div
+        v-if="!initLoading && !isEnd"
+        :style="{ textAlign: 'center', marginTop: '12px', height: '32px', lineHeight: '32px' }"
+      >
+        <a-button @click="onLoadMore">加载更多</a-button>
+      </div>
+    </template>
+    <template #renderItem="{ item, index }">
+      <a-list-item>
+        <!-- <template #actions>
+          <a key="list-loadmore-edit">edit</a>
+          <a key="list-loadmore-more">more</a>
+        </template> -->
+        <!-- 歌曲列表 -->
+        <div class="song-list-container">
+          <div class="song-list">
+            <a-row class="song-item">
+              <a-col :span="2" class="song-rank">{{ index + 1 }}</a-col>
+              <a-col :span="12">
+                <div class="list-song-info">
+                  <div class="song-cover" style="width: 60px; height: 60px">
+                    <img
+                      :src="item.artwork?.replace(/[`\s]/g, '') || '@/assets/default-cover.jpg'"
+                      :alt="item.title"
+                      width="60px"
+                      height="60px"
+                    />
+                  </div>
+                  <div class="list-song-info-title" style="flex: 1; min-width: 0">
+                    <div style="flex: 1; min-width: 0">
+                      <span>{{ item.title }}</span>
+                      <!-- <span> {{ song.subtitle }}</span> -->
+                    </div>
+                    <span class="song-actions">
+                      <PlayCircleOutlined font-size="16px" @click="playSong(item, index)" />
+                      <!-- <img :src="playIcon" alt="播放" @click="playSong(song, index)" />
                   <img :src="plusIcon" alt="添加" @click="addToPlaylist(song)" /> -->
-              </span>
-            </div>
-
+                    </span>
+                  </div>
+                </div>
+              </a-col>
+              <a-col :span="6" class="song-rank">
+                {{ item.artist }}
+              </a-col>
+              <a-col :span="4" class="song-rank"></a-col>
+            </a-row>
           </div>
-
-        </a-col>
-        <a-col :span="6" class="song-rank">
-          {{song.artist}}
-        </a-col>
-        <a-col :span="4" class="song-rank"></a-col>
-      </a-row>
-    </div>
-    <!-- 分页组件 - 使用统一的组件名称 -->
-    <div class="pagination-container">
-      <a-pagination v-model:current="currentPage" :page-size="pageSize" :total="total" @change="handlePageChange" show-size-changer show-quick-jumper :show-total="(total) => `共 ${total} 条记录`" />
-    </div>
-  </div>
+        </div>
+      </a-list-item>
+    </template>
+  </a-list>
 </template>
 
 <script setup>
@@ -70,16 +86,16 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
-  pageSize: {
-    type: Number,
-    default: 20,
+  isEnd: {
+    type: Boolean,
+    default: false,
   },
-  total: {
+  currentPage: {
     type: Number,
-    default: 0,
+    default: 1,
   },
 });
-const currentPage = ref(1);
+const initLoading = ref(false);
 // 播放歌曲
 const playSong = (song, index) => {
   musicStore.playSong(song);
@@ -89,9 +105,14 @@ const emit = defineEmits(['pageChange']);
 const handlePageChange = (page, pageSize) => {
   emit('pageChange', page, pageSize);
 };
+const onLoadMore = () => {
+  if (props.isEnd) return;
+  const newPage = props.currentPage + 1;
+  emit('pageChange', newPage);
+};
 </script>
 <style scoped>
-.song-list {
+.demo-loadmore-list {
   flex: 1;
   overflow: auto;
 }
@@ -159,5 +180,8 @@ const handlePageChange = (page, pageSize) => {
   margin-top: 20px;
   text-align: right;
   padding: 10px;
+}
+.song-list-container {
+  width: 100%;
 }
 </style>
