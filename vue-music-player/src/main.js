@@ -1,5 +1,7 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
+import AntDesign from 'ant-design-vue'
+import 'ant-design-vue/dist/reset.css'
 import './style.css'
 import App from './App.vue'
 import router from './router'
@@ -9,4 +11,5 @@ const pinia = createPinia()
 
 app.use(pinia)
 app.use(router)
-app.mount('#app')
+app.use(AntDesign)
+app.mount('#app')

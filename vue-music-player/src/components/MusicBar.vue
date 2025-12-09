@@ -124,16 +124,16 @@ const togglePlayMode = () => {
     <div class="music-info">
       <div class="music-cover">
         <img
-          :src="musicStore?.currentSong?.cover || albumCover"
+          :src="musicStore?.currentSong?.artwork || albumCover"
           :alt="musicStore?.currentSong?.name || '未知歌曲'"
         />
       </div>
       <div class="music-details">
         <div class="music-name">
-          {{ musicStore?.currentSong?.name || "未知歌曲" }}
+          {{ musicStore?.currentSong?.title || "未知歌曲" }}
         </div>
         <div class="music-artist">
-          <!-- {{ musicStore?.currentSong?.artist?.join("、") || "未知歌手" }} -->
+          {{ musicStore?.currentSong?.artist || "未知歌手" }}
         </div>
       </div>
     </div>

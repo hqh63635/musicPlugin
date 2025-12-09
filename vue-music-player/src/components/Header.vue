@@ -49,10 +49,7 @@ const search = (keyword) => {
       
       <!-- 导航栏 -->
       <div class="navigator">
-        <div class="nav-item" :class="{ active: $route.path === '/' }" @click="router.push('/')">推荐</div>
-        <div class="nav-item" :class="{ active: $route.path === '/ranklist' }" @click="router.push('/ranklist')">排行榜</div>
-        <div class="nav-item" :class="{ active: $route.path === '/artist' }" @click="router.push('/artist')">歌手</div>
-        <div class="nav-item" :class="{ active: $route.path === '/album' }" @click="router.push('/album')">专辑</div>
+        <div class="nav-item" :class="{ active: $route.path === '/recommend' }" @click="router.push('/recommend')">推荐</div>
       </div>
       
       <!-- 搜索框 -->

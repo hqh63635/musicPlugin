@@ -13,9 +13,9 @@ import Panel from './components/Panel.vue'
     <div class="body-container">
       <SideBar />
       <router-view class="main-content" />
-      <Panel />
+      <!-- <Panel /> -->
     </div>
-    <MusicDetail />
+    <!-- <MusicDetail /> -->
     <MusicBar />
   </div>
 </template>
@@ -52,7 +52,5 @@ body {
 /* 主内容区域 */
 .main-content {
   flex: 1;
-  padding: 20px;
-  overflow-y: auto;
 }
 </style>

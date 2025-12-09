@@ -46,17 +46,6 @@ async function runApiExamples() {
             
             if (searchResults.data && Array.isArray(searchResults.data)) {
                 console.log('   前3条结果:', searchResults.data);
-                searchResults.data.slice(0, 3).forEach((song, index) => {
-                    if (song) {
-                        console.log(`   ${index + 1}. ${song.title || '未知歌曲'} - ${song.artist || '未知歌手'}`);
-                        safeLogObject('   详情', song, [
-                            ['album', '专辑'],
-                            ['artwork', '封面'],
-                            ['id', 'ID'],
-                            ['songmid', 'Songmid']
-                        ], '');
-                    }
-                });
 
                 const firstSong = searchResults.data[0];
                 if (firstSong) {
@@ -67,12 +56,7 @@ async function runApiExamples() {
                     try {
                         const mediaSource = await plugin.getMediaSource(firstSong.id, firstSong.songmid);
                         if (mediaSource) {
-                            console.log(`   歌曲: ${firstSong.title} - ${firstSong.artist}`);
-                            safeLogObject('   媒体信息', mediaSource, [
-                                ['url', '播放链接'],
-                                ['quality', '音质'],
-                                ['format', '格式']
-                            ]);
+                            console.log(`   歌曲: ${firstSong.title} - ${firstSong.artist}`, firstSong);
                         } else {
                             console.log('   未获取到媒体源信息');
                         }
@@ -188,13 +172,8 @@ async function runApiExamples() {
                 
                 const sheet = sheetSearchResults.data[0];
                 if (sheet) {
-                    safeLogObject('   歌单信息', sheet, [
-                        ['title', '歌单名'],
-                        ['creator', '创建者'],
-                        ['songCount', '歌曲数量'],
-                        ['artwork', '歌单封面'],
-                        ['id', '歌单ID']
-                    ]);
+
+                    console.log('   歌单信息:', sheet);
                 }
             }
         } catch (error) {
@@ -207,17 +186,8 @@ async function runApiExamples() {
         try {
             const topLists = await plugin.getTopLists();
             if (topLists && Array.isArray(topLists)) {
-                console.log('   热门排行榜:');
-                topLists.slice(0, 5).forEach((list, index) => {
-                    if (list) {
-                        const listInfo = [];
-                        if (list.title) listInfo.push(list.title);
-                        if (list.id) listInfo.push(`(${list.id})`);
-                        if (listInfo.length > 0) {
-                            console.log(`   ${index + 1}. ${listInfo.join(' ')}`);
-                        }
-                    }
-                });
+                console.log('   热门排行榜:', topLists);
+    
             }
         } catch (error) {
             // 静默处理，不显示错误

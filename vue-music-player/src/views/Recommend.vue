@@ -11,6 +11,8 @@ const musicStore = useMusicStore()
 const playlists = ref([])
 // 推荐专辑数据
 const albums = ref([])
+// 加载状态
+const loading = ref(false)
 
 // 页面加载时获取推荐数据
 onMounted(() => {
@@ -19,22 +21,17 @@ onMounted(() => {
 
 // 获取推荐数据
 const fetchRecommendData = async () => {
-  const topListResult = await api.getTopLists()
-
-  if (topListResult.success) {
-    playlists.value = topListResult.data
-  }
-
-  // 获取推荐专辑（真实API数据）
-  const albumsResult = await api.getRecommendAlbums(8)
-  if (albumsResult.success) {
-    albums.value = albumsResult.data
-  }
   try {
-    // 获取推荐歌单（使用getTopList模拟推荐内容）
-
+    loading.value = true;
+    // 获取推荐歌单
+    const topListResult = await api.getTopLists()
+    if (topListResult) {
+      playlists.value = topListResult.data
+    }
   } catch (error) {
-    console.error('获取推荐数据失败:', error)
+    console.error('获取推荐数据失败:', error);
+  } finally {
+    loading.value = false;
   }
 }
 
@@ -341,3 +338,5 @@ const addToPlaylist = (song) => {
   color: #999;
 }
 </style>
+
+

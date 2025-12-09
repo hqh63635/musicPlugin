@@ -29,78 +29,40 @@ onMounted(() => {
 })
 
 // 获取艺术家数据
+const loading = ref(false);
 const fetchArtistData = async () => {
   try {
-    // 模拟艺术家数据
-    artist.value = {
-      id: '12345',
-      name: '周杰伦',
-      avatar: 'https://y.gtimg.cn/music/photo_new/T001R300x300M000003rsKF44GyaSk_1.jpg',
-      desc: '华语流行男歌手、词曲创作人、演员、MV及电影导演、编剧及制作人。',
-      musicSize: 150,
-      albumSize: 20
+    loading.value = true;
+    const singerMid = route.params.id;
+    // 使用新接口获取歌手详情
+    const artistInfo = await api.getQQArtistInfo();
+
+    if (!artistInfo) {
+      throw new Error('获取歌手信息失败');
     }
 
-    // 模拟艺术家歌曲数据
-    songs.value = [
-      {
-        id: '001JZkTF2XZ8lH',
-        name: '晴天',
-        artist: '周杰伦',
-        album: '叶惠美',
-        cover: 'https://y.gtimg.cn/music/photo_new/T002R300x300M000002J4UUk29y8BY_1.jpg'
-      },
-      {
-        id: '003NwXtC3aSff4',
-        name: '青花瓷',
-        artist: '周杰伦',
-        album: '我很忙',
-        cover: 'https://y.gtimg.cn/music/photo_new/T002R300x300M000000tJ8Zv2pE96r_1.jpg'
-      },
-      {
-        id: '004XtDOL0j8I1Z',
-        name: '七里香',
-        artist: '周杰伦',
-        album: '七里香',
-        cover: 'https://y.gtimg.cn/music/photo_new/T002R300x300M000000f4aDg0v3gZQ_1.jpg'
-      },
-      {
-        id: '003a6QZJ0wYrB5',
-        name: '稻香',
-        artist: '周杰伦',
-        album: '魔杰座',
-        cover: 'https://y.gtimg.cn/music/photo_new/T002R300x300M000001v65Xk0wU4hI_1.jpg'
-      }
-    ]
+    // 更新歌手信息
+    artist.value = {
+      id: artistInfo.id,
+      name: artistInfo.name,
+      avatar: artistInfo.avatar || '@/assets/default-avatar.jpg',
+      desc: artistInfo.desc || '暂无艺术家描述',
+      musicSize: artistInfo.musicSize || 0,
+      albumSize: artistInfo.albumSize || 0
+    };
 
-    // 模拟艺术家专辑数据
-    albums.value = [
-      {
-        id: '002J4UUk29y8BY',
-        name: '叶惠美',
-        artist: '周杰伦',
-        cover: 'https://y.gtimg.cn/music/photo_new/T002R300x300M000002J4UUk29y8BY_1.jpg',
-        releaseDate: '2003-07-31'
-      },
-      {
-        id: '000tJ8Zv2pE96r',
-        name: '我很忙',
-        artist: '周杰伦',
-        cover: 'https://y.gtimg.cn/music/photo_new/T002R300x300M000000tJ8Zv2pE96r_1.jpg',
-        releaseDate: '2007-11-02'
-      },
-      {
-        id: '000f4aDg0v3gZQ',
-        name: '七里香',
-        artist: '周杰伦',
-        cover: 'https://y.gtimg.cn/music/photo_new/T002R300x300M000000f4aDg0v3gZQ_1.jpg',
-        releaseDate: '2004-08-03'
-      }
-    ]
+    // 获取歌手歌曲和专辑
+    const songsResult = await api.getArtistWorks(singerMid, 0, 'song');
+    const albumsResult = await api.getArtistWorks(singerMid, 1, 'album');
+
+    songs.value = songsResult.data || [];
+    albums.value = albumsResult.data || [];
   } catch (error) {
-    console.error('获取艺术家数据失败:', error)
+    console.error('获取歌手数据失败:', error);
+  } finally {
+    loading.value = false;
   }
-}
+};
 
 // 播放歌曲
 const playSong = (song) => {

@@ -104,16 +104,16 @@ export const useMusicStore = defineStore('music', () => {
       
       // 获取音乐资源 - 传入歌曲ID和音质参数
       const result = await api.getMediaSource(song, currentQuality)
-      debugger
+
       if (result.url && audioElement.value) {
-        audioElement.value.src = result.data.url
+        audioElement.value.src = result.url
         
         
         // 设置请求头（如果有）
-        if (result.data.headers) {
+        if (result.headers) {
           // 注意：浏览器的audio元素不支持直接设置请求头
           // 在实际项目中，可能需要使用fetch API获取音频流，然后创建blob URL
-          console.log('音频请求头:', result.data.headers)
+          console.log('音频请求头:', result.headers)
         }
         
         // 开始播放

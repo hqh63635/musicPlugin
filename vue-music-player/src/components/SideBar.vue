@@ -13,12 +13,14 @@ import AlbumIcon from '@/assets/icons/album.svg'
 import UserIcon from '@/assets/icons/user.svg'
 import DocumentPlusIcon from '@/assets/icons/document-plus.svg'
 import IdentificationIcon from '@/assets/icons/identification.svg'
+import TrophyIcon from '@/assets/icons/trophy.svg'
 
 const router = useRouter()
 
 // 侧边栏导航项
 const navItems = ref([
-  { icon: CdIcon, text: '我的音乐', active: true, path: '/' },
+  { icon: TrophyIcon, text: '排行榜', active: true, path: '/ranklist' },
+  // { icon: CdIcon, text: '我的音乐', active: true, path: '/' },
   { icon: HeartIcon, text: '我喜欢的音乐', path: '/favorite' },
   { icon: ClockIcon, text: '最近播放', path: '/recent' },
   { icon: FolderOpenIcon, text: '本地音乐', path: '/local' },
