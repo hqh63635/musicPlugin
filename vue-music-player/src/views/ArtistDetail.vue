@@ -68,7 +68,7 @@ const isEnd = ref(false);
 const total = ref(0);
 
 const playAllSongs = () => {
-  musicStore.setPlaylist(artistInfo.value || [], 0);
+  musicStore.addSongsToPlaylist(artistInfo.value || [], 0);
 };
 
 // Extract API call to reusable function
