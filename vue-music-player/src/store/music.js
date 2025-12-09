@@ -75,6 +75,22 @@ export const useMusicStore = defineStore('music', () => {
     }
   }
   
+  // 批量添加歌曲到播放列表并通过id去重
+  const addSongsToPlaylist = (songs) => {
+    if (!Array.isArray(songs)) return;
+    
+    // 先过滤输入数组中的重复歌曲
+    const uniqueSongs = Array.from(new Map(songs.map(song => [song.id, song])).values());
+    
+    // 再检查播放列表中是否已存在，不存在则添加
+    uniqueSongs.forEach(song => {
+      const existingIndex = playlist.value.findIndex(item => item.id === song.id);
+      if (existingIndex === -1) {
+        playlist.value.push(song);
+      }
+    });
+  };
+  
   // 设置播放列表
   const setPlaylist = (songs, playIndex = 0) => {
     playlist.value = songs
@@ -226,3 +242,4 @@ export const useMusicStore = defineStore('music', () => {
     onEnded
   }
 })
+

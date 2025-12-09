@@ -16,14 +16,20 @@
         </div>
       </div>
      <div class="songs-list">
-          <SongList :listSongs="artistInfo || []" />
+          <SongList 
+            :listSongs="artistInfo || []"
+            :currentPage="currentPage"
+            :pageSize="20"
+            :total="total"
+            @update:currentPage="(page) => currentPage.value = page"
+          />
         </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import api from '../services/api';
 import SongList from '../components/songList.vue';
@@ -56,18 +62,26 @@ const init = () => {
 const artistInfo = ref(null);
 const loading = ref(!singer);
 const error = ref(false);
+// Add pagination state
+const currentPage = ref(1);
+const isEnd = ref(false);
+const total = ref(0);
 
 const playAllSongs = () => {
   musicStore.setPlaylist(artistInfo.value || [], 0);
 };
 
-onMounted(async () => {
-  init();
-  // 将id检查改为singerMID检查以匹配实际属性名
+// Extract API call to reusable function
+const fetchArtistWorks = async () => {
   if (singer.value?.singerMID) {
     try {
-      const response = await api.getArtistWorks(singer.value, 1, 'music');
+      loading.value = true;
+      const response = await api.getArtistWorks(singer.value, currentPage.value, 'music');
+      console.log('API Response:', response);
       artistInfo.value = response.data;
+      isEnd.value = response.isEnd;
+      // Set total based on isEnd status since API doesn't return total
+      total.value = response.total || (response.isEnd ? response.data.length : currentPage.value * 20 + 20);
     } catch (err) {
       console.error('获取艺术家详情失败:', err);
       error.value = true;
@@ -75,7 +89,15 @@ onMounted(async () => {
       loading.value = false;
     }
   }
+};
+
+onMounted(async () => {
+  init();
+  await fetchArtistWorks();
 });
+
+// Watch for currentPage changes to trigger data fetch
+watch(currentPage, fetchArtistWorks);
 </script>
 
 <style scoped>
