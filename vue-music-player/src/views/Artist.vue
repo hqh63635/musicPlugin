@@ -1,166 +1,136 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
-import api from '../services/api.js'
-import { useMusicStore } from '../store/music.js'
+import { ref, onMounted, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import api from '../services/api.js';
+import { useMusicStore } from '../store/music.js';
 
-const route = useRoute()
-const musicStore = useMusicStore()
+const route = useRoute();
+const router = useRouter();
+const musicStore = useMusicStore();
 
 // 艺术家信息
-const artist = ref({
-  id: '',
-  name: '',
-  avatar: '',
-  desc: '',
-  musicSize: 0,
-  albumSize: 0
-})
-
+const artist = ref({});
 // 艺术家歌曲数据
-const songs = ref([])
-
+const songs = ref([]);
 // 艺术家专辑数据
-const albums = ref([])
+const albums = ref([]);
 
-// 页面加载时获取艺术家数据
+// 新增：歌手分类相关数据
+const categories = ref([
+  {
+    id: '热门',
+    name: '热门',
+  },
+  { id: 'A', name: 'A' },
+  { id: 'B', name: 'B' },
+  { id: 'C', name: 'C' },
+  { id: 'D', name: 'D' },
+  { id: 'E', name: 'E' },
+  { id: 'F', name: 'F' },
+  { id: 'G', name: 'G' },
+  { id: 'H', name: 'H' },
+  { id: 'I', name: 'I' },
+  { id: 'J', name: 'J' },
+  { id: 'K', name: 'K' },
+  { id: 'L', name: 'L' },
+  { id: 'M', name: 'M' },
+  { id: 'N', name: 'N' },
+  { id: 'O', name: 'O' },
+  { id: 'P', name: 'P' },
+  { id: 'Q', name: 'Q' },
+  { id: 'R', name: 'R' },
+  { id: 'S', name: 'S' },
+  { id: 'T', name: 'T' },
+  { id: 'U', name: 'U' },
+  { id: 'V', name: 'V' },
+  { id: 'W', name: 'W' },
+  { id: 'X', name: 'X' },
+  { id: 'Y', name: 'Y' },
+  { id: 'Z', name: 'Z' },
+]);
+const selectedCategory = ref('热门');
+const singerList = ref([]);
+const isCategoryView = ref(false);
+const searchTerm = ref('');
+
+// 页面加载时初始化
 onMounted(() => {
-  fetchArtistData()
-})
+  initPage();
+});
 
-// 获取艺术家数据
-const loading = ref(false);
-const fetchArtistData = async () => {
-  try {
-    loading.value = true;
-    const singerMid = route.params.id;
-    // 使用新接口获取歌手详情
-    const artistInfo = await api.getQQArtistInfo();
+// 监听路由变化
+watch(
+  () => route.params.id,
+  () => initPage()
+);
 
-    if (!artistInfo) {
-      throw new Error('获取歌手信息失败');
-    }
-
-    // 更新歌手信息
-    artist.value = {
-      id: artistInfo.id,
-      name: artistInfo.name,
-      avatar: artistInfo.avatar || '@/assets/default-avatar.jpg',
-      desc: artistInfo.desc || '暂无艺术家描述',
-      musicSize: artistInfo.musicSize || 0,
-      albumSize: artistInfo.albumSize || 0
-    };
-
-    // 获取歌手歌曲和专辑
-    const songsResult = await api.getArtistWorks(singerMid, 0, 'song');
-    const albumsResult = await api.getArtistWorks(singerMid, 1, 'album');
-
-    songs.value = songsResult.data || [];
-    albums.value = albumsResult.data || [];
-  } catch (error) {
-    console.error('获取歌手数据失败:', error);
-  } finally {
-    loading.value = false;
-  }
+// 初始化页面状态
+const initPage = () => {
+  // 判断是否为分类列表模式（无歌手ID参数）
+  fetchSingerList();
 };
 
+// 获取分类下的歌手列表
+const fetchSingerList = async () => {
+  try {
+    const searchData = await api.search(selectedCategory.value, 1, 'artist');
+    singerList.value = searchData.data || [];
+  } catch (error) {
+    console.error('获取歌手列表失败:', error);
+  }
+};
 // 播放歌曲
-const playSong = (song) => {
-  musicStore.playSong(song)
-}
+const playSong = song => {
+  musicStore.playSong(song);
+};
 
 // 添加到播放列表
-const addToPlaylist = (song) => {
-  musicStore.addToPlaylist(song)
-}
+const addToPlaylist = song => {
+  musicStore.addToPlaylist(song);
+};
 
 // 播放全部歌曲
 const playAllSongs = () => {
   if (songs.value.length > 0) {
-    musicStore.setPlaylist(songs.value, 0)
+    musicStore.setPlaylist(songs.value, 0);
   }
-}
+};
+
+// 新增：切换分类
+const changeCategory = key => {
+  fetchSingerList();
+};
+
+// 新增：跳转到歌手详情
+const goToArtistDetail = singerId => {
+  router.push(`/artist/${singerId}`);
+};
 </script>
 
 <template>
   <div class="artist-page">
-    <!-- 艺术家头部信息 -->
-    <div class="artist-header">
-      <div class="artist-avatar">
-        <img :src="artist.avatar" :alt="artist.name" />
-      </div>
-      <div class="artist-info">
-        <h1 class="artist-name">{{ artist.name }}</h1>
-        <p class="artist-desc">{{ artist.desc }}</p>
-        <div class="artist-stats">
-          <span>{{ artist.musicSize }} 首歌曲</span>
-          <span>{{ artist.albumSize }} 张专辑</span>
+    <!-- 分类视图 -->
+    <div class="page-header">
+      <h1>歌手分类</h1>
+    </div>
+
+    <!-- A-Z分类导航 -->
+     <a-radio-group v-model:value="selectedCategory" class="category-nav" @change="changeCategory">
+       <a-radio v-for="category in categories" :key="category.id" :value="category.id" class="category-item">
+         {{ category.name }}
+       </a-radio>
+     </a-radio-group>
+
+    <!-- 歌手列表 -->
+    <div class="singer-grid">
+      <div v-for="singer in singerList" :key="singer.singer_id" class="singer-card" @click="goToArtistDetail(singer.singer_id)">
+        <div class="singer-avatar">
+          <img :src="singer.avatar || '@/assets/default-avatar.jpg'" :alt="singer.singer_name" />
         </div>
-        <div class="artist-actions">
-          <button class="action-button play" @click="playAllSongs">
-            <img src="@/assets/icons/play.svg" alt="播放" />
-            播放全部
-          </button>
-        </div>
+        <h3 class="singer-name">{{ singer.name }}</h3>
       </div>
     </div>
 
-    <!-- 艺术家歌曲列表 -->
-    <div class="section">
-      <div class="section-header">
-        <h2 class="section-title">热门歌曲</h2>
-      </div>
-
-      <div class="song-list">
-        <div 
-          v-for="(song, index) in songs" 
-          :key="song.id" 
-          class="song-item"
-        >
-          <div class="song-index">{{ index + 1 }}</div>
-          <div class="song-info">
-            <h3 class="song-name">{{ song.name }}</h3>
-            <p class="song-meta">{{ song.artist }} - {{ song.album }}</p>
-          </div>
-          <div class="song-actions">
-            <button class="action-btn play" @click="playSong(song)">
-              <img src="@/assets/icons/play.svg" alt="播放" />
-            </button>
-            <button class="action-btn add" @click="addToPlaylist(song)">
-              <img src="@/assets/icons/plus.svg" alt="添加" />
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 艺术家专辑列表 -->
-    <div class="section">
-      <div class="section-header">
-        <h2 class="section-title">专辑作品</h2>
-      </div>
-
-      <div class="album-list">
-        <div 
-          v-for="album in albums" 
-          :key="album.id" 
-          class="album-card"
-        >
-          <div class="album-cover">
-            <img :src="album.cover" :alt="album.name" />
-            <div class="album-overlay">
-              <div class="overlay-button play" @click="playSong(album)">
-                <img src="@/assets/icons/play.svg" alt="播放" />
-              </div>
-            </div>
-          </div>
-          <div class="album-info">
-            <h3 class="album-name">{{ album.name }}</h3>
-            <p class="album-date">{{ album.releaseDate }}</p>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -442,4 +412,79 @@ const playAllSongs = () => {
   font-size: 12px;
   color: #999;
 }
+
+/* 新增：分类视图样式 */
+.page-header {
+  padding: 20px 0;
+}
+
+.category-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  padding: 16px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.category-nav > div {
+  padding: 6px 12px;
+  background-color: #fff;
+  border-radius: 16px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.category-nav > div.active {
+  background-color: #1890ff;
+  color: #fff;
+}
+
+.singer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 20px;
+}
+
+.singer-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+
+.singer-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.singer-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.singer-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
 </style>
+
+
+
+
+
+
+
+

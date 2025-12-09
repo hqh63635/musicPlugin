@@ -379,7 +379,7 @@ export async function getRecommendSheetsByTag(tag, page = 1) {
 export async function getQQArtistInfo(singerMid) {
   try {
     const timestamp = new Date().getTime();
-    const url = `/qqmusic/cgi-bin/musics.fcg?_=${timestamp}&encoding=ag-1&sign=zzc1cfa1fdrgldaybohzqvixr6hitpaibh33415abdb5e`;
+    const url = `/qqmusic/cgi-bin/musics.fcg?_=${timestamp}&encoding=ag-1&sign=zzc04a5944br39mj1iilqnmcylsfnrwsd5jiu94a149ee`;
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`HTTP错误: ${response.status}`);
@@ -400,6 +400,97 @@ export async function getQQArtistInfo(singerMid) {
   }
 }
 
+/**
+ * 获取歌手分类列表
+ */
+export const getSingerCategories = async () => {
+  try {
+    const timestamp = new Date().getTime();
+    const url = `/qqapi/cgi-bin/musicu.fcg?_=${timestamp}&encoding=ag-1&sign=zzc04a5944br39mj1iilqnmcylsfnrwsd5jiu94a149ee`;
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        data: JSON.stringify({
+          comm: { ct: 24, cv: 0 },
+          singerList: {
+            module: 'Music.SingerListServer',
+            method: 'get_singer_list',
+            param: { area: 0, sex: 0, genre: 0, index: 1, sin: 0, cur_page: 1 },
+          },
+        }),
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.singerList?.data?.tags || [];
+  } catch (error) {
+    console.error('获取歌手分类失败:', error);
+    return [];
+  }
+};
+
+/**
+ * 根据分类获取歌手列表
+ * @param {Object} params - 查询参数
+ * @param {number} params.area - 地区分类(-100:全部)
+ * @param {number} params.sex - 性别分类(-100:全部)
+ * @param {number} params.genre - 流派分类(-100:全部)
+ * @param {number} params.index - 索引分类(-100:全部)
+ * @param {number} params.pageNo - 页码
+ */
+export const getSingerList = async (params = {}) => {
+  try {
+    const { area = -100, sex = -100, genre = -100, index = -100, pageNo = 1 } = params;
+    const timestamp = new Date().getTime();
+    const url = `/qqmusic/cgi-bin/musicu.fcg?_=${timestamp}`;
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        data: JSON.stringify({
+          comm: { ct: 24, cv: 0 },
+          singerList: {
+            module: 'Music.SingerListServer',
+            method: 'get_singer_list',
+            param: {
+              area: Number(area),
+              sex: Number(sex),
+              genre: Number(genre),
+              index: Number(index),
+              sin: (pageNo - 1) * 80,
+              cur_page: Number(pageNo),
+            },
+          },
+        }),
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const singerData = data.singerList?.data || {};
+    return {
+      list: singerData.singerlist || [],
+      total: singerData.total || 0,
+      curPage: singerData.cur_page || 1,
+    };
+  } catch (error) {
+    console.error('获取歌手列表失败:', error);
+    return { list: [], total: 0, curPage: 1 };
+  }
+};
+
 // 导出所有API方法
 export default {
   search,
@@ -413,4 +504,6 @@ export default {
   getRecommendSheetTags,
   getRecommendSheetsByTag,
   getQQArtistInfo,
+  getSingerCategories,
+  getSingerList,
 };
