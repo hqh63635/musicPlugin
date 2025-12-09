@@ -1,145 +1,58 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
-import api from '../services/api.js'
-import { useMusicStore } from '../store/music.js'
+import { ref, onMounted, computed } from 'vue';
+import { useRoute } from 'vue-router';
+import api from '../services/api.js';
+import { useMusicStore } from '../store/music.js';
+import SongList from '../components/songList.vue';
 
-const route = useRoute()
-const musicStore = useMusicStore()
+const route = useRoute();
+const musicStore = useMusicStore();
 
 // 歌单详情
-const playlist = ref(null)
+const playlist = ref(null);
 // 加载状态
-const loading = ref(false)
+const loading = ref(false);
 
-// 页面加载时获取歌单详情
-onMounted(() => {
-  fetchPlaylistDetail()
-})
-
-// 获取歌单详情
-const fetchPlaylistDetail = async () => {
-  try {
-    loading.value = true
-    const result = await api.getPlaylistInfo(route.params.id)
-    if (result.success) {
-      playlist.value = result.data
-    }
-  } catch (error) {
-    console.error('获取歌单详情失败:', error)
-  } finally {
-    loading.value = false
-  }
-}
-
+const songList = computed(() => {
+  return musicStore?.playlist || [];
+});
 // 播放全部歌曲
 const playAll = () => {
   if (playlist.value?.songs?.length > 0) {
-    musicStore.setPlaylist(playlist.value.songs, 0)
+    musicStore.setPlaylist(playlist.value.songs, 0);
   }
-}
+};
 
 // 播放歌曲
 const playSong = (song, index) => {
-  musicStore.playSong(song)
-}
+  musicStore.playSong(song);
+};
 
 // 添加到播放列表
-const addToPlaylist = (song) => {
-  musicStore.addToPlaylist(song)
-}
+const addToPlaylist = song => {
+  musicStore.addToPlaylist(song);
+};
 </script>
 
 <template>
   <div class="playlist-page">
-    <!-- 加载状态 -->
-    <div v-if="loading" class="loading">加载中...</div>
-    
-    <!-- 歌单详情 -->
-    <div v-else-if="playlist" class="playlist-detail">
-      <!-- 歌单头部 -->
-      <div class="playlist-header">
-        <div class="header-cover">
-          <img :src="playlist.cover" :alt="playlist.name" />
-          <div class="play-button" @click="playAll">
-            <img src="@/assets/icons/play.svg" alt="播放全部" />
-            <span>播放全部</span>
-          </div>
-        </div>
-        <div class="header-info">
-          <div class="info-type">歌单</div>
-          <h1 class="info-name">{{ playlist.name }}</h1>
-          <div class="info-description">{{ playlist.description || '暂无描述' }}</div>
-          <div class="info-stats">
-            <span class="play-count">
-              <img src="@/assets/icons/play.svg" alt="播放" />
-              {{ playlist.playCount > 10000 ? (playlist.playCount / 10000).toFixed(1) + '万' : playlist.playCount }}
-            </span>
-            <span class="song-count">{{ playlist.songs?.length || 0 }}首歌曲</span>
-          </div>
-        </div>
-      </div>
-      
-      <!-- 歌曲列表 -->
-      <div class="song-list">
-        <div class="song-header">
-          <div class="header-number">#</div>
-          <div class="header-title">标题</div>
-          <div class="header-artist">歌手</div>
-          <div class="header-duration">时长</div>
-        </div>
-        
-        <div 
-          v-for="(song, index) in playlist.songs" 
-          :key="song.id"
-          class="song-item"
-        >
-          <!-- 序号 -->
-          <div class="song-number">
-            <span>{{ index + 1 }}</span>
-            <div class="song-actions">
-              <img 
-                src="@/assets/icons/play.svg" 
-                alt="播放" 
-                @click="playSong(song, index)"
-              />
-              <img 
-                src="@/assets/icons/plus.svg" 
-                alt="添加" 
-                @click="addToPlaylist(song)"
-              />
-            </div>
-          </div>
-          
-          <!-- 歌曲信息 -->
-          <div class="song-info">
-            <h3 class="song-name">{{ song.name }}</h3>
-          </div>
-          
-          <!-- 歌手信息 -->
-          <div class="song-artist">
-            {{ song.singer?.[0]?.name || song.artist?.[0] || '未知歌手' }}
-          </div>
-          
-          <!-- 歌曲时长 -->
-          <div class="song-duration">
-            {{ musicStore.formatTime(song.duration) }}
-          </div>
-        </div>
-      </div>
+
+    <div class="playlist-detail"><!-- 加载状态 -->
+      <div v-if="loading" class="loading">加载中...</div>
+      <SongList :listSongs="songList || []" />
     </div>
-    
+
     <!-- 歌单不存在 -->
-    <div v-else class="not-found">
+    <!-- <div v-else class="not-found">
       <p>歌单不存在或已被删除</p>
-    </div>
+    </div> -->
   </div>
 </template>
 
 <style scoped>
 .playlist-page {
-  padding: 20px;
-  color: #fff;
+  padding: 12px;
+  background: #f5f5f5;
 }
 
 /* 加载状态 */
@@ -154,8 +67,11 @@ const addToPlaylist = (song) => {
 
 /* 歌单详情 */
 .playlist-detail {
-  max-width: 1200px;
-  margin: 0 auto;
+  height: 100%;
+  background: #fff;
+  border-radius: 4px;
+  padding: 12px;
+  overflow: auto;
 }
 
 /* 歌单头部 */

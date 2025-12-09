@@ -8,6 +8,7 @@ import Artist from '../views/Artist.vue';
 import ArtistDetail from '../views/ArtistDetail.vue';
 const Album = () => import('../views/Album.vue');
 const Search = () => import('../views/Search.vue');
+const Playlist = () => import('../views/Playlist.vue');
 
 // 创建路由实例
 const router = createRouter({
@@ -47,6 +48,11 @@ const router = createRouter({
       name: 'Search',
       component: Search,
       props: true,
+    },
+    {
+      path: '/playlist',
+      name: 'Playlist',
+      component: Playlist,
     },
   ],
 });

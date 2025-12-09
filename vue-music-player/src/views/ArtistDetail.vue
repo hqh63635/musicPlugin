@@ -11,10 +11,12 @@
           <p><strong>地区:</strong> {{ singer?.area || '未知' }}</p>
           <p><strong>流派:</strong> {{ singer?.name || '未知' }}</p>
         </div>
+        <div class="play-active">
+          <button @click="playAllSongs">播放全部</button>
+        </div>
       </div>
      <div class="songs-list">
           <SongList :listSongs="artistInfo || []" />
-
         </div>
     </div>
   </div>
@@ -25,7 +27,9 @@ import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import api from '../services/api';
 import SongList from '../components/songList.vue';
+import { useMusicStore } from '../store/music.js';
 
+const musicStore = useMusicStore();
 const route = useRoute();
 const artistId = route.params.id;
 // 修复变量声明顺序并添加调试日志
@@ -47,14 +51,18 @@ const init = () => {
   }
 };
 
+
 // 修改加载状态初始化
 const artistInfo = ref(null);
 const loading = ref(!singer);
 const error = ref(false);
 
+const playAllSongs = () => {
+  musicStore.setPlaylist(artistInfo.value || [], 0);
+};
+
 onMounted(async () => {
   init();
-  console.log('1111', singer.value, !singer.value);
   // 将id检查改为singerMID检查以匹配实际属性名
   if (singer.value?.singerMID) {
     try {
@@ -94,7 +102,7 @@ onMounted(async () => {
 
 .artist-info {
   display: flex;
-  gap: 30px;
+  gap: 12px;
   margin-top: 8px;
 }
 
