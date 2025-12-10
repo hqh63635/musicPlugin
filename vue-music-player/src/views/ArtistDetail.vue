@@ -30,7 +30,7 @@
 import { ref, onMounted, watch, h } from 'vue';
 import { useRoute } from 'vue-router';
 import api from '../services/api';
-import SongList from '../components/songList.vue';
+import SongList from '@/components/SongList.vue';
 import { useMusicStore } from '../store/music.js';
 import { PlusCircleOutlined, LoadingOutlined } from '@ant-design/icons-vue';
 import { Spin } from 'ant-design-vue';
