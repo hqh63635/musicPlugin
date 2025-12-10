@@ -2,39 +2,42 @@
   <div class="artist-detail-container">
     <div class="artist-detail-content">
       <h2>{{ singer?.name || '艺术家详情' }}</h2>
-      <div v-if="loading" class="loading">加载中...</div>
-      <div v-else class="artist-info">
-        <img :src="singer?.avatar" :alt="artistInfo?.name" class="artist-avatar" />
-        <div class="artist-details">
-          <p><strong>简介:</strong> {{ singer?.name || '暂无简介' }}</p>
-          <p><strong>地区:</strong> {{ singer?.area || '未知' }}</p>
-          <p><strong>流派:</strong> {{ singer?.name || '未知' }}</p>
+      <a-spin :spinning="loading" :indicator="indicator" class="loading-spin">
+        <div class="artist-info">
+          <img :src="singer?.avatar" :alt="artistInfo?.name" class="artist-avatar" />
+          <div class="artist-details">
+            <p><strong>简介:</strong> {{ singer?.name || '暂无简介' }}</p>
+            <p><strong>地区:</strong> {{ singer?.area || '未知' }}</p>
+            <p><strong>流派:</strong> {{ singer?.name || '未知' }}</p>
+          </div>
+          <div class="play-active">
+            <a-button class="mr-12" type="primary" @click="playAllSongs">播放全部</a-button>
+            <a-button type="primary" @click="addToPlaylist">添加到播放列表</a-button>
+          </div>
         </div>
-        <div class="play-active">
-          <a-button class="mr-12" type="primary" @click="playAllSongs">播放全部</a-button>
-          <a-button type="primary" @click="addToPlaylist">添加到播放列表</a-button>
+        <div class="songs-list">
+          <SongList :listSongs="artistInfo || []" :isEnd="trueß" :currentPage="currentPage" @pageChange="handlePageChange">
+            <template #actions="{ item, index }">
+              <PlusCircleOutlined style="font-size: 18px; color: #ff4d4f;" @click="addToPlaylist(item, index)" />
+            </template>
+          </SongList>
         </div>
-      </div>
-      <div class="songs-list">
-        <SongList :listSongs="artistInfo || []" :isEnd="trueß" :currentPage="currentPage" @pageChange="handlePageChange">
-          <template #actions="{ item, index }">
-            <PlusCircleOutlined style="font-size: 18px; color: #ff4d4f;" @click="addToPlaylist(item, index)" />
-          </template>
-        </SongList>
-      </div>
+      </a-spin>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, h } from 'vue';
 import { useRoute } from 'vue-router';
 import api from '../services/api';
 import SongList from '../components/songList.vue';
 import { useMusicStore } from '../store/music.js';
-import { PlusCircleOutlined } from '@ant-design/icons-vue';
+import { PlusCircleOutlined, LoadingOutlined } from '@ant-design/icons-vue';
+import { Spin } from 'ant-design-vue';
 
-
+// 添加自定义加载指示器
+const indicator = h(LoadingOutlined, { style: { fontSize: '24px' }, spin: true });
 
 const musicStore = useMusicStore();
 const route = useRoute();
@@ -96,7 +99,7 @@ const fetchArtistWorks = async () => {
       } else {
         artistInfo.value.push(...response.data);
       }
-      isEnd.value = result.isEnd;
+      indicator.value.spin = false;
     } catch (err) {
       console.error('获取艺术家详情失败:', err);
       error.value = true;
@@ -121,10 +124,19 @@ watch(currentPage, fetchArtistWorks);
 </script>
 
 <style scoped>
+/* 添加加载指示器样式 */
+.loading-spin {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+}
+
 .artist-detail-container {
   margin: 0 auto;
   padding: 12px;
   background-color: #f5f5f5;
+  overflow: auto;
 }
 
 .artist-detail-content {

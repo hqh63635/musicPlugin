@@ -4,6 +4,7 @@ import AntDesign from 'ant-design-vue';
 import 'ant-design-vue/dist/reset.css';
 import piniaPersist from 'pinia-plugin-persistedstate';
 import './style.css';
+import './assets/css/index.css';
 import App from './App.vue';
 import router from './router';
 
