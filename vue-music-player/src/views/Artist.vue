@@ -52,10 +52,38 @@ const selectedCategory = ref('热门');
 const singerList = ref([]);
 const isCategoryView = ref(false);
 const searchTerm = ref('');
-
+const isEnd = ref(false);
+const currentPage = ref(1);
+const isLoading = ref(false);
+// 检查是否需要自动加载更多（内容未填满视口时）
+const checkAndLoadMore = () => {
+  const container = document.querySelector('.singer-grid');
+  if (!container) return;
+  
+  const containerHeight = container.offsetHeight;
+  const viewportHeight = window.innerHeight;
+  
+  // 当内容高度小于视口高度且有更多数据时继续加载
+  if (containerHeight < viewportHeight - 200 && !isLoading.value && !isEnd.value) {
+    fetchSingerList();
+  }
+};
 // 页面加载时初始化
 onMounted(() => {
   initPage();
+  const observer = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting && !isLoading.value && !isEnd.value) {
+      fetchSingerList();
+    }
+  });
+  const loader = document.createElement('div');
+  document.querySelector('.singer-grid').appendChild(loader);
+  observer.observe(loader);
+  
+  // 初始加载后检查是否需要填充内容
+  checkAndLoadMore();
+  
+  return () => observer.disconnect();
 });
 
 // 监听路由变化
@@ -72,11 +100,26 @@ const initPage = () => {
 
 // 获取分类下的歌手列表
 const fetchSingerList = async () => {
+  if (isLoading.value || isEnd.value) return;
+  isLoading.value = true;
   try {
-    const searchData = await api.search(selectedCategory.value, 1, 'artist');
-    singerList.value = searchData.data || [];
+    const searchData = await api.search(selectedCategory.value, currentPage.value, 'artist');
+    isEnd.value = searchData.isEnd || false;
+    const newData = searchData.data || [];
+    singerList.value = [...singerList.value, ...newData];
+    
+    // 只有当有新数据时才增加页码
+    if (newData.length > 0) {
+      currentPage.value++;
+    } else {
+      isEnd.value = true;
+    }
   } catch (error) {
     console.error('获取歌手列表失败:', error);
+  } finally {
+    isLoading.value = false;
+    // 加载完成后检查是否需要继续填充
+    checkAndLoadMore();
   }
 };
 // 播放歌曲
@@ -98,6 +141,8 @@ const playAllSongs = () => {
 
 // 新增：切换分类
 const changeCategory = key => {
+  singerList.value = [];
+  currentPage.value = 1;
   fetchSingerList();
 };
 
@@ -130,6 +175,7 @@ const goToArtistDetail = singer => {
         </div>
         <h3 class="singer-name">{{ singer.name }}</h3>
       </div>
+      <div v-if="isLoading" class="loading-indicator">加载中...</div>
     </div>
     </div>
   </div>
@@ -485,8 +531,10 @@ const goToArtistDetail = singer => {
   height: 100%;
   padding: 12px;
   background-color: #fff;
+  overflow: auto;
 }
 </style>
+
 
 
 

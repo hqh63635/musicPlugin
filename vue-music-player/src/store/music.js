@@ -108,6 +108,8 @@ export const useMusicStore = defineStore(
       if (!song) return;
 
       currentSong.value = song;
+      // 更新页面标题为当前歌曲名
+      document.title = `${song.title} - 音乐播放器`;
       const existingIndex = playlist.value.findIndex(item => item.id === song.id);
       if (existingIndex !== -1) {
         currentIndex.value = existingIndex;

@@ -50,15 +50,10 @@ const search = (keyword) => {
         <LogoIcon alt="Logo" />
       </div>
       
-      <!-- 导航栏 -->
-      <div class="navigator">
-        <div class="nav-item" :class="{ active: $route.path === '/recommend' }" @click="router.push('/recommend')">推荐</div>
-      </div>
-      
       <!-- 搜索框 -->
       <div id="header-search" class="header-search">
-        <input
-          v-model="inputValue"
+        <a-input
+          v-model.value="inputValue"
           class="header-search-input"
           placeholder="搜索音乐、歌手、专辑"
           @click="showSearchHistory = true"
@@ -116,7 +111,7 @@ const search = (keyword) => {
 }
 
 .logo {
-  width: 120px;
+  width: 205px;
   height: 60px;
   display: flex;
   align-items: center;
@@ -126,9 +121,9 @@ const search = (keyword) => {
 
 .logo svg {
   width: auto;
-  height: 24px;
   max-width: 100%;
   object-fit: contain;
+  transform: scale(2);
 }
 
 .navigator {
