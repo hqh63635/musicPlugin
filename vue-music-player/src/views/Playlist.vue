@@ -76,10 +76,7 @@ const removeSong = (song, index) => {
 
     <div class="playlist-detail"><!-- 加载状态 -->
       <div v-if="loading" class="loading">加载中...</div>
-      <SongList :listSongs="songList || []" :isEnd="isEnd" :currentPage="currentPage" @pageChange="handlePageChange" >
-        <template #actions="{ item, index }">
-          <DeleteOutlined style="font-size: 18px; color: #ff4d4f;" @click="removeSong(item, index)" />
-        </template>
+      <SongList :listSongs="songList || []" :isEnd="isEnd" :currentPage="currentPage" @pageChange="handlePageChange" :isShowAdd="false" :isShowDelete="true">
       </SongList>
     </div>
 

@@ -11,14 +11,18 @@
           </div>
           <div class="play-active">
             <a-button class="mr-12" type="primary" @click="playAllSongs">播放全部</a-button>
-            <a-button type="primary" @click="addToPlaylist">添加到播放列表</a-button>
+            <a-button type="primary" @click="addToPlaylist()">添加到播放列表</a-button>
           </div>
         </div>
         <div class="songs-list">
-          <SongList :listSongs="artistInfo || []" :isEnd="trueß" :currentPage="currentPage" @pageChange="handlePageChange">
-            <template #actions="{ item, index }">
-              <PlusCircleOutlined style="font-size: 18px; color: #ff4d4f;" @click="addToPlaylist(item, index)" />
-            </template>
+          <SongList
+            :listSongs="artistInfo || []"
+            :isEnd="trueß"
+            :currentPage="currentPage"
+            @pageChange="handlePageChange"
+            :isShowAdd="true"
+            :isShowDelete="false"
+          >
           </SongList>
         </div>
       </a-spin>
@@ -30,10 +34,10 @@
 import { ref, onMounted, watch, h } from 'vue';
 import { useRoute } from 'vue-router';
 import api from '../services/api';
-import SongList from '../components/songList.vue';
+import SongList from '../components/SongList.vue';
 import { useMusicStore } from '../store/music.js';
 import { PlusCircleOutlined, LoadingOutlined } from '@ant-design/icons-vue';
-import { Spin } from 'ant-design-vue';
+import { message } from 'ant-design-vue';
 
 // 添加自定义加载指示器
 const indicator = h(LoadingOutlined, { style: { fontSize: '24px' }, spin: true });
@@ -77,11 +81,13 @@ const playAllSongs = () => {
 };
 
 // 添加到播放列表
-const addToPlaylist = item => {
+const addToPlaylist = (item) => {
   if (item) {
     musicStore.addToPlaylist(item, 0);
+    message.success(`$(item.title)添加到播放列表`);
   } else {
     musicStore.addSongsToPlaylist(artistInfo.value || [], 0);
+    message.success(`添加${artistInfo.value.length}首歌曲到播放列表`);
   }
 };
 

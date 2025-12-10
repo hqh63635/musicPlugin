@@ -1,15 +1,19 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, h } from 'vue';
 import { useRoute } from 'vue-router';
 import api from '../services/api.js';
 import SongList from '../components/SongList.vue';
+import { useMusicStore } from '@/store/music.js';
+import { PlusCircleOutlined, LoadingOutlined } from '@ant-design/icons-vue';
 
+const musicStore = useMusicStore();
 const route = useRoute();
 const keyword = ref('');
 const searchResults = ref([]);
 const loading = ref(false);
 const currentPage = ref(1);
 const isEnd = ref(false);
+const indicator = h(LoadingOutlined, { style: { fontSize: '24px' }, spin: true });
 
 // 当路由参数变化时重新搜索
 onMounted(() => {
@@ -36,8 +40,8 @@ const performSearch = async () => {
   try {
     const result = await api.search(keyword.value, currentPage.value, 'music');
     if (currentPage.value === 1) {
-       searchResults.value = result.data;
-    }else {
+      searchResults.value = result.data;
+    } else {
       searchResults.value.push(...result.data);
     }
     isEnd.value = result.isEnd;
@@ -48,11 +52,14 @@ const performSearch = async () => {
   }
 };
 
-const handlePageChange = (page) => {
+const handlePageChange = page => {
   currentPage.value = page;
   performSearch();
 };
 
+const addToPlaylist = (item, index) => {
+  musicStore.addToPlaylist(item, 0);
+};
 // 格式化歌曲时长
 const formatDuration = seconds => {
   const minutes = Math.floor(seconds / 60);
@@ -70,14 +77,20 @@ const formatDuration = seconds => {
 
       <div v-else-if="searchResults.length === 0" class="no-results">没有找到相关结果</div>
 
-      <div v-if="searchResults.length" class="search-results">
-        <SongList
-          :listSongs="searchResults"
-          :isEnd="isEnd"
-          :currentPage="currentPage"
-          @pageChange="handlePageChange"
-        />
-      </div>
+      <a-spin :spinning="loading" :indicator="indicator" class="loading-spin">
+        <div v-if="searchResults.length" class="search-results">
+          <SongList
+            :listSongs="searchResults"
+            :isEnd="isEnd"
+            :currentPage="currentPage"
+            @pageChange="handlePageChange"
+            :isShowAdd="true"
+            :isShowDelete="false"
+          >
+            
+          ></SongList>
+        </div>
+      </a-spin>
     </div>
   </div>
 </template>
@@ -107,7 +120,7 @@ const formatDuration = seconds => {
 }
 
 .search-results {
-  height: calc(100% - 55px);
+  height: calc(100% - 35px);
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -198,5 +211,9 @@ const formatDuration = seconds => {
 
 .song-action:hover img {
   opacity: 1;
+}
+:deep(.ant-spin-nested-loading) {
+  height: calc(100% - 35px);
+  overflow: auto;
 }
 </style>
