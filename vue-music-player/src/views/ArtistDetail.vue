@@ -1,7 +1,6 @@
 <template>
   <div class="artist-detail-container">
     <div class="artist-detail-content">
-      <h2>{{ singer?.name || '艺术家详情' }}</h2>
       <a-spin :spinning="loading" :indicator="indicator" class="loading-spin">
         <div class="artist-info">
           <img :src="singer?.avatar" :alt="artistInfo?.name" class="artist-avatar" />
@@ -180,7 +179,7 @@ watch(currentPage, fetchArtistWorks);
 }
 
 .songs-list {
-  height: calc(100% - 140px);
+  height: calc(100% - 120px);
   overflow: auto;
 }
 
