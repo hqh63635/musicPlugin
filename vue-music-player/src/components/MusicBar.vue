@@ -2,6 +2,7 @@
 import { ref, onMounted, onBeforeUnmount, h } from 'vue';
 import { useMusicStore } from '@/store/music.js';
 import albumCover from '@/assets/imgs/album-cover.jpg';
+import Lyric from './Lyric.vue';
 import repeatSongIcon from '@/assets/icons/repeat-song.svg';
 import repeatSong1Icon from '@/assets/icons/repeat-song-1.svg';
 import shuffleIcon from '@/assets/icons/shuffle.svg';
@@ -25,6 +26,8 @@ const audioRef = ref(null);
 
 // 播放列表抽屉状态
 const showPlaylistDrawer = ref(false);
+// 歌词抽屉状态
+const showLyricDrawer = ref(false);
 
 // 组件挂载时初始化
 onMounted(() => {
@@ -133,6 +136,11 @@ const togglePlayMode = () => {
 // 切换播放列表抽屉
 const togglePlaylistDrawer = () => {
   showPlaylistDrawer.value = !showPlaylistDrawer.value;
+};
+
+// 切换歌词抽屉
+const toggleLyricDrawer = () => {
+  showLyricDrawer.value = !showLyricDrawer.value;
 };
 
 // 播放列表表格列定义
@@ -323,7 +331,7 @@ const removeSong = (record, index) => {
         :step="1"
         class="volume-slider"
       />
-      <div class="control-button">
+      <div class="control-button" @click="toggleLyricDrawer">
         <component :is="lyricIcon" :alt="'歌词'" />
       </div>
       <div class="control-button">
@@ -361,6 +369,19 @@ const removeSong = (record, index) => {
           播放列表为空
         </div>
       </div>
+    </div>
+  </a-drawer>
+
+  <!-- 歌词抽屉 -->
+  <a-drawer
+    v-model:open="showLyricDrawer"
+    title="歌词"
+    placement="right"
+    size="large"
+    rootClassName="playlist-drawer"
+  >
+    <div class="lyric-drawer-container">
+      <Lyric />
     </div>
   </a-drawer>
 </template>
@@ -815,5 +836,22 @@ const removeSong = (record, index) => {
   height: 200px;
   font-size: 14px;
   color: #999;
+}
+
+/* 歌词抽屉样式 */
+.lyric-drawer-container {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #000;
+}
+
+.lyric-drawer-container :deep(.lyric-container) {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>

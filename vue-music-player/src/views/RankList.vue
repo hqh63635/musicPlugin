@@ -155,7 +155,6 @@ const formatNumber = value => {
           :isShowAdd="true"
           :isShowDelete="false"
         >
-    
         </SongList>
         
       </div>

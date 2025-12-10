@@ -30,6 +30,12 @@ export const useMusicStore = defineStore(
     const currentIndex = ref(-1);
     // 当前播放的音频元素
     const audioElement = ref(null);
+    // 解析后的当前歌词行
+    const parsedLrc = ref(null);
+    // 完整歌词数组
+    const fullLyric = ref([]);
+    // 当前歌词行索引
+    const currentLyricIndex = ref(-1);
 
     // 格式化时间
     const formatTime = seconds => {
@@ -223,6 +229,76 @@ export const useMusicStore = defineStore(
       playlist.value.splice(index, 1);
     };
 
+    // 解析歌词
+    const parseLyric = (lrcText) => {
+      if (!lrcText) {
+        fullLyric.value = [];
+        parsedLrc.value = null;
+        currentLyricIndex.value = -1;
+        return;
+      }
+
+      const lines = lrcText.split('\n');
+      const lyricArray = [];
+
+      const timeRegex = /\[(\d{2}):(\d{2})\.(\d{2,3})\]/g;
+
+      lines.forEach(line => {
+        let match;
+        const times = [];
+
+        // 提取所有时间戳
+        while ((match = timeRegex.exec(line)) !== null) {
+          const minutes = parseInt(match[1]);
+          const seconds = parseInt(match[2]);
+          const milliseconds = parseInt(match[3].padEnd(3, '0'));
+          const totalSeconds = minutes * 60 + seconds + milliseconds / 1000;
+          times.push(totalSeconds);
+        }
+
+        // 提取歌词文本
+        const text = line.replace(timeRegex, '').trim();
+
+        // 如果有时间戳和歌词文本，添加到数组
+        if (times.length > 0 && text) {
+          times.forEach(time => {
+            lyricArray.push({ time, lrc: text });
+          });
+        }
+      });
+
+      // 按时间排序
+      lyricArray.sort((a, b) => a.time - b.time);
+      fullLyric.value = lyricArray;
+      currentLyricIndex.value = -1;
+    };
+
+    // 更新当前歌词
+    const updateCurrentLyric = (currentTime) => {
+      if (!fullLyric.value.length) {
+        parsedLrc.value = null;
+        currentLyricIndex.value = -1;
+        return;
+      }
+
+      let index = 0;
+      while (index < fullLyric.value.length && fullLyric.value[index].time <= currentTime) {
+        index++;
+      }
+
+      // 当前歌词是最后一个满足条件的索引
+      const newIndex = Math.max(0, index - 1);
+      if (newIndex !== currentLyricIndex.value) {
+        currentLyricIndex.value = newIndex;
+        parsedLrc.value = fullLyric.value[newIndex];
+      }
+    };
+
+    // 设置歌词
+    const setLyric = (lyric) => {
+      parseLyric(lyric);
+    };
+
     return {
       // 状态
       currentSong,
@@ -236,6 +312,9 @@ export const useMusicStore = defineStore(
       playlist,
       currentIndex,
       audioElement,
+      parsedLrc,
+      fullLyric,
+      currentLyricIndex,
       addSongsToPlaylist,
       // 计算属性
       formatTime,
@@ -256,6 +335,9 @@ export const useMusicStore = defineStore(
       updateTotalTime,
       onEnded,
       removeSong,
+      parseLyric,
+      updateCurrentLyric,
+      setLyric,
     };
   },
   {

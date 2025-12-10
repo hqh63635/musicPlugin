@@ -87,8 +87,7 @@ const formatDuration = seconds => {
             :isShowAdd="true"
             :isShowDelete="false"
           >
-            
-          ></SongList>
+          </SongList>
         </div>
       </a-spin>
     </div>
