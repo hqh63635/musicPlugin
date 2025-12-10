@@ -11,16 +11,16 @@
           <p><strong>流派:</strong> {{ singer?.name || '未知' }}</p>
         </div>
         <div class="play-active">
-          <button @click="playAllSongs">播放全部</button>
+          <a-button class="mr-12" type="primary" @click="playAllSongs">播放全部</a-button>
+          <a-button type="primary" @click="addToPlaylist">添加到播放列表</a-button>
         </div>
       </div>
       <div class="songs-list">
-        <SongList
-          :listSongs="artistInfo || []"
-          :isEnd="trueß"
-          :currentPage="currentPage"
-          @pageChange="handlePageChange"
-        />
+        <SongList :listSongs="artistInfo || []" :isEnd="trueß" :currentPage="currentPage" @pageChange="handlePageChange">
+          <template #actions="{ item, index }">
+            <PlusCircleOutlined style="font-size: 18px; color: #ff4d4f;" @click="addToPlaylist(item, index)" />
+          </template>
+        </SongList>
       </div>
     </div>
   </div>
@@ -30,8 +30,11 @@
 import { ref, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import api from '../services/api';
-import SongList from '../components/SongList.vue';
+import SongList from '../components/songList.vue';
 import { useMusicStore } from '../store/music.js';
+import { PlusCircleOutlined } from '@ant-design/icons-vue';
+
+
 
 const musicStore = useMusicStore();
 const route = useRoute();
@@ -65,8 +68,19 @@ const loading = ref(!singer);
 const error = ref(false);
 // Add pagination stat
 
+// 播放全部
 const playAllSongs = () => {
+  musicStore.playSong(artistInfo.value[0]);
   musicStore.addSongsToPlaylist(artistInfo.value || [], 0);
+};
+
+// 添加到播放列表
+const addToPlaylist = item => {
+  if (item) {
+    musicStore.addToPlaylist(item, 0);
+  } else {
+    musicStore.addSongsToPlaylist(artistInfo.value || [], 0);
+  }
 };
 
 // Extract API call to reusable function
@@ -97,7 +111,7 @@ onMounted(async () => {
   await fetchArtistWorks();
 });
 
-const handlePageChange = (page) => {
+const handlePageChange = page => {
   currentPage.value = page;
   fetchArtistWorks();
 };
@@ -173,5 +187,8 @@ watch(currentPage, fetchArtistWorks);
   text-align: center;
   padding: 20px;
   color: #999;
+}
+.mr-12 {
+  margin-right: 12px;
 }
 </style>

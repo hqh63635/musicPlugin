@@ -3,7 +3,8 @@ import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import api from '../services/api.js';
 import { useMusicStore } from '../store/music.js';
-import SongList from '../components/songList.vue';
+import SongList from '../components/SongList.vue';
+import { DeleteOutlined } from '@ant-design/icons-vue';
 
 const route = useRoute();
 const musicStore = useMusicStore();
@@ -42,6 +43,11 @@ const handlePageChange = page => {
   }
 };
 
+// 初始化时检查是否为最后一页
+onMounted(() => {
+  handlePageChange(1);
+});
+
 // 播放全部歌曲
 const playAll = () => {
   if (playlist.value?.songs?.length > 0) {
@@ -58,6 +64,11 @@ const playSong = (song, index) => {
 const addToPlaylist = song => {
   musicStore.addToPlaylist(song);
 };
+
+// 从播放列表移除歌曲
+const removeSong = (song, index) => {
+  musicStore.removeSong(song, index);
+};
 </script>
 
 <template>
@@ -65,7 +76,11 @@ const addToPlaylist = song => {
 
     <div class="playlist-detail"><!-- 加载状态 -->
       <div v-if="loading" class="loading">加载中...</div>
-      <SongList :listSongs="songList || []" :isEnd="isEnd" :currentPage="currentPage" @pageChange="handlePageChange" />
+      <SongList :listSongs="songList || []" :isEnd="isEnd" :currentPage="currentPage" @pageChange="handlePageChange" >
+        <template #actions="{ item, index }">
+          <DeleteOutlined style="font-size: 18px; color: #ff4d4f;" @click="removeSong(item, index)" />
+        </template>
+      </SongList>
     </div>
 
     <!-- 歌单不存在 -->

@@ -94,19 +94,6 @@ const search = (keyword) => {
       <div class="header-button" title="设置">
         <Cog8ToothIcon alt="设置" />
       </div>
-      
-      <div class="header-divider"></div>
-      
-      <!-- 窗口控制按钮 -->
-      <div class="header-button" title="最小化">
-        <MinusIcon alt="最小化" />
-      </div>
-      <div class="header-button" title="最大化/还原">
-        <SquareIcon alt="最大化" />
-      </div>
-      <div class="header-button" title="关闭">
-        <XMarkIcon alt="关闭" />
-      </div>
     </div>
   </div>
 </template>

@@ -5,7 +5,7 @@ import { useMusicStore } from '../store/music.js';
 import playIcon from '@/assets/icons/play.svg?url';
 import plusIcon from '@/assets/icons/plus.svg?url';
 import { PlayCircleOutlined } from '@ant-design/icons-vue';
-import SongList from '../components/songList.vue';
+import SongList from '../components/SongList.vue';
 
 const musicStore = useMusicStore();
 

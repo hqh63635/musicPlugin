@@ -43,7 +43,10 @@ onMounted(() => {
     albumid: 33021,
     albummid: '002eFUFm2XYZ7z'
   });
+  } else {
+    musicStore.playSong(musicStore.currentSong);
   }
+  musicStore.setVolume(musicStore.volume);
 });
 
 // 组件卸载前清理
@@ -97,8 +100,16 @@ const toggleMute = () => {
 };
 
 // 调整音量
-const adjustVolume = (newVolume) => {
-  musicStore.setVolume(newVolume);
+const handleVolumeChange = (value) => {
+  musicStore.setVolume(value);
+};
+
+// 根据点击位置调整音量
+const adjustVolumeFromClick = (event) => {
+  const rect = event.currentTarget.getBoundingClientRect();
+  const clickX = event.clientX - rect.left;
+  const volumePercentage = (clickX / rect.width) * 100;
+  musicStore.setVolume(Math.round(volumePercentage));
 };
 
 // 调整播放进度
@@ -216,18 +227,14 @@ const togglePlayMode = () => {
           :alt="musicStore.isMuted ? '静音' : '音量'"
         />
       </div>
-      <div class="volume-slider">
-        <div class="progress-track">
-          <div
-            class="progress-fill"
-            :style="{ width: musicStore.volume + '%' }"
-          ></div>
-          <div
-            class="progress-thumb"
-            :style="{ left: musicStore.volume + '%' }"
-          ></div>
-        </div>
-      </div>
+      <a-slider
+        v-model:value="musicStore.volume"
+        @change="handleVolumeChange"
+        :min="0"
+        :max="100"
+        :step="1"
+        class="volume-slider"
+      />
       <div class="control-button">
         <component :is="lyricIcon" :alt="'歌词'" />
       </div>

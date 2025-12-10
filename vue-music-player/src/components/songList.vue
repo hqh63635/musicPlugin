@@ -2,8 +2,9 @@
   <a-row class="song-header">
     <a-col :span="2" class="">序号 </a-col>
     <a-col :span="12" class=""> 歌曲 </a-col>
-    <a-col :span="6" class="">歌手 </a-col>
+    <a-col :span="4" class="">歌手 </a-col>
     <a-col :span="4" class=""> 时长 </a-col>
+    <a-col :span="2" class=""> 操作 </a-col>
   </a-row>
   <a-list
     class="demo-loadmore-list"
@@ -21,10 +22,9 @@
     </template>
     <template #renderItem="{ item, index }">
       <a-list-item>
-        <!-- <template #actions>
-          <a key="list-loadmore-edit">edit</a>
-          <a key="list-loadmore-more">more</a>
-        </template> -->
+        <template #actions>
+          <slot name="actions" :item="item" :index="index"></slot>
+        </template>
         <!-- 歌曲列表 -->
         <div class="song-list-container">
           <div class="song-list">
