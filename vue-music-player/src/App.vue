@@ -58,7 +58,7 @@ body {
 }
 .lyric-container-box {
   width: 600px;
-  padding: 12px;
+  padding: 12px 12px 12px 0;
   background-color: #f5f5f5;
 }
 </style>
