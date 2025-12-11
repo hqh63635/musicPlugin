@@ -21,6 +21,10 @@ export default defineConfig({
         target: 'https://c.y.qq.com',
         changeOrigin: true,
         rewrite: path => path.replace(/^\/api/, ''),
+        headers: {
+          Referer: 'https://y.qq.com/',
+          Host: 'c.y.qq.com',
+        },
       },
       // QQ Music API proxy for u.y.qq.com (musicu.fcg)
       '/musicu': {

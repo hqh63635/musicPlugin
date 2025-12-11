@@ -68,10 +68,10 @@ async function runApiExamples() {
                     // 4. 获取歌词
                     console.log('4. 获取歌词:');
                     try {
-                        const lyric = await plugin.getLyric(firstSong.id, firstSong.songmid);
+                        const lyric = await plugin.getLyric(firstSong);
                         if (lyric) {
                             console.log(`   歌曲: ${firstSong.title} - ${firstSong.artist}`);
-                            console.log('   歌词前几行:');
+                            console.log('   歌词前几行:', lyric);
                             const lyricLines = lyric.split('\n').filter(line => line.trim());
                             if (lyricLines.length > 0) {
                                 lyricLines.slice(0, 3).forEach(line => {

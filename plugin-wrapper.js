@@ -11,6 +11,20 @@ const he = require('he');
 
 axios.defaults.timeout = 15000;
 
+axios.interceptors.request.use(req => {
+  console.log("📡 Axios Request:", req.url)
+  console.log("📤 Data:", req.data)
+  console.log("📤 Params:", req.params)
+  return req
+})
+
+axios.interceptors.response.use(res => {
+  console.log("📥 Axios Response:", res.config.url)
+  console.log("📥 Status:", res.status)
+  console.log("📥 Data:", res.data)
+  return res
+})
+
 // 定义可用的包
 const packages = {
     cheerio,

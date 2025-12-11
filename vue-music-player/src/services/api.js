@@ -167,6 +167,12 @@ export async function getLyric(song) {
     normalizedSong.id = String(normalizedSong.id).trim();
     normalizedSong.songmid = String(normalizedSong.songmid).trim();
 
+    // 新增songmid有效性校验
+    if (!normalizedSong.songmid) {
+      console.error('获取歌词失败: songmid不能为空');
+      return { lyric: '', translation: '' };
+    }
+
     console.log('获取歌词参数:', { song: normalizedSong });
 
     // 验证plugin实例和getLyric方法的有效性
@@ -188,27 +194,28 @@ export async function getLyric(song) {
     try {
       const result = await plugin.getLyric(normalizedSong);
       console.log('plugin.getLyric返回结果:', result);
-      
+
       // 验证返回结果的格式是否正确
-      if (result && typeof result === 'object') {
-        // 确保lyric属性存在且为字符串
-        if (typeof result.lyric !== 'string') {
-          console.warn('plugin.getLyric返回的lyric不是字符串:', result.lyric);
-          // 如果lyric不是字符串，尝试转换为字符串或返回null
-          result.lyric = String(result.lyric || '');
-        }
-        return result;
+      if (typeof result === 'string') {
+        // 处理字符串格式的歌词（兼容example.js的返回格式）
+        return { lyric: result, translation: '' };
+      } else if (result && typeof result === 'object') {
+        // 映射rawLrc到lyric并验证
+        const lyric = typeof result.rawLrc === 'string' ? result.rawLrc : '';
+        return { lyric, translation: result.translation || '' };
       }
-      
-      console.warn('plugin.getLyric返回的结果不是有效的对象:', result);
+
+      console.warn('plugin.getLyric返回的结果不是有效的对象或字符串:', result);
+      return { lyric: '', translation: '' };
       return null;
     } catch (pluginError) {
       console.error('调用plugin.getLyric时发生错误:', pluginError);
-      
+
       // 详细记录错误信息，帮助调试
       console.error('错误堆栈:', pluginError.stack);
-      
-      // 返回null，让调用方处理错误
+
+      // 返回空歌词对象避免下游错误
+      return { lyric: '', translation: '' };
       return null;
     }
   } catch (error) {
