@@ -1,0 +1,213 @@
+{
+  "editor.fontSize": 14,
+  "files.associations": {
+    "*.tsx": "typescriptreact",
+    "*.js": "javascriptreact",
+    "*.wxss": "css",
+    "*.wxml": "xml",
+    "*.scss": "scss",
+    "*.svg": "html",
+    "*.md": "markdown",
+    "*.jsx": "javascriptreact"
+  },
+  // The number of spaces a tab is equal to. This setting is overridden based on the file contents when `editor.detectIndentation` is on.
+  "editor.tabSize": 4,
+  // Configure glob patterns for excluding files and folders. For example, the files explorer decides which files and folders to show or hide based on this setting. Read more about glob patterns [here](https://code.visualstudio.com/docs/editor/codebasics#_advanced-search-options).
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true
+  },
+  "editor.quickSuggestions": {
+    "other": true,
+    "comments": true,
+    "strings": true
+  },
+  // 以上为通用配置
+  "terminal.integrated.allowChords": false,
+  "terminal.integrated.fontSize": 16,
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "git.enableSmartCommit": true,
+  "files.autoSave": "afterDelay", // 自动保存
+  "files.autoSaveDelay": 10000,
+  "terminal.integrated.defaultProfile.osx": "zsh",
+  "terminal.integrated.cwd": "${workspaceFolder}",
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "security.workspace.trust.untrustedFiles": "open",
+  "search.seedOnFocus": true,
+  "terminal.integrated.splitCwd": "initial",
+  "workbench.editorAssociations": {
+    "*.vsix": "default",
+    "*.xlsx": "default"
+  },
+  "explorer.confirmDelete": false,
+  "json.schemas": [],
+  // ================= eslint 格式化配置 =================
+  // 是否为 JavaScript 文件开启 eslint 检测，默认开启 true
+  // 保存时修复来自所有插件的所有可自动修复的 ESlint 错误
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "editor.showUnused": true,
+  // 启用/禁用 javascript 格式化程序
+  // 代表 vscode 默认格式 js 程序是否开启
+  // 用 eslint 格式化 js 时需要关闭
+  // 无任何其他格式化插件时执行此格式化程序
+  "javascript.format.enable": false,
+  // 应通过 ESLint 验证的语言数组
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "reacttypescript",
+    "reactjavascript",
+    "html",
+    "vue"
+  ],
+  // 控制编辑器在键入一行后，是否自动格式化该行
+  "editor.formatOnType": true,
+  // 在保存时格式化文件,格式化程序必须可用
+  // 单纯使用 eslint 可以不开启，使用 prettier 时必须开启
+  // 使用 VSCode 自身格式化程序格式化
+  "editor.formatOnSave": true,
+  // 在保存文件时修剪尾随空格
+  "files.trimTrailingWhitespace": false,
+  // 当启用时，diff 编辑器将忽略前导或尾随空格中的更改
+  "diffEditor.ignoreTrimWhitespace": false,
+  // 在快速修复菜单中显示打开的 lint 规则文档网页
+  "eslint.codeAction.showDocumentation": {
+    "enable": true
+  },
+  // 关闭 vetur 的格式化功能
+  "vetur.validation.script": false,
+  "vetur.validation.style": false,
+  "vetur.validation.template": false,
+  // ================= eslint 格式化结束 =================
+  "eslint.quiet": false,
+  "eslint.format.enable": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "window.commandCenter": false,
+  "workbench.layoutControl.enabled": false,
+  "terminal.integrated.enableMultiLinePasteWarning": false,
+  "js/ts.implicitProjectConfig.experimentalDecorators": true,
+  "debug.onTaskErrors": "debugAnyway",
+  "editor.accessibilitySupport": "off",
+  "workbench.startupEditor": "none",
+  "doxdocgen.file.copyrightTag": [],
+  "gitlens.remotes": [],
+  "gitlens.codeLens.dateFormat": "",
+  // =================== 格式化插件选择 ====================
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[less]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[scss]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
+  "[xml]": {
+    "editor.defaultFormatter": "DotJoshJohnson.xml"
+  },
+  "[vue]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[java]": {
+    "editor.defaultFormatter": "redhat.java"
+  },
+  "settingsSync.ignoredExtensions": [
+    "jeff-hykin.better-cpp-syntax",
+    "mitaki28.vscode-clang",
+    "ms-vscode.cpptools",
+    "ms-vscode.cpptools-extension-pack",
+    "ms-vscode.cpptools-themes"
+  ],
+  /*  vscode 中 prettier的配置 */
+  "prettier.printWidth": 120, //每行代码的长度限制
+  "prettier.tabWidth": 4, // 缩进字节数
+  "prettier.useTabs": false, // 缩进不使用tab，使用空格
+  "prettier.semi": true, // 句尾添加分号
+  // 使用单引号代替双引号
+  "prettier.singleQuote": true,
+  // 默认值。因为使用了一些折行敏感型的渲染器（如 GitHub comment）而按照 markdown 文本样式进行折行
+  "prettier.proseWrap": "preserve",
+  //  (x) => {} 箭头函数参数只有一个时是否要有小括号。avoid：省略括号
+  "prettier.arrowParens": "avoid",
+  // 在对象，数组括号与文字之间加空格 "{ foo: bar }"
+  "prettier.bracketSpacing": true,
+  // 结尾是 \n \r \n\r auto
+  "prettier.endOfLine": "auto",
+  "prettier.htmlWhitespaceSensitivity": "ignore",
+  // 不使用 prettier 格式化的文件填写在项目的 .prettierignore 文件中
+  "prettier.ignorePath": ".prettierignore",
+  // 在 jsx 中把'>' 是否单独放一行
+  "prettier.jsxBracketSameLine": false,
+  // 在 jsx 中使用单引号代替双引号
+  "prettier.jsxSingleQuote": false,
+  // Require a 'prettierconfig' to format prettier
+  "prettier.requireConfig": false,
+  // prettier 不使用 stylelint 的代码格式进行校验
+  "prettier.stylelintIntegration": false,
+  // 在对象或数组最后一个元素后面是否加逗号（在ES5中加尾逗号）
+  "prettier.trailingComma": "es5",
+  // prettier 不使用 eslint 的代码格式进行校验
+  "prettier.eslintIntegration": false,
+  // prettier 不使用 tslint 的代码格式进行校验
+  "prettier.tslintIntegration": false,
+  // ================= vscode 中 prettier 的配置结束 =================
+  "RainbowBrackets.depreciation-notice": false,
+  "tabnine.experimentalAutoImports": true,
+  "liveServer.settings.ignoreFiles": [
+    ".vscode/**",
+    "**/*.scss",
+    "**/*.sass",
+    "**/*.ts"
+  ],
+  "javascript.validate.enable": true,
+  "typescript.validate.enable": true,
+  "workbench.settings.openDefaultKeybindings": true,
+  "redhat.telemetry.enabled": true,
+  "Codegeex.Privacy": true,
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter"
+  },
+  "editor.unicodeHighlight.allowedLocales": {
+    "zh-hans": true
+  },
+  "liveServer.settings.AdvanceCustomBrowserCmdLine": "",
+  "git.ignoreRebaseWarning": true,
+  "files.encoding": "utf8bom",
+  "launch": {
+    "configurations": [],
+    "compounds": []
+  },
+  "workbench.iconTheme": "material-icon-theme",
+  "workbench.settings.applyToAllProfiles": [],
+  "terminal.integrated.env.windows": {}
+}

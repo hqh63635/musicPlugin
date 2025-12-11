@@ -1,0 +1,14 @@
+/node_modules
+/helpCenter
+/gantt
+/nginx
+/Viewer
+/src/styles
+
+/src/examples
+/src/modules/demo
+/docs
+/bin
+/dist
+/public
+/static

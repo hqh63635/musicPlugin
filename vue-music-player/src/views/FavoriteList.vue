@@ -75,7 +75,7 @@ const toggleFavorite = (song, forceState) => {
     // 如果提供了forceState参数，则直接设置，否则切换状态
     const newState = forceState !== undefined ? forceState : !musicStore.playlist[index].isFavorite;
     musicStore.playlist[index].isFavorite = newState;
-    
+
     // 如果是当前播放的歌曲，同步更新currentSong的状态
     if (musicStore.currentSong && musicStore.currentSong.id === song.id) {
       musicStore.currentSong.isFavorite = newState;
@@ -84,7 +84,7 @@ const toggleFavorite = (song, forceState) => {
 };
 
 // 从收藏列表移除歌曲（取消收藏）
-const removeSong = (song) => {
+const removeSong = song => {
   toggleFavorite(song, false);
   message.success('取消收藏');
 };
@@ -95,7 +95,14 @@ const removeSong = (song) => {
     <div class="playlist-detail">
       <!-- 加载状态 -->
       <div v-if="loading" class="loading">加载中...</div>
-      <SongList :listSongs="songList || []" :isEnd="isEnd" :currentPage="currentPage" @pageChange="handlePageChange" :isShowAdd="false" :isShowDelete="true">
+      <SongList
+        :listSongs="songList || []"
+        :isEnd="isEnd"
+        :currentPage="currentPage"
+        @pageChange="handlePageChange"
+        :isShowAdd="false"
+        :isShowDelete="true"
+      >
       </SongList>
     </div>
   </div>
