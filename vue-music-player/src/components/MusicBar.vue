@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount, h } from 'vue';
+import { ref, onMounted, onBeforeUnmount, h, computed } from 'vue';
 import { useMusicStore } from '@/store/music.js';
 import albumCover from '@/assets/imgs/album-cover.jpg';
 import Lyric from './Lyric.vue';
@@ -221,6 +221,11 @@ const removeSong = (record, index) => {
   musicStore.removeSong(record, index);
   message.success('移除成功');
 };
+
+const displayText = computed(() => {
+  return musicStore.fullLyric[musicStore.currentLyricIndex] || '暂无歌词';
+});
+
 </script>
 
 <template>
@@ -244,8 +249,9 @@ const removeSong = (record, index) => {
           {{ musicStore?.currentSong?.title || '未知歌曲' }}
         </div>
         <div class="music-artist">
-          {{ musicStore?.currentSong?.artist || '未知歌手' }}
+          {{ musicStore?.currentSong?.artist || '未知歌手' }}   
         </div>
+        
       </div>
     </div>
 
@@ -272,7 +278,6 @@ const removeSong = (record, index) => {
           {{ formatTime(musicStore.totalTime) }}
         </div>
       </div>
-
       <!-- 控制按钮 -->
       <div class="control-buttons">
         <!-- 播放模式 -->
@@ -375,7 +380,6 @@ const removeSong = (record, index) => {
   <!-- 歌词抽屉 -->
   <a-drawer
     v-model:open="showLyricDrawer"
-    v-if="showLyricDrawer"
     title="歌词"
     placement="right"
     size="large"
@@ -449,7 +453,7 @@ const removeSong = (record, index) => {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8;
   max-width: 600px;
 }
 

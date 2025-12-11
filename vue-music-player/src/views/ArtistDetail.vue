@@ -17,7 +17,7 @@
         <div class="songs-list">
           <SongList
             :listSongs="artistInfo || []"
-            :isEnd="trueß"
+            :isEnd="isEnd"
             :currentPage="currentPage"
             @pageChange="handlePageChange"
             :isShowAdd="true"
@@ -104,7 +104,6 @@ const fetchArtistWorks = async () => {
       } else {
         artistInfo.value.push(...response.data);
       }
-      indicator.value.spin = false;
     } catch (err) {
       console.error('获取艺术家详情失败:', err);
       error.value = true;
@@ -123,9 +122,6 @@ const handlePageChange = page => {
   currentPage.value = page;
   fetchArtistWorks();
 };
-
-// Watch for currentPage changes to trigger data fetch
-watch(currentPage, fetchArtistWorks);
 </script>
 
 <style scoped>
