@@ -25,7 +25,7 @@
         <template #actions>
           <slot name="actions" :item="item" :index="index"></slot>
           <PlusCircleOutlined v-if="isShowAdd" font-size="16px" @click="addToPlaylist(item)" />
-           <HeartFilledIcon v-if="item.isFavorite" font-size="16px" @click="toggleFavorite(item)" />
+          <HeartFilledIcon v-if="item.isFavorite" font-size="16px" @click="toggleFavorite(item)" />
           <DeleteOutlined v-if="isShowDelete" font-size="16px" @click="removeSong(item, index)" />
         </template>
         <!-- 歌曲列表 -->

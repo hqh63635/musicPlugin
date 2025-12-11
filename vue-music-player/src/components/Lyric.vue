@@ -17,7 +17,6 @@
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
-
       }"
     >
       <div class="lyric-list">

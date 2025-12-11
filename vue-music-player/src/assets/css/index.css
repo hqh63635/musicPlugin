@@ -77,14 +77,14 @@ th {
 }
 
 ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-    background: transparent;
+  width: 8px;
+  height: 8px;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-    border-radius: 10px;
-    box-shadow: none;
-    background: #d9d9d9;
+  border-radius: 10px;
+  box-shadow: none;
+  background: #d9d9d9;
 }
 
 .ant-spin-nested-loading,
@@ -102,6 +102,6 @@ th {
 .playlist-drawer .ant-drawer-header {
   padding: 8px 12px !important;
 }
-.lyric-drawer .ant-drawer-header{
+.lyric-drawer .ant-drawer-header {
   display: none;
 }

@@ -73,10 +73,17 @@ const removeSong = (song, index) => {
 
 <template>
   <div class="playlist-page">
-
-    <div class="playlist-detail"><!-- 加载状态 -->
+    <div class="playlist-detail">
+      <!-- 加载状态 -->
       <div v-if="loading" class="loading">加载中...</div>
-      <SongList :listSongs="songList || []" :isEnd="isEnd" :currentPage="currentPage" @pageChange="handlePageChange" :isShowAdd="false" :isShowDelete="true">
+      <SongList
+        :listSongs="songList || []"
+        :isEnd="isEnd"
+        :currentPage="currentPage"
+        @pageChange="handlePageChange"
+        :isShowAdd="false"
+        :isShowDelete="true"
+      >
       </SongList>
     </div>
 
@@ -147,7 +154,9 @@ const removeSong = (song, index) => {
   background-color: rgba(24, 144, 255, 0.9);
   border-radius: 20px;
   cursor: pointer;
-  transition: background-color 0.3s, transform 0.3s;
+  transition:
+    background-color 0.3s,
+    transform 0.3s;
 }
 
 .play-button:hover {

@@ -59,10 +59,10 @@ const isLoading = ref(false);
 const checkAndLoadMore = () => {
   const container = document.querySelector('.singer-grid');
   if (!container) return;
-  
+
   const containerHeight = container.offsetHeight;
   const viewportHeight = window.innerHeight;
-  
+
   // 当内容高度小于视口高度且有更多数据时继续加载
   if (containerHeight < viewportHeight - 200 && !isLoading.value && !isEnd.value) {
     fetchSingerList();
@@ -71,7 +71,7 @@ const checkAndLoadMore = () => {
 // 页面加载时初始化
 onMounted(() => {
   initPage();
-  const observer = new IntersectionObserver((entries) => {
+  const observer = new IntersectionObserver(entries => {
     if (entries[0].isIntersecting && !isLoading.value && !isEnd.value) {
       fetchSingerList();
     }
@@ -79,10 +79,10 @@ onMounted(() => {
   const loader = document.createElement('div');
   document.querySelector('.singer-grid').appendChild(loader);
   observer.observe(loader);
-  
+
   // 初始加载后检查是否需要填充内容
   checkAndLoadMore();
-  
+
   return () => observer.disconnect();
 });
 
@@ -107,7 +107,7 @@ const fetchSingerList = async () => {
     isEnd.value = searchData.isEnd || false;
     const newData = searchData.data || [];
     singerList.value = [...singerList.value, ...newData];
-    
+
     // 只有当有新数据时才增加页码
     if (newData.length > 0) {
       currentPage.value++;
@@ -154,34 +154,34 @@ const goToArtistDetail = singer => {
 
 <template>
   <div class="artist-page">
-    <div class=artist-page-container>
-    <!-- A-Z分类导航 -->
-    <a-radio-group
-  v-model:value="selectedCategory"
-  class="category-nav"
-  @change="changeCategory"
->
-  <a-radio
-    v-for="category in categories"
-    :key="category.id"
-    :value="category.id"
-    class="category-item"
-  >
-    {{ category.name }}
-  </a-radio>
-</a-radio-group>
+    <div class="artist-page-container">
+      <!-- A-Z分类导航 -->
+      <a-radio-group v-model:value="selectedCategory" class="category-nav" @change="changeCategory">
+        <a-radio
+          v-for="category in categories"
+          :key="category.id"
+          :value="category.id"
+          class="category-item"
+        >
+          {{ category.name }}
+        </a-radio>
+      </a-radio-group>
 
-
-    <!-- 歌手列表 -->
-    <div class="singer-grid">
-      <div v-for="singer in singerList" :key="singer.singer_id" class="singer-card" @click="goToArtistDetail(singer)">
-        <div class="singer-avatar">
-          <img :src="singer.avatar || '@/assets/default-avatar.jpg'" :alt="singer.singer_name" />
+      <!-- 歌手列表 -->
+      <div class="singer-grid">
+        <div
+          v-for="singer in singerList"
+          :key="singer.singer_id"
+          class="singer-card"
+          @click="goToArtistDetail(singer)"
+        >
+          <div class="singer-avatar">
+            <img :src="singer.avatar || '@/assets/default-avatar.jpg'" :alt="singer.singer_name" />
+          </div>
+          <h3 class="singer-name">{{ singer.name }}</h3>
         </div>
-        <h3 class="singer-name">{{ singer.name }}</h3>
+        <div v-if="isLoading" class="loading-indicator">加载中...</div>
       </div>
-      <div v-if="isLoading" class="loading-indicator">加载中...</div>
-    </div>
     </div>
   </div>
 </template>
@@ -380,7 +380,9 @@ const goToArtistDetail = singer => {
 
 .album-card {
   cursor: pointer;
-  transition: transform 0.3s, box-shadow 0.3s;
+  transition:
+    transform 0.3s,
+    box-shadow 0.3s;
 }
 
 .album-card:hover {
@@ -434,7 +436,9 @@ const goToArtistDetail = singer => {
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  transition: transform 0.3s, background-color 0.3s;
+  transition:
+    transform 0.3s,
+    background-color 0.3s;
 }
 
 .overlay-button:hover {
@@ -539,13 +543,3 @@ const goToArtistDetail = singer => {
   overflow: auto;
 }
 </style>
-
-
-
-
-
-
-
-
-
-

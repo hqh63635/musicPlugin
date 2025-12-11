@@ -1,10 +1,10 @@
 <script setup>
 // 引入组件
-import Header from './components/Header.vue'
-import MusicBar from './components/MusicBar.vue'
-import SideBar from './components/SideBar.vue'
-import MusicDetail from './components/MusicDetail.vue'
-import Lyric from './components/Lyric.vue'
+import Header from './components/Header.vue';
+import MusicBar from './components/MusicBar.vue';
+import SideBar from './components/SideBar.vue';
+import MusicDetail from './components/MusicDetail.vue';
+import Lyric from './components/Lyric.vue';
 </script>
 
 <template>
@@ -14,9 +14,9 @@ import Lyric from './components/Lyric.vue'
       <SideBar />
       <router-view class="main-content" />
       <!-- <Panel /> -->
-       <div class="lyric-container-box"> 
-         <Lyric />
-        </div>
+      <div class="lyric-container-box">
+        <Lyric />
+      </div>
     </div>
     <!-- <MusicDetail /> -->
     <MusicBar />
@@ -32,7 +32,8 @@ import Lyric from './components/Lyric.vue'
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   background-color: #ffffff;
   color: #333333;
 }

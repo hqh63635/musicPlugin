@@ -109,13 +109,25 @@ const formatNumber = value => {
       <div class="ranklist-sidebar">
         <div v-for="group in topLists" :key="group.groupName" class="ranklist-group">
           <h2 class="group-title">{{ group.title }}</h2>
-          <div v-for="list in group.data" :key="list.title" class="ranklist-item" :class="{ active: selectedList?.title === list.title }" @click="selectList(list)">
+          <div
+            v-for="list in group.data"
+            :key="list.title"
+            class="ranklist-item"
+            :class="{ active: selectedList?.title === list.title }"
+            @click="selectList(list)"
+          >
             <div class="ranklist-cover">
-              <img :src="list.coverImg || '@/assets/default-cover.jpg'" :alt="list.title" style="width: 40px; height: 40px; object-fit: cover;" />
+              <img
+                :src="list.coverImg || '@/assets/default-cover.jpg'"
+                :alt="list.title"
+                style="width: 40px; height: 40px; object-fit: cover"
+              />
             </div>
             <div class="ranklist-info">
               <h3 class="ranklist-name">{{ list.title }}</h3>
-              <p class="ranklist-update">{{ list.period }} 更新 · {{ formatNumber(list.listenNum) }} 播放</p>
+              <p class="ranklist-update">
+                {{ list.period }} 更新 · {{ formatNumber(list.listenNum) }} 播放
+              </p>
             </div>
           </div>
         </div>
@@ -128,7 +140,7 @@ const formatNumber = value => {
           <div class="header-cover">
             <img :src="selectedList.coverImg" :alt="selectedList.name" />
             <div class="play-button" @click="playAllSongs">
-              <PlayOutlined style="font-size: 20px; margin-right: 8px;" />
+              <PlayOutlined style="font-size: 20px; margin-right: 8px" />
               <span>播放全部</span>
             </div>
           </div>
@@ -156,7 +168,6 @@ const formatNumber = value => {
           :isShowDelete="false"
         >
         </SongList>
-        
       </div>
 
       <!-- 未选择排行榜提示 -->
@@ -288,8 +299,6 @@ const formatNumber = value => {
   flex-shrink: 0;
   min-width: 50px;
 }
-
-
 
 .song-rank {
   text-align: center;
@@ -505,11 +514,5 @@ const formatNumber = value => {
   align-self: center;
   justify-items: center;
   display: flex;
-
 }
 </style>
-
-
-
-
-

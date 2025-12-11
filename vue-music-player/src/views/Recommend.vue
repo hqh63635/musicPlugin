@@ -1,64 +1,64 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import api from '../services/api.js'
-import { useMusicStore } from '../store/music.js'
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import api from '../services/api.js';
+import { useMusicStore } from '../store/music.js';
 
-const router = useRouter()
-const musicStore = useMusicStore()
+const router = useRouter();
+const musicStore = useMusicStore();
 
 // 推荐歌单数据
-const playlists = ref([])
+const playlists = ref([]);
 // 推荐专辑数据
-const albums = ref([])
+const albums = ref([]);
 // 加载状态
-const loading = ref(false)
+const loading = ref(false);
 
 // 页面加载时获取推荐数据
 onMounted(() => {
-  fetchRecommendData()
-})
+  fetchRecommendData();
+});
 
 // 获取推荐数据
 const fetchRecommendData = async () => {
   try {
     loading.value = true;
     // 获取推荐歌单
-    const topListResult = await api.getTopLists()
+    const topListResult = await api.getTopLists();
     if (topListResult) {
-      playlists.value = topListResult.data
+      playlists.value = topListResult.data;
     }
   } catch (error) {
     console.error('获取推荐数据失败:', error);
   } finally {
     loading.value = false;
   }
-}
+};
 
 // 查看歌单详情
-const viewPlaylist = (playlistId) => {
-  router.push(`/playlist/${playlistId}`)
-}
+const viewPlaylist = playlistId => {
+  router.push(`/playlist/${playlistId}`);
+};
 
 // 查看专辑详情
-const viewAlbum = (albumId) => {
-  router.push(`/album/${albumId}`)
-}
+const viewAlbum = albumId => {
+  router.push(`/album/${albumId}`);
+};
 
 // 播放专辑/歌单
 const playAll = (songs, playIndex = 0) => {
-  musicStore.setPlaylist(songs, playIndex)
-}
+  musicStore.setPlaylist(songs, playIndex);
+};
 
 // 播放歌曲
-const playSong = (song) => {
-  musicStore.playSong(song)
-}
+const playSong = song => {
+  musicStore.playSong(song);
+};
 
 // 添加到播放列表
-const addToPlaylist = (song) => {
-  musicStore.addToPlaylist(song)
-}
+const addToPlaylist = song => {
+  musicStore.addToPlaylist(song);
+};
 </script>
 
 <template>
@@ -74,7 +74,12 @@ const addToPlaylist = (song) => {
       </div>
 
       <div class="playlist-list">
-        <div v-for="playlist in playlists" :key="playlist.id" class="playlist-card" @click="viewPlaylist(playlist.id)">
+        <div
+          v-for="playlist in playlists"
+          :key="playlist.id"
+          class="playlist-card"
+          @click="viewPlaylist(playlist.id)"
+        >
           <div class="playlist-cover">
             <img :src="playlist.picUrl" :alt="playlist.topTitle" />
             <div class="play-count">
@@ -98,7 +103,12 @@ const addToPlaylist = (song) => {
       </div>
 
       <div class="album-list">
-        <div v-for="album in albums" :key="album.id" class="album-card" @click="viewAlbum(album.id)">
+        <div
+          v-for="album in albums"
+          :key="album.id"
+          class="album-card"
+          @click="viewAlbum(album.id)"
+        >
           <div class="album-cover">
             <img :src="album.cover" :alt="album.name" />
             <div class="album-overlay">
@@ -174,7 +184,9 @@ const addToPlaylist = (song) => {
 
 .playlist-card {
   cursor: pointer;
-  transition: transform 0.3s, box-shadow 0.3s;
+  transition:
+    transform 0.3s,
+    box-shadow 0.3s;
 }
 
 .playlist-card:hover {
@@ -242,7 +254,9 @@ const addToPlaylist = (song) => {
 
 .album-card {
   cursor: pointer;
-  transition: transform 0.3s, box-shadow 0.3s;
+  transition:
+    transform 0.3s,
+    box-shadow 0.3s;
 }
 
 .album-card:hover {
@@ -297,7 +311,9 @@ const addToPlaylist = (song) => {
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  transition: transform 0.3s, background-color 0.3s;
+  transition:
+    transform 0.3s,
+    background-color 0.3s;
 }
 
 .overlay-button:hover {
@@ -338,5 +354,3 @@ const addToPlaylist = (song) => {
   color: #999;
 }
 </style>
-
-

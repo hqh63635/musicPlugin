@@ -19,7 +19,6 @@ import listBulletIcon from '@/assets/icons/list-bullet.svg';
 import { PlayCircleOutlined, DeleteOutlined, PauseCircleOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
 
-
 // 使用音乐store
 const musicStore = useMusicStore();
 

@@ -1,8 +1,8 @@
 <script setup>
-import { ref } from 'vue'
+import { ref } from 'vue';
 
 // 音乐详情是否显示
-const isShown = ref(true)
+const isShown = ref(true);
 // 当前播放歌曲信息
 const currentSong = ref({
   name: '晴天',
@@ -10,8 +10,8 @@ const currentSong = ref({
   album: '叶惠美',
   cover: '@/assets/imgs/album-cover.jpg',
   playCount: '100,000,000+',
-  releaseDate: '2003-07-31'
-})
+  releaseDate: '2003-07-31',
+});
 
 // 歌词
 const lyrics = ref([
@@ -24,13 +24,13 @@ const lyrics = ref([
   { time: '00:30', text: 'Re So So Si Do Si La' },
   { time: '00:35', text: 'So La Si Si Si Si La Si La So' },
   { time: '00:40', text: '吹着前奏望着天空' },
-  { time: '00:45', text: '我想起花瓣试着掉落' }
-])
+  { time: '00:45', text: '我想起花瓣试着掉落' },
+]);
 
 // 隐藏音乐详情
 const hideDetail = () => {
-  isShown.value = false
-}
+  isShown.value = false;
+};
 </script>
 
 <template>
@@ -39,12 +39,12 @@ const hideDetail = () => {
     <div class="close-button" @click="hideDetail">
       <img src="@/assets/icons/x-mark.svg" alt="关闭" />
     </div>
-    
+
     <!-- 专辑封面 -->
     <div class="album-cover">
       <img :src="currentSong.cover" :alt="currentSong.name" />
     </div>
-    
+
     <!-- 歌曲信息 -->
     <div class="song-info">
       <div class="song-name">{{ currentSong.name }}</div>
@@ -54,7 +54,7 @@ const hideDetail = () => {
         <span>{{ currentSong.playCount }} 播放</span>
         <span>{{ currentSong.releaseDate }}</span>
       </div>
-      
+
       <!-- 操作按钮 -->
       <div class="action-buttons">
         <div class="action-button primary">
@@ -75,13 +75,13 @@ const hideDetail = () => {
         </div>
       </div>
     </div>
-    
+
     <!-- 歌词 -->
     <div class="lyrics-section">
       <div class="section-title">歌词</div>
       <div class="lyrics-container">
-        <div 
-          v-for="(line, index) in lyrics" 
+        <div
+          v-for="(line, index) in lyrics"
           :key="index"
           class="lyric-line"
           :class="{ active: index === 5 }"
@@ -91,7 +91,7 @@ const hideDetail = () => {
         </div>
       </div>
     </div>
-    
+
     <!-- 相关推荐 -->
     <div class="related-section">
       <div class="section-title">相关推荐</div>

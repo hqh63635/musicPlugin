@@ -1,51 +1,46 @@
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { Input } from 'ant-design-vue'
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { Input } from 'ant-design-vue';
 
 // 导入SVG图标
-import LogoIcon from '@/assets/icons/logo.svg'
-import MagnifyingGlassIcon from '@/assets/icons/magnifying-glass.svg'
-import ClockIcon from '@/assets/icons/clock.svg'
-import TShirtLineIcon from '@/assets/icons/t-shirt-line.svg'
-import Cog8ToothIcon from '@/assets/icons/cog-8-tooth.svg'
-import MinusIcon from '@/assets/icons/minus.svg'
-import SquareIcon from '@/assets/icons/square.svg'
-import XMarkIcon from '@/assets/icons/x-mark.svg'
+import LogoIcon from '@/assets/icons/logo.svg';
+import MagnifyingGlassIcon from '@/assets/icons/magnifying-glass.svg';
+import ClockIcon from '@/assets/icons/clock.svg';
+import TShirtLineIcon from '@/assets/icons/t-shirt-line.svg';
+import Cog8ToothIcon from '@/assets/icons/cog-8-tooth.svg';
+import MinusIcon from '@/assets/icons/minus.svg';
+import SquareIcon from '@/assets/icons/square.svg';
+import XMarkIcon from '@/assets/icons/x-mark.svg';
 
-const router = useRouter()
-const inputValue = ref('')
-const showSearchHistory = ref(false)
+const router = useRouter();
+const inputValue = ref('');
+const showSearchHistory = ref(false);
 
 // 模拟搜索历史
-const searchHistory = ref([
-  '周杰伦',
-  '五月天',
-  '陈奕迅',
-  'Taylor Swift'
-])
+const searchHistory = ref(['周杰伦', '五月天', '陈奕迅', 'Taylor Swift']);
 
 // 搜索提交
 const onSearchSubmit = () => {
   console.log('onSearchSubmit called, inputValue:', inputValue.value);
   if (inputValue.value) {
-    search(inputValue.value)
+    search(inputValue.value);
   }
-}
+};
 
 // 执行搜索
-const search = (keyword) => {
+const search = keyword => {
   // 导航到搜索页面并传递关键词
   router.push({
     name: 'Search',
-    query: { keyword: keyword }
-  })
+    query: { keyword: keyword },
+  });
   // 关闭搜索历史
-  showSearchHistory.value = false
-}
+  showSearchHistory.value = false;
+};
 const handleBlur = () => {
-  setTimeout(() => showSearchHistory.value = false, 200)
-}
+  setTimeout(() => (showSearchHistory.value = false), 200);
+};
 </script>
 
 <template>
@@ -54,7 +49,7 @@ const handleBlur = () => {
       <div class="logo">
         <LogoIcon alt="Logo" />
       </div>
-      
+
       <!-- 搜索框 -->
       <div id="header-search" class="header-search">
         <Input
@@ -69,15 +64,18 @@ const handleBlur = () => {
         <div class="search-submit" @click="onSearchSubmit">
           <MagnifyingGlassIcon alt="搜索" />
         </div>
-        
+
         <!-- 搜索历史 -->
         <div v-if="showSearchHistory && searchHistory.length" class="search-history">
           <div class="history-header">搜索历史</div>
-          <div 
-            v-for="(item, index) in searchHistory.value" 
+          <div
+            v-for="(item, index) in searchHistory.value"
             :key="index"
             class="history-item"
-            @click="search(item); inputValue.value = item"
+            @click="
+              search(item);
+              inputValue.value = item;
+            "
           >
             <ClockIcon alt="时钟" />
             <span>{{ item }}</span>
@@ -85,7 +83,7 @@ const handleBlur = () => {
         </div>
       </div>
     </div>
-    
+
     <div class="right-part">
       <!-- 功能按钮 -->
       <div class="header-button" title="主题">

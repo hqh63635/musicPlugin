@@ -81,7 +81,7 @@ const playAllSongs = () => {
 };
 
 // 添加到播放列表
-const addToPlaylist = (item) => {
+const addToPlaylist = item => {
   if (item) {
     musicStore.addToPlaylist(item, 0);
     message.success(`$(item.title)添加到播放列表`);

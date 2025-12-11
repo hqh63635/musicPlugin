@@ -1,21 +1,21 @@
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 // 导入SVG图标
-import CdIcon from '@/assets/icons/cd.svg'
-import HeartIcon from '@/assets/icons/heart.svg'
-import ClockIcon from '@/assets/icons/clock.svg'
-import FolderOpenIcon from '@/assets/icons/folder-open.svg'
-import ArrayDownloadTrayIcon from '@/assets/icons/array-download-tray.svg'
-import ListBulletIcon from '@/assets/icons/list-bullet.svg'
-import AlbumIcon from '@/assets/icons/album.svg'
-import UserIcon from '@/assets/icons/user.svg'
-import DocumentPlusIcon from '@/assets/icons/document-plus.svg'
-import IdentificationIcon from '@/assets/icons/identification.svg'
-import TrophyIcon from '@/assets/icons/trophy.svg'
+import CdIcon from '@/assets/icons/cd.svg';
+import HeartIcon from '@/assets/icons/heart.svg';
+import ClockIcon from '@/assets/icons/clock.svg';
+import FolderOpenIcon from '@/assets/icons/folder-open.svg';
+import ArrayDownloadTrayIcon from '@/assets/icons/array-download-tray.svg';
+import ListBulletIcon from '@/assets/icons/list-bullet.svg';
+import AlbumIcon from '@/assets/icons/album.svg';
+import UserIcon from '@/assets/icons/user.svg';
+import DocumentPlusIcon from '@/assets/icons/document-plus.svg';
+import IdentificationIcon from '@/assets/icons/identification.svg';
+import TrophyIcon from '@/assets/icons/trophy.svg';
 
-const router = useRouter()
+const router = useRouter();
 
 // 侧边栏导航项
 const navItems = ref([
@@ -28,26 +28,26 @@ const navItems = ref([
   { icon: ListBulletIcon, text: '我的歌单', path: '/playlist' },
   { icon: AlbumIcon, text: '专辑', path: '/album' },
   { icon: UserIcon, text: '歌手', path: '/artist' },
-])
+]);
 
 // 切换导航项
-const switchNavItem = (index) => {
-  const item = navItems.value[index]
+const switchNavItem = index => {
+  const item = navItems.value[index];
   if (item.path) {
-    router.push(item.path)
+    router.push(item.path);
   }
   navItems.value.forEach((navItem, i) => {
-    navItem.active = i === index
-  })
-}</script>
+    navItem.active = i === index;
+  });
+};
+</script>
 
 <template>
   <div class="sidebar-container">
-    
     <!-- 导航菜单 -->
     <div class="nav-menu">
-      <div 
-        v-for="(item, index) in navItems" 
+      <div
+        v-for="(item, index) in navItems"
         :key="index"
         class="nav-item"
         :class="{ active: item.active }"
@@ -59,13 +59,13 @@ const switchNavItem = (index) => {
         <div class="nav-text">{{ item.text }}</div>
       </div>
     </div>
-    
+
     <!-- 歌单列表 -->
     <div class="playlist-section">
       <div class="section-header">
-          <span>我的歌单</span>
-          <DocumentPlusIcon alt="添加" />
-        </div>
+        <span>我的歌单</span>
+        <DocumentPlusIcon alt="添加" />
+      </div>
       <div class="playlist-list">
         <div class="playlist-item">
           <div class="playlist-cover">
@@ -92,8 +92,6 @@ const switchNavItem = (index) => {
   overflow-y: auto;
   transition: width 0.3s;
 }
-
-
 
 /* 导航菜单 */
 .nav-menu {
@@ -240,7 +238,7 @@ const switchNavItem = (index) => {
   .sidebar-container {
     width: 80px;
   }
-  
+
   .user-name,
   .login-button,
   .nav-text,
@@ -248,28 +246,28 @@ const switchNavItem = (index) => {
   .playlist-info {
     display: none;
   }
-  
+
   .user-avatar {
     width: 40px;
     height: 40px;
     margin: 0 auto;
   }
-  
+
   .user-avatar svg {
     width: 24px;
     height: 24px;
   }
-  
+
   .nav-item {
     justify-content: center;
     padding: 12px 0;
   }
-  
+
   .playlist-item {
     justify-content: center;
     padding: 8px 0;
   }
-  
+
   .playlist-cover {
     width: 40px;
     height: 40px;

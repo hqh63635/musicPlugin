@@ -49,12 +49,12 @@ const playAll = () => {
 };
 
 // 播放歌曲
-const playSong = (song) => {
+const playSong = song => {
   musicStore.playSong(song);
 };
 
 // 从最近播放移除歌曲
-const removeSong = (song) => {
+const removeSong = song => {
   musicStore.removeFromRecent(song);
 };
 </script>
@@ -62,7 +62,7 @@ const removeSong = (song) => {
 <template>
   <div class="playlist-page">
     <div class="playlist-detail">
-      <SongList 
+      <SongList
         :listSongs="songList || []"
         :isEnd="isEnd"
         :currentPage="currentPage"
