@@ -1,4 +1,4 @@
-import { defineStore } from 'pinia';
+﻿import { defineStore } from 'pinia';
 import { ref, computed, watch } from 'vue';
 import api from '@/services/api.js';
 
@@ -37,6 +37,9 @@ export const useMusicStore = defineStore(
     const fullLyric = ref([]);
     // 当前歌词行索引
     const currentLyricIndex = ref(-1);
+
+    // 歌词抽屉状态
+    const showLyricDrawer = ref(true);
 
     // 格式化时间
     const formatTime = seconds => {
@@ -362,6 +365,11 @@ export const useMusicStore = defineStore(
       parseLyric(lyric);
     };
 
+    // 切换歌词抽屉状态
+    const toggleLyricDrawer = () => {
+      showLyricDrawer.value = !showLyricDrawer.value;
+    };
+
     return {
       // 状态
       currentSong,
@@ -378,6 +386,7 @@ export const useMusicStore = defineStore(
       parsedLrc,
       fullLyric,
       currentLyricIndex,
+      showLyricDrawer,
       addSongsToPlaylist,
       // 计算属性
       formatTime,
@@ -401,6 +410,7 @@ export const useMusicStore = defineStore(
       parseLyric,
       updateCurrentLyric,
       setLyric,
+      toggleLyricDrawer,
     };
   },
   {

@@ -25,8 +25,6 @@ const musicStore = useMusicStore();
 // 音频元素引用
 const audioRef = ref(null);
 
-// 播放列表抽屉状态
-const showPlaylistDrawer = ref(false);
 // 歌词抽屉状态
 const showLyricDrawer = ref(false);
 
@@ -134,6 +132,7 @@ const togglePlayMode = () => {
   musicStore.setPlayMode((musicStore.playMode + 1) % 3);
 };
 
+const showPlaylistDrawer = ref(false);
 // 切换播放列表抽屉
 const togglePlaylistDrawer = () => {
   showPlaylistDrawer.value = !showPlaylistDrawer.value;
@@ -141,7 +140,7 @@ const togglePlaylistDrawer = () => {
 
 // 切换歌词抽屉
 const toggleLyricDrawer = () => {
-  showLyricDrawer.value = !showLyricDrawer.value;
+  musicStore.toggleLyricDrawer();
 };
 
 // 播放列表表格列定义
@@ -295,20 +294,30 @@ const toggleFavorite = () => {
       <!-- 控制按钮 -->
       <div class="control-buttons">
         <!-- 播放模式 -->
-        <div class="control-button play-mode-button" @click="togglePlayMode">
+        <div
+          class="control-button play-mode-button"
+          @click="togglePlayMode"
+          :title="
+            musicStore.playMode === 0
+              ? '单曲循环'
+              : musicStore.playMode === 1
+                ? '列表循环'
+                : '随机播放'
+          "
+        >
           <component
             :is="
               musicStore.playMode === 0
-                ? repeatSongIcon
+                ? repeatSong1Icon
                 : musicStore.playMode === 1
-                  ? repeatSong1Icon
+                  ? repeatSongIcon
                   : shuffleIcon
             "
-            :alt="
+            :title="
               musicStore.playMode === 0
-                ? '列表循环'
+                ? '单曲循环'
                 : musicStore.playMode === 1
-                  ? '单曲循环'
+                  ? '列表循环'
                   : '随机播放'
             "
           />
@@ -350,10 +359,18 @@ const toggleFavorite = () => {
         :step="1"
         class="volume-slider"
       />
-      <div class="control-button" @click="toggleLyricDrawer">
+      <div
+        class="control-button lyric-button"
+        :class="{ active: musicStore.showLyricDrawer }"
+        @click="toggleLyricDrawer"
+      >
         <component :is="lyricIcon" :alt="'歌词'" />
       </div>
-      <div class="control-button" @click="toggleFavorite">
+      <div
+        class="control-button favorite-button"
+        :class="{ active: musicStore.currentSong?.isFavorite }"
+        @click="toggleFavorite"
+      >
         <component
           :is="musicStore.currentSong?.isFavorite ? heartFilledIcon : heartOutlineIcon"
           :alt="musicStore.currentSong?.isFavorite ? '已喜欢' : '喜欢'"
@@ -393,25 +410,13 @@ const toggleFavorite = () => {
       </div>
     </div>
   </a-drawer>
-
-  <!-- 歌词抽屉 -->
-  <a-drawer
-    v-model:open="showLyricDrawer"
-    :title="musicStore?.currentSong?.title || '歌词'"
-    placement="right"
-    size="large"
-    rootClassName="playlist-drawer lyric-drawer"
-  >
-    <div class="lyric-drawer-container">
-      <Lyric />
-    </div>
-  </a-drawer>
 </template>
 
 <style scoped>
 .lyric-music-info {
   text-align: center;
 }
+
 .lyric-music-cover {
   display: inline-block;
   width: 80px;
@@ -419,9 +424,11 @@ const toggleFavorite = () => {
   border-radius: 4px;
   overflow: hidden;
 }
+
 :deep(.playing-row) {
   background-color: #f5f5dc !important;
 }
+
 .music-bar-container {
   display: flex;
   align-items: center;
@@ -564,6 +571,19 @@ const toggleFavorite = () => {
   transition: opacity 0.3s;
   display: block;
   margin: auto;
+}
+
+.control-button.active svg {
+  color: #1890ff;
+  opacity: 1;
+}
+.control-button.lyric-button svg {
+  width: 24px;
+  height: 24px;
+}
+
+.favorite-button.active svg {
+  color: #ff4d4f;
 }
 
 .play-mode-button svg {
@@ -769,6 +789,7 @@ const toggleFavorite = () => {
 .playlist-list {
   padding: 0 0;
 }
+
 .table-striped {
   background-color: #f9f9f9;
 }

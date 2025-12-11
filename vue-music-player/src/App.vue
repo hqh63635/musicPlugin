@@ -3,8 +3,11 @@
 import Header from './components/Header.vue';
 import MusicBar from './components/MusicBar.vue';
 import SideBar from './components/SideBar.vue';
-import MusicDetail from './components/MusicDetail.vue';
 import Lyric from './components/Lyric.vue';
+import { useMusicStore } from './store/music.js';
+
+// 使用音乐store
+const musicStore = useMusicStore();
 </script>
 
 <template>
@@ -14,7 +17,7 @@ import Lyric from './components/Lyric.vue';
       <SideBar />
       <router-view class="main-content" />
       <!-- <Panel /> -->
-      <div class="lyric-container-box">
+      <div class="lyric-container-box" v-if="musicStore.showLyricDrawer">
         <Lyric />
       </div>
     </div>
