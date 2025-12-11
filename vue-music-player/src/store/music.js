@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import api from '@/services/api.js';
 
 export const useMusicStore = defineStore(
@@ -29,8 +29,10 @@ export const useMusicStore = defineStore(
     // 当前播放索引
     const currentIndex = ref(-1);
     // 当前播放的音频元素
-    const audioElement = ref(null);
-    // 解析后的当前歌词行
+    // 音频元素
+    const audioElement = ref(new Audio());
+
+    // 当前播放歌曲
     const parsedLrc = ref(null);
     // 完整歌词数组
     const fullLyric = ref([]);
@@ -114,6 +116,20 @@ export const useMusicStore = defineStore(
       if (!song) return;
 
       currentSong.value = song;
+      audioElement.value.src = song.url;
+      audioElement.value.load();
+      audioElement.value
+        .play()
+        .then(() => {
+          isPlaying.value = true;
+        })
+        .catch(err => {
+          console.error('播放失败:', err);
+        });
+      // 添加timeupdate事件监听以更新播放时间
+      audioElement.value.addEventListener('timeupdate', () => {
+        updateCurrentTime(audioElement.value.currentTime);
+      });
       // 更新页面标题为当前歌曲名
       document.title = `${song.title} - 音乐播放器`;
       const existingIndex = playlist.value.findIndex(item => item.id === song.id);
@@ -205,6 +221,14 @@ export const useMusicStore = defineStore(
       currentTime.value = time;
     };
 
+    // 添加currentTime监听以更新歌词索引
+    watch(
+      () => currentTime.value,
+      newTime => {
+        updateCurrentLyric(newTime);
+      }
+    );
+
     // 更新总时长
     const updateTotalTime = time => {
       totalTime.value = time;
@@ -230,7 +254,7 @@ export const useMusicStore = defineStore(
     };
 
     // 解析歌词
-    const parseLyric = (lrcText) => {
+    const parseLyric = lrcText => {
       if (!lrcText) {
         fullLyric.value = [];
         parsedLrc.value = null;
@@ -274,7 +298,7 @@ export const useMusicStore = defineStore(
     };
 
     // 更新当前歌词
-    const updateCurrentLyric = (currentTime) => {
+    const updateCurrentLyric = currentTime => {
       if (!fullLyric.value.length) {
         parsedLrc.value = null;
         currentLyricIndex.value = -1;
@@ -295,7 +319,7 @@ export const useMusicStore = defineStore(
     };
 
     // 设置歌词
-    const setLyric = (lyric) => {
+    const setLyric = lyric => {
       parseLyric(lyric);
     };
 
