@@ -105,3 +105,38 @@ th {
 .lyric-drawer .ant-drawer-header {
   display: none;
 }
+
+.category-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  left: 20px;
+}
+
+/* 让每个 a-radio-button 变成独立按钮，而不是连在一起 */
+.category-nav .ant-radio-button-wrapper {
+  width: 60px;
+  text-align: center;
+  margin: 0 !important;
+  border-radius: 6px !important;
+  border: 1px solid #d9d9d9 !important;
+}
+
+/* 选中状态（solid风格） */
+.category-nav .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+  background: #1677ff !important;
+  border-color: #1677ff !important;
+  color: white !important;
+}
+
+/* hover */
+.category-nav .ant-radio-button-wrapper:hover {
+  color: #1677ff !important;
+  border-color: #1677ff !important;
+}
+.category-nav .ant-radio-button-wrapper:not(:first-child)::before {
+  display: none;
+}

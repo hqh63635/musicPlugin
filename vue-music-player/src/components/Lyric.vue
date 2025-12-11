@@ -1,23 +1,20 @@
 <template>
   <div class="lyric-container">
-    <!-- <div class="lyric-music-info">
-      <div class="lyric-music-cover">
-        <img :src="musicStore?.currentSong?.artwork || ''" alt="封面" />
-      </div>
-
-      <p>{{ musicStore?.currentSong?.title || '未知标题' }}</p>
-      <p>{{ musicStore?.currentSong?.artist || '未知歌手' }}</p>
-      <p>{{ musicStore?.currentSong?.album || '未知专辑' }}</p>
-    </div> -->
     <div
       class="lyric-scroll-container"
       ref="scrollContainer"
-      :style="{
-        backgroundImage: `url(${musicStore?.currentSong?.artwork || ''})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-      }"
+      :style="
+        musicStore?.currentSong?.artwork
+          ? {
+              backgroundImage: `url(${musicStore.currentSong.artwork})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+            }
+          : {
+              backgroundColor: 'rgb(163, 198, 207)',
+            }
+      "
     >
       <div class="lyric-list">
         <div
@@ -91,7 +88,7 @@ watch(
 .lyric-scroll-container {
   width: 100%;
   height: 100%;
-  overflow: auto;
+  overflow: hidden;
   padding: 20px 0;
   background-size: cover;
   border-radius: 12px;

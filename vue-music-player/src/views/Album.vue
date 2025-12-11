@@ -155,21 +155,16 @@ const goToArtistDetail = singer => {
 <template>
   <div class="artist-page">
     <div class="artist-page-container">
-      <!-- 分类视图 -->
-      <div class="page-header">
-        <h2>歌手分类</h2>
-      </div>
-
       <!-- A-Z分类导航 -->
-      <a-radio-group v-model:value="selectedCategory" class="category-nav" @change="changeCategory">
-        <a-radio
-          v-for="category in categories"
-          :key="category.id"
-          :value="category.id"
-          class="category-item"
-        >
+      <a-radio-group
+        v-model:value="selectedCategory"
+        button-style="solid"
+        class="category-nav"
+        @change="changeCategory"
+      >
+        <a-radio-button v-for="category in categories" :key="category.id" :value="category.id">
           {{ category.name }}
-        </a-radio>
+        </a-radio-button>
       </a-radio-group>
 
       <!-- 歌手列表 -->
@@ -193,6 +188,7 @@ const goToArtistDetail = singer => {
 
 <style scoped>
 .artist-page {
+  position: relative;
   padding: 12px;
   color: #333;
   border-radius: 4px;
@@ -483,9 +479,9 @@ const goToArtistDetail = singer => {
 .category-nav {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px 12px;
+  gap: 8px;
   padding: 16px;
-  background-color: #f5f5f5;
+  background-color: rgba(245, 245, 245, 0.8);
   border-radius: 8px;
   margin-bottom: 24px;
 }
@@ -543,7 +539,7 @@ const goToArtistDetail = singer => {
 }
 .artist-page-container {
   height: 100%;
-  padding: 12px;
+  padding: 118px 12px 12px;
   background-color: #fff;
   overflow: auto;
 }
