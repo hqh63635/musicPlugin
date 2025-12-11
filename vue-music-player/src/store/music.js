@@ -31,7 +31,6 @@ export const useMusicStore = defineStore(
     // 当前播放的音频元素
     // 音频元素
     const audioElement = ref(new Audio());
-
     // 当前播放歌曲
     const parsedLrc = ref(null);
     // 完整歌词数组
@@ -81,7 +80,14 @@ export const useMusicStore = defineStore(
     const addToPlaylist = song => {
       const existingIndex = playlist.value.findIndex(item => item.id === song.id);
       if (existingIndex === -1) {
-        playlist.value.push(song);
+        playlist.value.push({
+          ...song,
+          playTime: new Date().toISOString(),
+          isFavorite: false,
+        });
+      } else {
+        // 更新已存在歌曲的播放时间
+        playlist.value[existingIndex].playTime = new Date().toISOString();
       }
     };
 
@@ -90,24 +96,44 @@ export const useMusicStore = defineStore(
       if (!Array.isArray(songs)) return;
 
       // 先过滤输入数组中的重复歌曲
-      const uniqueSongs = Array.from(new Map(songs.map(song => [song.id, song])).values());
+      const uniqueSongs = Array.from(
+        new Map(
+          songs.map(song => [
+            song.id,
+            {
+              ...song,
+              playTime: new Date().toISOString(),
+              isFavorite: false,
+            },
+          ])
+        ).values()
+      );
 
       // 再检查播放列表中是否已存在，不存在则添加
       uniqueSongs.forEach(song => {
         const existingIndex = playlist.value.findIndex(item => item.id === song.id);
         if (existingIndex === -1) {
           playlist.value.push(song);
+        } else {
+          // 更新已存在歌曲的播放时间
+          playlist.value[existingIndex].playTime = new Date().toISOString();
         }
       });
     };
 
     // 设置播放列表
     const setPlaylist = (songs, playIndex = 0) => {
-      playlist.value = songs;
+      // 为每个歌曲添加playTime和isFavorite属性
+      const songsWithMeta = songs.map(song => ({
+        ...song,
+        playTime: new Date().toISOString(),
+        isFavorite: false,
+      }));
+      playlist.value = songsWithMeta;
       currentIndex.value = playIndex;
-      if (playIndex >= 0 && playIndex < songs.length) {
-        currentSong.value = songs[playIndex];
-        playSong(songs[playIndex]);
+      if (playIndex >= 0 && playIndex < songsWithMeta.length) {
+        currentSong.value = songsWithMeta[playIndex];
+        playSong(songsWithMeta[playIndex]);
       }
     };
 
@@ -120,6 +146,8 @@ export const useMusicStore = defineStore(
       currentLyricIndex.value = -1;
 
       currentSong.value = song;
+      // 更新播放时间
+      song.playTime = new Date().toISOString();
       audioElement.value.src = song.url;
       audioElement.value.load();
 
@@ -145,14 +173,11 @@ export const useMusicStore = defineStore(
         updateCurrentTime(audioElement.value.currentTime);
       });
       // 更新页面标题为当前歌曲名
-      document.title = `${song.title} - 音乐播放器`;
+      document.title = `${song.title} - ${song.artist}`;
+      // 使用addToPlaylist添加歌曲，确保playTime和isFavorite属性正确设置
+      addToPlaylist(song);
       const existingIndex = playlist.value.findIndex(item => item.id === song.id);
-      if (existingIndex !== -1) {
-        currentIndex.value = existingIndex;
-      } else {
-        playlist.value.push(song);
-        currentIndex.value = playlist.value.length - 1;
-      }
+      currentIndex.value = existingIndex;
 
       try {
         // 获取当前音质设置

@@ -155,17 +155,22 @@ const goToArtistDetail = singer => {
 <template>
   <div class="artist-page">
     <div class=artist-page-container>
-      <!-- 分类视图 -->
-    <div class="page-header">
-      <h2>歌手分类</h2>
-    </div>
-
     <!-- A-Z分类导航 -->
-     <a-radio-group v-model:value="selectedCategory" class="category-nav" @change="changeCategory">
-       <a-radio v-for="category in categories" :key="category.id" :value="category.id" class="category-item">
-         {{ category.name }}
-       </a-radio>
-     </a-radio-group>
+    <a-radio-group
+  v-model:value="selectedCategory"
+  class="category-nav"
+  @change="changeCategory"
+>
+  <a-radio
+    v-for="category in categories"
+    :key="category.id"
+    :value="category.id"
+    class="category-item"
+  >
+    {{ category.name }}
+  </a-radio>
+</a-radio-group>
+
 
     <!-- 歌手列表 -->
     <div class="singer-grid">

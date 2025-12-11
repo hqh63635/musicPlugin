@@ -23,7 +23,7 @@ const navItems = ref([
   // { icon: CdIcon, text: '我的音乐', active: true, path: '/' },
   { icon: HeartIcon, text: '我喜欢的音乐', path: '/favorite' },
   { icon: ClockIcon, text: '最近播放', path: '/recent' },
-  { icon: FolderOpenIcon, text: '本地音乐', path: '/local' },
+  // { icon: FolderOpenIcon, text: '本地音乐', path: '/local' },
   { icon: ArrayDownloadTrayIcon, text: '下载管理', path: '/download' },
   { icon: ListBulletIcon, text: '我的歌单', path: '/playlist' },
   { icon: AlbumIcon, text: '专辑', path: '/album' },

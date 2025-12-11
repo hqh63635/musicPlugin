@@ -9,6 +9,9 @@ import ArtistDetail from '../views/ArtistDetail.vue';
 const Album = () => import('../views/Album.vue');
 const Search = () => import('../views/Search.vue');
 const Playlist = () => import('../views/Playlist.vue');
+const RecentPlay = () => import('../views/RecentPlay.vue');
+const Download = () => import('../views/Download.vue');
+const FavoriteList = () => import('../views/FavoriteList.vue');
 
 // 创建路由实例
 const router = createRouter({
@@ -53,6 +56,21 @@ const router = createRouter({
       path: '/playlist',
       name: 'Playlist',
       component: Playlist,
+    },
+    {
+      path: '/recent',
+      name: 'Recent',
+      component: RecentPlay,
+    },
+    {
+      path: '/download',
+      name: 'Download',
+      component: Download,
+    },
+    {
+      path: '/favorite',
+      name: 'FavoriteList',
+      component: FavoriteList,
     },
   ],
 });

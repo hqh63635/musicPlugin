@@ -14,9 +14,11 @@ import speakerXMarkIcon from '@/assets/icons/speaker-x-mark.svg';
 import speakerWaveIcon from '@/assets/icons/speaker-wave.svg';
 import lyricIcon from '@/assets/icons/lyric.svg';
 import heartOutlineIcon from '@/assets/icons/heart-outline.svg';
+import heartFilledIcon from '@/assets/icons/heart.svg';
 import listBulletIcon from '@/assets/icons/list-bullet.svg';
 import { PlayCircleOutlined, DeleteOutlined, PauseCircleOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
+
 
 // 使用音乐store
 const musicStore = useMusicStore();
@@ -225,6 +227,21 @@ const removeSong = (record, index) => {
 const displayText = computed(() => {
   return musicStore.fullLyric[musicStore.currentLyricIndex] || '暂无歌词';
 });
+// 切换收藏状态
+const toggleFavorite = () => {
+  if (!musicStore.currentSong) return;
+
+  // 切换当前歌曲收藏状态
+  musicStore.currentSong.isFavorite = !musicStore.currentSong.isFavorite;
+
+  // 更新播放列表中对应歌曲的收藏状态
+  const index = musicStore.playlist.findIndex(item => item.id === musicStore.currentSong.id);
+  if (index !== -1) {
+    musicStore.playlist[index].isFavorite = musicStore.currentSong.isFavorite;
+  }
+
+  message.success(musicStore.currentSong.isFavorite ? '收藏成功' : '取消收藏');
+};
 </script>
 
 <template>
@@ -337,8 +354,11 @@ const displayText = computed(() => {
       <div class="control-button" @click="toggleLyricDrawer">
         <component :is="lyricIcon" :alt="'歌词'" />
       </div>
-      <div class="control-button">
-        <component :is="heartOutlineIcon" :alt="'喜欢'" />
+      <div class="control-button" @click="toggleFavorite">
+        <component
+          :is="musicStore.currentSong?.isFavorite ? heartFilledIcon : heartOutlineIcon"
+          :alt="musicStore.currentSong?.isFavorite ? '已喜欢' : '喜欢'"
+        />
       </div>
       <div class="control-button" @click="togglePlaylistDrawer">
         <component :is="listBulletIcon" :alt="'播放列表'" />
