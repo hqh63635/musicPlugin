@@ -402,7 +402,7 @@ const displayText = computed(() => {
   height: 80px;
   padding: 0 20px;
   background-color: #ffffff;
-  border-top: 1px solid #8d8888;
+  border-top: 1px solid #e5e5e5;
   gap: 20px;
 }
 
