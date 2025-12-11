@@ -375,6 +375,7 @@ const removeSong = (record, index) => {
   <!-- 歌词抽屉 -->
   <a-drawer
     v-model:open="showLyricDrawer"
+    v-if="showLyricDrawer"
     title="歌词"
     placement="right"
     size="large"

@@ -115,9 +115,23 @@ export const useMusicStore = defineStore(
     const playSong = async song => {
       if (!song) return;
 
+      // 重置歌词状态
+      setLyric('');
+      currentLyricIndex.value = -1;
+
       currentSong.value = song;
       audioElement.value.src = song.url;
       audioElement.value.load();
+
+      // 获取并设置新歌词
+      try {
+        const lyricResult = await api.getLyric(song);
+        setLyric(lyricResult.lyric || '');
+      } catch (error) {
+        console.error('获取歌词失败:', error);
+        setLyric('');
+      }
+
       audioElement.value
         .play()
         .then(() => {
