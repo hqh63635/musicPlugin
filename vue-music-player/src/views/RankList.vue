@@ -24,7 +24,12 @@ const isEnd = ref(false);
 onMounted(() => {
   fetchTopLists();
 });
-
+// 切换排行榜
+const selectList = list => {
+  selectedList.value = list;
+  fetchListDetail(list);
+  listSongs.value = list.song || [];
+};
 // 获取排行榜列表
 const fetchTopLists = async () => {
   try {
@@ -33,6 +38,7 @@ const fetchTopLists = async () => {
 
     if (result) {
       topLists.value = result;
+      selectList(result?.[0].data?.[0]);
     }
   } catch (error) {
     console.error('获取排行榜列表失败:', error);
@@ -56,13 +62,6 @@ const fetchListDetail = async list => {
   } finally {
     loading.value = false;
   }
-};
-
-// 切换排行榜
-const selectList = list => {
-  selectedList.value = list;
-  fetchListDetail(list);
-  listSongs.value = list.song || [];
 };
 
 // 播放歌曲

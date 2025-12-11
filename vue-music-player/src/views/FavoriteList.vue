@@ -6,6 +6,8 @@ import { useMusicStore } from '../store/music.js';
 import SongList from '../components/SongList.vue';
 import { DeleteOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
+import heartOutlineIcon from '@/assets/icons/heart-outline.svg';
+import heartFilledIcon from '@/assets/icons/heart.svg';
 
 const route = useRoute();
 const musicStore = useMusicStore();
@@ -101,8 +103,13 @@ const removeSong = song => {
         :currentPage="currentPage"
         @pageChange="handlePageChange"
         :isShowAdd="false"
-        :isShowDelete="true"
-      >
+        :isShowDelete="false"
+        ><div class="control-button" @click="toggleFavorite">
+          <component
+            :is="musicStore.currentSong?.isFavorite ? heartFilledIcon : heartOutlineIcon"
+            :alt="musicStore.currentSong?.isFavorite ? '已喜欢' : '喜欢'"
+          />
+        </div>
       </SongList>
     </div>
   </div>
