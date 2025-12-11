@@ -188,9 +188,27 @@ export async function getLyric(song) {
     try {
       const result = await plugin.getLyric(normalizedSong);
       console.log('plugin.getLyric返回结果:', result);
-      return result;
+      
+      // 验证返回结果的格式是否正确
+      if (result && typeof result === 'object') {
+        // 确保lyric属性存在且为字符串
+        if (typeof result.lyric !== 'string') {
+          console.warn('plugin.getLyric返回的lyric不是字符串:', result.lyric);
+          // 如果lyric不是字符串，尝试转换为字符串或返回null
+          result.lyric = String(result.lyric || '');
+        }
+        return result;
+      }
+      
+      console.warn('plugin.getLyric返回的结果不是有效的对象:', result);
+      return null;
     } catch (pluginError) {
       console.error('调用plugin.getLyric时发生错误:', pluginError);
+      
+      // 详细记录错误信息，帮助调试
+      console.error('错误堆栈:', pluginError.stack);
+      
+      // 返回null，让调用方处理错误
       return null;
     }
   } catch (error) {

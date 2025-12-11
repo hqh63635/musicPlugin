@@ -80,3 +80,14 @@ th {
 .ant-spin-container {
   height: 100%;
 }
+.playlist-drawer .ant-table-wrapper .ant-table-tbody > tr.ant-table-row:hover > td {
+  background: #f5f5dc !important;
+}
+
+.playlist-drawer .ant-drawer-body {
+  padding: 0 !important;
+}
+
+.playlist-drawer .ant-drawer-header {
+  padding: 8px 12px !important;
+}

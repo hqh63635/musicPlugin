@@ -4,7 +4,7 @@ import api from '../services/api.js';
 import { useMusicStore } from '../store/music.js';
 import playIcon from '@/assets/icons/play.svg?url';
 import plusIcon from '@/assets/icons/plus.svg?url';
-import { PlayCircleOutlined } from '@ant-design/icons-vue';
+import { PlayCircleOutlined, PlusCircleOutlined } from '@ant-design/icons-vue';
 import SongList from '../components/SongList.vue';
 
 const musicStore = useMusicStore();
@@ -151,9 +151,12 @@ const formatNumber = value => {
         <!-- 歌曲列表 -->
         <SongList
           :listSongs="listSongs"
-          :isEnd="isEnd"
           :currentPage="currentPage"
-        />
+          :isShowAdd="true"
+          :isShowDelete="false"
+        >
+        </SongList>
+        
       </div>
 
       <!-- 未选择排行榜提示 -->

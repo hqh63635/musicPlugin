@@ -1,19 +1,22 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from "vue";
-import { useMusicStore } from "@/store/music.js";
-import albumCover from "@/assets/imgs/album-cover.jpg";
-import repeatSongIcon from "@/assets/icons/repeat-song.svg";
-import repeatSong1Icon from "@/assets/icons/repeat-song-1.svg";
-import shuffleIcon from "@/assets/icons/shuffle.svg";
-import skipLeftIcon from "@/assets/icons/skip-left.svg";
-import playIcon from "@/assets/icons/play.svg";
-import pauseIcon from "@/assets/icons/pause.svg";
-import skipRightIcon from "@/assets/icons/skip-right.svg";
-import speakerXMarkIcon from "@/assets/icons/speaker-x-mark.svg";
-import speakerWaveIcon from "@/assets/icons/speaker-wave.svg";
-import lyricIcon from "@/assets/icons/lyric.svg";
-import heartOutlineIcon from "@/assets/icons/heart-outline.svg";
-import listBulletIcon from "@/assets/icons/list-bullet.svg";
+import { ref, onMounted, onBeforeUnmount, h } from 'vue';
+import { useMusicStore } from '@/store/music.js';
+import albumCover from '@/assets/imgs/album-cover.jpg';
+import Lyric from './Lyric.vue';
+import repeatSongIcon from '@/assets/icons/repeat-song.svg';
+import repeatSong1Icon from '@/assets/icons/repeat-song-1.svg';
+import shuffleIcon from '@/assets/icons/shuffle.svg';
+import skipLeftIcon from '@/assets/icons/skip-left.svg';
+import playIcon from '@/assets/icons/play.svg';
+import pauseIcon from '@/assets/icons/pause.svg';
+import skipRightIcon from '@/assets/icons/skip-right.svg';
+import speakerXMarkIcon from '@/assets/icons/speaker-x-mark.svg';
+import speakerWaveIcon from '@/assets/icons/speaker-wave.svg';
+import lyricIcon from '@/assets/icons/lyric.svg';
+import heartOutlineIcon from '@/assets/icons/heart-outline.svg';
+import listBulletIcon from '@/assets/icons/list-bullet.svg';
+import { PlayCircleOutlined, DeleteOutlined, PauseCircleOutlined } from '@ant-design/icons-vue';
+import { message } from 'ant-design-vue';
 
 // 使用音乐store
 const musicStore = useMusicStore();
@@ -21,28 +24,33 @@ const musicStore = useMusicStore();
 // 音频元素引用
 const audioRef = ref(null);
 
+// 播放列表抽屉状态
+const showPlaylistDrawer = ref(false);
+// 歌词抽屉状态
+const showLyricDrawer = ref(false);
+
 // 组件挂载时初始化
 onMounted(() => {
   // 设置音频元素
   musicStore.setAudioElement(audioRef.value);
   // 绑定事件监听
-  audioRef.value.addEventListener("timeupdate", handleTimeUpdate);
-  audioRef.value.addEventListener("loadedmetadata", handleLoadedMetadata);
-  audioRef.value.addEventListener("ended", handleEnded);
+  audioRef.value.addEventListener('timeupdate', handleTimeUpdate);
+  audioRef.value.addEventListener('loadedmetadata', handleLoadedMetadata);
+  audioRef.value.addEventListener('ended', handleEnded);
 
   // 初始化歌曲信息
   if (!musicStore.currentSong) {
     musicStore.playSong({
-    id: 102340965,
-    songmid: '004Yi5BD3ksoAN',
-    title: '蒲公英的约定',
-    artist: '周杰伦',
-    artwork: 'https://y.gtimg.cn/music/photo_new/T002R800x800M000002eFUFm2XYZ7z.jpg',
-    album: '我很忙',
-    lrc: undefined,
-    albumid: 33021,
-    albummid: '002eFUFm2XYZ7z'
-  });
+      id: 102340965,
+      songmid: '004Yi5BD3ksoAN',
+      title: '蒲公英的约定',
+      artist: '周杰伦',
+      artwork: 'https://y.gtimg.cn/music/photo_new/T002R800x800M000002eFUFm2XYZ7z.jpg',
+      album: '我很忙',
+      lrc: undefined,
+      albumid: 33021,
+      albummid: '002eFUFm2XYZ7z',
+    });
   } else {
     musicStore.playSong(musicStore.currentSong);
   }
@@ -53,9 +61,9 @@ onMounted(() => {
 onBeforeUnmount(() => {
   // 移除事件监听
   if (audioRef.value) {
-    audioRef.value.removeEventListener("timeupdate", handleTimeUpdate);
-    audioRef.value.removeEventListener("loadedmetadata", handleLoadedMetadata);
-    audioRef.value.removeEventListener("ended", handleEnded);
+    audioRef.value.removeEventListener('timeupdate', handleTimeUpdate);
+    audioRef.value.removeEventListener('loadedmetadata', handleLoadedMetadata);
+    audioRef.value.removeEventListener('ended', handleEnded);
   }
 });
 
@@ -75,7 +83,7 @@ const handleEnded = () => {
 };
 
 // 格式化时间
-const formatTime = (seconds) => {
+const formatTime = seconds => {
   return musicStore.formatTime(seconds);
 };
 
@@ -100,12 +108,12 @@ const toggleMute = () => {
 };
 
 // 调整音量
-const handleVolumeChange = (value) => {
+const handleVolumeChange = value => {
   musicStore.setVolume(value);
 };
 
 // 根据点击位置调整音量
-const adjustVolumeFromClick = (event) => {
+const adjustVolumeFromClick = event => {
   const rect = event.currentTarget.getBoundingClientRect();
   const clickX = event.clientX - rect.left;
   const volumePercentage = (clickX / rect.width) * 100;
@@ -113,7 +121,7 @@ const adjustVolumeFromClick = (event) => {
 };
 
 // 调整播放进度
-const adjustProgress = (event) => {
+const adjustProgress = event => {
   const rect = event.currentTarget.getBoundingClientRect();
   const clickX = event.clientX - rect.left;
   const percentage = (clickX / rect.width) * 100;
@@ -124,12 +132,104 @@ const adjustProgress = (event) => {
 const togglePlayMode = () => {
   musicStore.setPlayMode((musicStore.playMode + 1) % 3);
 };
+
+// 切换播放列表抽屉
+const togglePlaylistDrawer = () => {
+  showPlaylistDrawer.value = !showPlaylistDrawer.value;
+};
+
+// 切换歌词抽屉
+const toggleLyricDrawer = () => {
+  showLyricDrawer.value = !showLyricDrawer.value;
+};
+
+// 播放列表表格列定义
+const columns = [
+  {
+    title: '序号',
+    dataIndex: 'index',
+    width: 60,
+    align: 'center',
+    customRender: ({ index }) => index + 1,
+  },
+  {
+    title: '歌曲',
+    dataIndex: 'title',
+    ellipsis: true,
+    customRender: ({ record }) => {
+      return record.title || '未知歌曲';
+    },
+  },
+  {
+    title: '歌手',
+    dataIndex: 'title',
+    ellipsis: true,
+    customRender: ({ record }) => {
+      return record.artist || '未知歌手';
+    },
+  },
+  {
+    title: '专辑',
+    dataIndex: 'album',
+    ellipsis: true,
+  },
+  {
+    title: '操作',
+    dataIndex: 'operation',
+    width: 120,
+    align: 'center',
+    customRender: ({ record, index }) => {
+      const isPlaying = record.id === musicStore.currentSong.id;
+
+      return h(
+        'div',
+        {
+          style: 'display:flex; justify-content:center; gap:12px; cursor:pointer;',
+        },
+        [
+          // ▶️ / ⏸ 播放 / 暂停
+          h(isPlaying ? PauseCircleOutlined : PlayCircleOutlined, {
+            style: `font-size:20px; color:${isPlaying ? '#52c41a' : '#1677ff'};`,
+            onClick: () => musicStore.playSong(record, index),
+          }),
+
+          // ❌ 删除
+          h(DeleteOutlined, {
+            style: 'font-size:20px; color:#ff4d4f;',
+            onClick: () => musicStore.removeSong(record),
+          }),
+        ]
+      );
+    },
+  },
+];
+
+// 播放歌曲
+const playSong = item => {
+  const index = musicStore.playlist.findIndex(song => song.id === item.id);
+  musicStore.setCurrentSong(item, index);
+};
+
+// 添加到播放列表
+const addToPlaylist = item => {
+  musicStore.addToPlaylist(item);
+};
+const rowClassName = record => {
+  return record.id === musicStore.currentSong.id ? 'playing-row' : '';
+};
+const removeSong = (record, index) => {
+  musicStore.removeSong(record, index);
+  message.success('移除成功');
+};
 </script>
 
 <template>
   <div class="music-bar-container">
     <!-- 音频元素 -->
-    <audio ref="audioRef" src="https://lv-sycdn.kuwo.cn/27602873ff00ab3b26d7bf4f2bf61417/6936f511/resource/30106/trackmedia/M800004Yi5BD3ksoAN.mp3"/>
+    <audio
+      ref="audioRef"
+      src="https://lv-sycdn.kuwo.cn/27602873ff00ab3b26d7bf4f2bf61417/6936f511/resource/30106/trackmedia/M800004Yi5BD3ksoAN.mp3"
+    />
 
     <!-- 当前播放歌曲信息 -->
     <div class="music-info">
@@ -141,10 +241,10 @@ const togglePlayMode = () => {
       </div>
       <div class="music-details">
         <div class="music-name">
-          {{ musicStore?.currentSong?.title || "未知歌曲" }}
+          {{ musicStore?.currentSong?.title || '未知歌曲' }}
         </div>
         <div class="music-artist">
-          {{ musicStore?.currentSong?.artist || "未知歌手" }}
+          {{ musicStore?.currentSong?.artist || '未知歌手' }}
         </div>
       </div>
     </div>
@@ -219,11 +319,7 @@ const togglePlayMode = () => {
     <div class="volume-control">
       <div class="control-button" @click="toggleMute">
         <component
-          :is="
-            musicStore.isMuted || musicStore.volume === 0
-              ? speakerXMarkIcon
-              : speakerWaveIcon
-          "
+          :is="musicStore.isMuted || musicStore.volume === 0 ? speakerXMarkIcon : speakerWaveIcon"
           :alt="musicStore.isMuted ? '静音' : '音量'"
         />
       </div>
@@ -235,20 +331,65 @@ const togglePlayMode = () => {
         :step="1"
         class="volume-slider"
       />
-      <div class="control-button">
+      <div class="control-button" @click="toggleLyricDrawer">
         <component :is="lyricIcon" :alt="'歌词'" />
       </div>
       <div class="control-button">
         <component :is="heartOutlineIcon" :alt="'喜欢'" />
       </div>
-      <div class="control-button">
+      <div class="control-button" @click="togglePlaylistDrawer">
         <component :is="listBulletIcon" :alt="'播放列表'" />
       </div>
     </div>
   </div>
+
+  <!-- 播放列表抽屉 -->
+  <a-drawer
+    v-model:open="showPlaylistDrawer"
+    title="播放列表"
+    placement="right"
+    size="large"
+    rootClassName="playlist-drawer"
+  >
+    <div class="playlist-container">
+      <div class="playlist-list">
+        <a-table
+          class="ant-table-striped"
+          size="middle"
+          :columns="columns"
+          :data-source="musicStore.playlist"
+          row-key="id"
+          :pagination="false"
+          :scroll="{ y: 'calc(100vh - 120px)' }"
+          :rowClassName="rowClassName"
+          virtual
+        />
+
+        <div v-if="!musicStore.playlist || musicStore.playlist.length === 0" class="playlist-empty">
+          播放列表为空
+        </div>
+      </div>
+    </div>
+  </a-drawer>
+
+  <!-- 歌词抽屉 -->
+  <a-drawer
+    v-model:open="showLyricDrawer"
+    title="歌词"
+    placement="right"
+    size="large"
+    rootClassName="playlist-drawer"
+  >
+    <div class="lyric-drawer-container">
+      <Lyric />
+    </div>
+  </a-drawer>
 </template>
 
 <style scoped>
+:deep(.playing-row) {
+  background-color: #f5f5dc !important;
+}
 .music-bar-container {
   display: flex;
   align-items: center;
@@ -256,7 +397,7 @@ const togglePlayMode = () => {
   height: 80px;
   padding: 0 20px;
   background-color: #ffffff;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid #8d8888;
   gap: 20px;
 }
 
@@ -585,5 +726,132 @@ const togglePlayMode = () => {
   .volume-control .control-button:nth-child(5) {
     display: none;
   }
+}
+
+/* 播放列表抽屉样式 */
+.playlist-container {
+  height: 100%;
+  overflow-y: auto;
+}
+
+.playlist-list {
+  padding: 0 0;
+}
+.table-striped {
+  background-color: #f9f9f9;
+}
+
+.song-info {
+  min-width: 0;
+}
+
+.song-name {
+  font-size: 14px;
+  color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.song-artist {
+  font-size: 12px;
+  color: #999;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.playlist-item-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.playlist-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  font-size: 14px;
+  color: #999;
+}
+
+.playlist-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.playlist-item:hover {
+  background-color: #f5f5f5;
+}
+
+.playlist-item.active {
+  background-color: #e6f7ff;
+  color: #1890ff;
+}
+
+.playlist-item-index {
+  width: 30px;
+  font-size: 14px;
+  color: #999;
+  margin-right: 12px;
+}
+
+.playlist-item.active .playlist-item-index {
+  color: #1890ff;
+}
+
+.playlist-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.playlist-item-name {
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.playlist-item.active .playlist-item-name {
+  color: #1890ff;
+}
+
+.playlist-item-artist {
+  font-size: 12px;
+  color: #999;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.playlist-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  font-size: 14px;
+  color: #999;
+}
+
+/* 歌词抽屉样式 */
+.lyric-drawer-container {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #000;
+}
+
+.lyric-drawer-container :deep(.lyric-container) {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>

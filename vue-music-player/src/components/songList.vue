@@ -24,6 +24,8 @@
       <a-list-item>
         <template #actions>
           <slot name="actions" :item="item" :index="index"></slot>
+          <PlusCircleOutlined v-if="isShowAdd" font-size="16px" @click="addToPlaylist(item)" />
+          <DeleteOutlined v-if="isShowDelete" font-size="16px" @click="removeSong(item, index)" />
         </template>
         <!-- 歌曲列表 -->
         <div class="song-list-container">
@@ -70,7 +72,8 @@ import { ref } from 'vue';
 import { useMusicStore } from '../store/music.js';
 import playIcon from '@/assets/icons/play.svg?url';
 import plusIcon from '@/assets/icons/plus.svg?url';
-import { PlayCircleOutlined } from '@ant-design/icons-vue';
+import { PlayCircleOutlined, PlusCircleOutlined, DeleteOutlined } from '@ant-design/icons-vue';
+import { message } from 'ant-design-vue';
 // 移除循环导入
 // import SongList from '../components/songList.vue';
 
@@ -85,6 +88,14 @@ const props = defineProps({
   listSongs: {
     type: Array,
     default: () => [],
+  },
+  isShowAdd: {
+    type: Boolean,
+    default: true,
+  },
+  isShowDelete: {
+    type: Boolean,
+    default: false,
   },
   isEnd: {
     type: Boolean,
@@ -109,6 +120,16 @@ const onLoadMore = () => {
   if (props.isEnd) return;
   const newPage = props.currentPage + 1;
   emit('pageChange', newPage);
+};
+
+const addToPlaylist = song => {
+  musicStore.addToPlaylist(song);
+  message.success('添加到播放列表成功');
+};
+// 移除歌曲
+const removeSong = (song, index) => {
+  musicStore.removeSong(song, index);
+  message.success('移除成功');
 };
 </script>
 <style scoped>
@@ -156,11 +177,10 @@ const onLoadMore = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 80px;
-  padding: 12px 15px;
+  min-height: 60px;
+  padding: 0 12px;
   border-radius: 8px;
   transition: all 0.2s;
-  margin-bottom: 8px;
   width: 100%;
   box-sizing: border-box;
 }
@@ -183,5 +203,16 @@ const onLoadMore = () => {
 }
 .song-list-container {
   width: 100%;
+}
+:deep(.anticon-delete:hover) {
+  cursor: pointer;
+  color: #ff4d4f;
+}
+:deep(.anticon-plus-circle:hover) {
+  cursor: pointer;
+  color: #409eff;
+}
+:deep(.ant-list-item) {
+  padding: 8px 0;
 }
 </style>

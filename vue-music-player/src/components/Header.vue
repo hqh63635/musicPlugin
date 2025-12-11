@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { Input } from 'ant-design-vue'
 
 // 导入SVG图标
 import LogoIcon from '@/assets/icons/logo.svg'
@@ -26,6 +27,7 @@ const searchHistory = ref([
 
 // 搜索提交
 const onSearchSubmit = () => {
+  console.log('onSearchSubmit called, inputValue:', inputValue.value);
   if (inputValue.value) {
     search(inputValue.value)
   }
@@ -41,6 +43,9 @@ const search = (keyword) => {
   // 关闭搜索历史
   showSearchHistory.value = false
 }
+const handleBlur = () => {
+  setTimeout(() => showSearchHistory.value = false, 200)
+}
 </script>
 
 <template>
@@ -52,14 +57,14 @@ const search = (keyword) => {
       
       <!-- 搜索框 -->
       <div id="header-search" class="header-search">
-        <a-input
-          v-model.value="inputValue"
+        <Input
+          v-model:value="inputValue"
           class="header-search-input"
           placeholder="搜索音乐、歌手、专辑"
-          @click="showSearchHistory = true"
-          @keydown.enter="onSearchSubmit"
-          @focus="showSearchHistory = true"
-          @blur="setTimeout(() => showSearchHistory = false, 200)"
+          @change="showSearchHistory = true"
+          @pressEnter="onSearchSubmit"
+          @focus="showSearchHistory = false"
+          @blur="handleBlur"
         />
         <div class="search-submit" @click="onSearchSubmit">
           <MagnifyingGlassIcon alt="搜索" />
@@ -69,10 +74,10 @@ const search = (keyword) => {
         <div v-if="showSearchHistory && searchHistory.length" class="search-history">
           <div class="history-header">搜索历史</div>
           <div 
-            v-for="(item, index) in searchHistory" 
+            v-for="(item, index) in searchHistory.value" 
             :key="index"
             class="history-item"
-            @click="search(item); inputValue = item"
+            @click="search(item); inputValue.value = item"
           >
             <ClockIcon alt="时钟" />
             <span>{{ item }}</span>

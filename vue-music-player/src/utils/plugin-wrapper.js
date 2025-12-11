@@ -25,12 +25,9 @@ axios.interceptors.request.use(config => {
         // 转换为 /qqapi 代理路径
         config.url = config.url.replace('https://u.y.qq.com', '/qqapi');
     } else if (config.url.includes('c.y.qq.com')) {
-        // 转换为 /api 代理路径
-        config.url = config.url.replace('https://c.y.qq.com', '/api');
-    } else if (config.url.includes('musicapi.haitangw.net')) {
-        // 转换为 /haitang 代理路径
-        config.url = config.url.replace('http://musicapi.haitangw.net', '/haitang');
-    }
+        // 转换为 /api 代理路径，同时处理HTTP和HTTPS协议
+        config.url = config.url.replace(/https?:\/\/c\.y\.qq\.com/, '/api');
+    }  
     return config;
 }, error => {
     return Promise.reject(error);
