@@ -3,6 +3,11 @@
     <div
       class="lyric-scroll-container"
       ref="scrollContainer"
+      @wheel.prevent="onWheel"
+      @mousedown="onMouseDown"
+      @mousemove="onMouseMove"
+      @mouseup="onMouseUp"
+      @mouseleave="onMouseUp"
       :style="
         musicStore?.currentSong?.artwork
           ? {
@@ -74,6 +79,74 @@ watch(
     });
   }
 );
+
+const isDown = ref(false);
+let startY = 0;
+let scrollStart = 0;
+
+let lastY = 0;
+let velocity = 0;
+let momentumFrame = null;
+
+const stopMomentum = () => cancelAnimationFrame(momentumFrame);
+
+// ----------------------
+// 按住拖动
+// ----------------------
+const onMouseDown = (e) => {
+  isDown.value = true;
+  startY = e.clientY;
+  scrollStart = scrollContainer.value.scrollTop;
+  stopMomentum();
+  velocity = 0;
+  lastY = e.clientY;
+};
+
+const onMouseMove = (e) => {
+  if (!isDown.value) return;
+  const deltaY = e.clientY - startY;
+  scrollContainer.value.scrollTop = scrollStart - deltaY;
+
+  velocity = e.clientY - lastY;
+  lastY = e.clientY;
+};
+
+const onMouseUp = () => {
+  if (!isDown.value) return;
+  isDown.value = false;
+  applyMomentum();
+};
+
+// ----------------------
+// 鼠标滚轮惯性滚动
+// ----------------------
+const onWheel = (e) => {
+  stopMomentum();
+    velocity += e.deltaY * 0.1; // 滚轮量适配
+  applyMomentum();
+};
+
+// ----------------------
+// 惯性滚动实现
+// ----------------------
+const applyMomentum = () => {
+  const container = scrollContainer.value;
+  if (!container) return;
+
+  const friction = 0.92;   // 滑动衰减
+  const minVelocity = 0.3; // 停止阈值
+
+  const step = () => {
+    container.scrollTop += velocity;
+    velocity *= friction;
+
+    if (Math.abs(velocity) > minVelocity) {
+      momentumFrame = requestAnimationFrame(step);
+    }
+  };
+
+  momentumFrame = requestAnimationFrame(step);
+};
 </script>
 
 <style scoped>
