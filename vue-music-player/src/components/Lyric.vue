@@ -1,12 +1,30 @@
 <template>
   <div class="lyric-container">
-    <div class="lyric-scroll-container" ref="scrollContainer">
+    <!-- <div class="lyric-music-info">
+      <div class="lyric-music-cover">
+        <img :src="musicStore?.currentSong?.artwork || ''" alt="封面" />
+      </div>
+
+      <p>{{ musicStore?.currentSong?.title || '未知标题' }}</p>
+      <p>{{ musicStore?.currentSong?.artist || '未知歌手' }}</p>
+      <p>{{ musicStore?.currentSong?.album || '未知专辑' }}</p>
+    </div> -->
+    <div
+      class="lyric-scroll-container"
+      ref="scrollContainer"
+      :style="{
+        backgroundImage: `url(${musicStore?.currentSong?.artwork || ''})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      }"
+    >
       <div class="lyric-list">
         <div
           v-for="(line, index) in musicStore.fullLyric"
           :key="index"
           class="lyric-line"
-          :class="{ 'active': index === musicStore.currentLyricIndex }"
+          :class="{ active: index === musicStore.currentLyricIndex }"
           :data-time="line.time"
         >
           {{ line.lrc }}
@@ -28,7 +46,9 @@ const scrollContainer = ref(null);
 
 const displayText = computed(() => {
   if (musicStore.currentSong) {
-    return `${musicStore.currentSong.title} - ${musicStore.currentSong.singerName || musicStore.currentSong.artist}`;
+    return `${musicStore.currentSong.title} - ${
+      musicStore.currentSong.singerName || musicStore.currentSong.artist
+    }`;
   }
   return '暂无歌词';
 });
@@ -36,7 +56,7 @@ const displayText = computed(() => {
 // 监听当前歌词索引变化，实现滚动居中
 watch(
   () => musicStore.currentLyricIndex,
-  (newIndex) => {
+  newIndex => {
     if (newIndex === -1 || !scrollContainer.value) return;
 
     nextTick(() => {
@@ -45,11 +65,13 @@ watch(
         const container = scrollContainer.value;
         const containerRect = container.getBoundingClientRect();
         const lineRect = activeLine.getBoundingClientRect();
-        const scrollTop = container.scrollTop + (lineRect.top - containerRect.top - containerRect.height / 2 + lineRect.height / 2);
+        const scrollTop =
+          container.scrollTop +
+          (lineRect.top - containerRect.top - containerRect.height / 2 + lineRect.height / 2);
 
         container.scrollTo({
           top: scrollTop,
-          behavior: 'smooth'
+          behavior: 'smooth',
         });
       }
     });
@@ -71,6 +93,8 @@ watch(
   height: 100%;
   overflow: auto;
   padding: 20px 0;
+  background-size: cover;
+  border-radius: 12px;
 }
 
 .lyric-list {

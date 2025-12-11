@@ -225,7 +225,6 @@ const removeSong = (record, index) => {
 const displayText = computed(() => {
   return musicStore.fullLyric[musicStore.currentLyricIndex] || '暂无歌词';
 });
-
 </script>
 
 <template>
@@ -249,9 +248,8 @@ const displayText = computed(() => {
           {{ musicStore?.currentSong?.title || '未知歌曲' }}
         </div>
         <div class="music-artist">
-          {{ musicStore?.currentSong?.artist || '未知歌手' }}   
+          {{ musicStore?.currentSong?.artist || '未知歌手' }}
         </div>
-        
       </div>
     </div>
 
@@ -287,15 +285,15 @@ const displayText = computed(() => {
               musicStore.playMode === 0
                 ? repeatSongIcon
                 : musicStore.playMode === 1
-                ? repeatSong1Icon
-                : shuffleIcon
+                  ? repeatSong1Icon
+                  : shuffleIcon
             "
             :alt="
               musicStore.playMode === 0
                 ? '列表循环'
                 : musicStore.playMode === 1
-                ? '单曲循环'
-                : '随机播放'
+                  ? '单曲循环'
+                  : '随机播放'
             "
           />
         </div>
@@ -380,10 +378,10 @@ const displayText = computed(() => {
   <!-- 歌词抽屉 -->
   <a-drawer
     v-model:open="showLyricDrawer"
-    title="歌词"
+    :title="musicStore?.currentSong?.title || '歌词'"
     placement="right"
     size="large"
-    rootClassName="playlist-drawer"
+    rootClassName="playlist-drawer lyric-drawer"
   >
     <div class="lyric-drawer-container">
       <Lyric />
@@ -392,6 +390,16 @@ const displayText = computed(() => {
 </template>
 
 <style scoped>
+.lyric-music-info {
+  text-align: center;
+}
+.lyric-music-cover {
+  display: inline-block;
+  width: 80px;
+  height: 80px;
+  border-radius: 4px;
+  overflow: hidden;
+}
 :deep(.playing-row) {
   background-color: #f5f5dc !important;
 }
@@ -849,7 +857,7 @@ const displayText = computed(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #000;
+  background-color: rgba(0, 0, 0, 0.35);
 }
 
 .lyric-drawer-container :deep(.lyric-container) {

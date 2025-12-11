@@ -102,3 +102,6 @@ th {
 .playlist-drawer .ant-drawer-header {
   padding: 8px 12px !important;
 }
+.lyric-drawer .ant-drawer-header{
+  display: none;
+}

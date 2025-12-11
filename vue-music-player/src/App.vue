@@ -4,7 +4,7 @@ import Header from './components/Header.vue'
 import MusicBar from './components/MusicBar.vue'
 import SideBar from './components/SideBar.vue'
 import MusicDetail from './components/MusicDetail.vue'
-import Panel from './components/Panel.vue'
+import Lyric from './components/Lyric.vue'
 </script>
 
 <template>
@@ -14,6 +14,9 @@ import Panel from './components/Panel.vue'
       <SideBar />
       <router-view class="main-content" />
       <!-- <Panel /> -->
+       <div class="lyric-container-box"> 
+         <Lyric />
+        </div>
     </div>
     <!-- <MusicDetail /> -->
     <MusicBar />
@@ -52,5 +55,10 @@ body {
 /* 主内容区域 */
 .main-content {
   flex: 1;
+}
+.lyric-container-box {
+  width: 600px;
+  padding: 12px;
+  background-color: #f5f5f5;
 }
 </style>
