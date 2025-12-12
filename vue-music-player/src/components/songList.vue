@@ -28,10 +28,10 @@
       </vxe-column>
 
       <!-- 歌手 -->
-      <vxe-column title="歌手" field="artist" width="200" />
+      <vxe-column title="歌手" field="artist" />
 
       <!-- 操作 -->
-      <vxe-column title="操作" width="120">
+      <vxe-column title="操作" width="80">
         <template #default="{ row, rowIndex }">
           <slot name="actions" :item="row" :index="rowIndex"></slot>
 
@@ -184,6 +184,7 @@ const removeSong = (song, index) => {
   font-weight: 500;
   color: #333;
   transition: color 0.2s ease;
+  min-width: 0;
 }
 
 .song-info:hover .title {

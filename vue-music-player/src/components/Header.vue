@@ -154,6 +154,7 @@ const handleBlur = () => {
   position: relative;
   width: 300px;
   height: 36px;
+  line-height: 36px;
   background-color: #f5f5f5;
   border-radius: 18px;
   overflow: hidden;

@@ -189,17 +189,18 @@ const formatNumber = value => {
 /* 排行榜容器 */
 .ranklist-container {
   display: flex;
-  height: calc(100vh - 162px);
+  height: 100%;
   background-color: #fff;
-  border-radius: 4px;
+  border-radius: 12px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
 /* 排行榜侧边栏 */
 .ranklist-sidebar {
   width: 300px;
+  border-radius: 12px 0 0 12px;
   overflow-y: auto;
-  background-color: #f9f9f9;
+  background-color: #fff;
   border-right: 1px solid #eee;
 }
 
@@ -495,6 +496,7 @@ const formatNumber = value => {
 }
 .ranklist-detail {
   flex: 1;
+  min-width: 0;
   padding: 12px;
   display: flex;
   flex-direction: column;

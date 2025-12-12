@@ -19,12 +19,10 @@ const router = useRouter();
 
 // 侧边栏导航项
 const navItems = ref([
-  { icon: IdentificationIcon, text: '搜索', active: true, path: '/search' },
-  { icon: TrophyIcon, text: '排行榜', active: true, path: '/ranklist' },
-  // { icon: CdIcon, text: '我的音乐', active: true, path: '/' },
+  { icon: IdentificationIcon, text: '搜索', path: '/search' },
+  { icon: TrophyIcon, text: '排行榜', path: '/ranklist' },
   { icon: HeartIcon, text: '我喜欢的音乐', path: '/favorite' },
   { icon: ClockIcon, text: '最近播放', path: '/recent' },
-  // { icon: FolderOpenIcon, text: '本地音乐', path: '/local' },
   { icon: ArrayDownloadTrayIcon, text: '下载管理', path: '/download' },
   { icon: ListBulletIcon, text: '我的歌单', path: '/playlist' },
   { icon: AlbumIcon, text: '专辑', path: '/album' },
@@ -47,18 +45,18 @@ const switchNavItem = index => {
   <div class="sidebar-container">
     <!-- 导航菜单 -->
     <div class="nav-menu">
-      <div
+      <router-link
         v-for="(item, index) in navItems"
         :key="index"
+        :to="item.path"
         class="nav-item"
-        :class="{ active: item.active }"
-        @click="switchNavItem(index)"
+        active-class="active"
       >
         <div class="nav-icon">
           <component :is="item.icon" :alt="item.text" />
         </div>
         <div class="nav-text">{{ item.text }}</div>
-      </div>
+      </router-link>
     </div>
 
     <!-- 歌单列表 -->
@@ -84,7 +82,7 @@ const switchNavItem = index => {
 
 <style scoped>
 .sidebar-container {
-  width: 240px;
+  width: 100%;
   height: 100%;
   background-color: #ffffff;
   border-right: 1px solid #e0e0e0;

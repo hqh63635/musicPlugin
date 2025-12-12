@@ -139,6 +139,7 @@ const removeSong = (song, index) => {
 }
 .ranklist-detail {
   flex: 1;
+  min-width: 0;
   padding: 12px;
   display: flex;
   flex-direction: column;

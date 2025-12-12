@@ -114,7 +114,7 @@ const removeSong = (song, index) => {
 .playlist-detail {
   height: 100%;
   background: #fff;
-  border-radius: 4px;
+  border-radius: 12px;
   padding: 12px;
   overflow: auto;
 }

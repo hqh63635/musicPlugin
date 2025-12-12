@@ -140,3 +140,8 @@ th {
 .category-nav .ant-radio-button-wrapper:not(:first-child)::before {
   display: none;
 }
+
+.ant-layout .ant-layout-header {
+  height: 60px;
+  line-height: 60px;
+}

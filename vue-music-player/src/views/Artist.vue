@@ -191,7 +191,7 @@ const goToArtistDetail = singer => {
   position: relative;
   padding: 12px;
   color: #333;
-  border-radius: 4px;
+  border-radius: 12px;
   background-color: #f5f5f5;
 }
 

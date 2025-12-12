@@ -143,6 +143,7 @@ const handlePageChange = page => {
 .artist-detail-content {
   height: 100%;
   padding: 12px;
+  border-radius: 12px;
   background-color: #fff;
 }
 
