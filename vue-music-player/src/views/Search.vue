@@ -5,6 +5,7 @@ import api from '../services/api.js';
 import SongList from '../components/SongList.vue';
 import { useMusicStore } from '@/store/music.js';
 import { PlusCircleOutlined, LoadingOutlined } from '@ant-design/icons-vue';
+import { Tabs, TabPane } from 'ant-design-vue';
 
 const musicStore = useMusicStore();
 const route = useRoute();
@@ -14,6 +15,7 @@ const loading = ref(false);
 const currentPage = ref(1);
 const isEnd = ref(false);
 const indicator = h(LoadingOutlined, { style: { fontSize: '24px' }, spin: true });
+const currentType = ref('music'); // 搜索类型：music, artist, album
 
 // 当路由参数变化时重新搜索
 onMounted(() => {
@@ -38,7 +40,7 @@ const performSearch = async () => {
 
   loading.value = true;
   try {
-    const result = await api.search(keyword.value, currentPage.value, 'music');
+    const result = await api.search(keyword.value, currentPage.value, currentType.value);
     if (currentPage.value === 1) {
       searchResults.value = result.data;
     } else {
@@ -66,13 +68,22 @@ const formatDuration = seconds => {
   const remainingSeconds = seconds % 60;
   return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
 };
+// 新增：处理搜索类型切换
+const handleTypeChange = () => {
+  currentPage.value = 1;
+  searchResults.value = [];
+  performSearch();
+};
 </script>
 
 <template>
   <div class="artist-detail-container">
     <div class="artist-detail-content">
-      <h2>搜索结果: {{ keyword }}</h2>
-
+      <a-tabs v-model:value="currentType" @change="handleTypeChange" class="search-tabs">
+        <a-tab-pane key="song" tab="歌曲"></a-tab-pane>
+        <a-tab-pane key="artist" tab="歌手"></a-tab-pane>
+        <a-tab-pane key="album" tab="专辑"></a-tab-pane>
+      </a-tabs>
       <div v-if="loading" class="loading">搜索中...</div>
 
       <div v-else-if="searchResults.length === 0" class="no-results">没有找到相关结果</div>
@@ -95,6 +106,8 @@ const formatDuration = seconds => {
 </template>
 
 <style scoped>
+.search-tabs {
+}
 .artist-detail-container {
   margin: 0 auto;
   padding: 12px;

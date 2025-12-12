@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup>
 // 引入组件
 import Header from './components/Header.vue';
 import MusicBar from './components/MusicBar.vue';
@@ -15,7 +15,9 @@ const musicStore = useMusicStore();
     <Header />
     <div class="body-container">
       <SideBar />
-      <router-view class="main-content" />
+      <keep-alive>
+        <router-view class="main-content" />
+      </keep-alive>
       <!-- <Panel /> -->
       <div class="lyric-container-box" v-if="musicStore.showLyricDrawer">
         <Lyric />
@@ -66,3 +68,4 @@ body {
   background-color: #f5f5f5;
 }
 </style>
+
