@@ -77,8 +77,8 @@ const removeSong = (song, index) => {
       <!-- 加载状态 -->
       <div v-if="loading" class="loading">加载中...</div>
       <SongList
-        :listSongs="songList || []"
-        :isEnd="isEnd"
+        :listSongs="fullSongList || []"
+        :isEnd="true"
         :currentPage="currentPage"
         @pageChange="handlePageChange"
         :isShowAdd="false"

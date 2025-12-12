@@ -17,7 +17,7 @@
       </vxe-column>
 
       <!-- 歌曲 -->
-      <vxe-column title="歌曲" width="400">
+      <vxe-column title="歌曲">
         <template #default="{ row }">
           <div class="song-info">
             <img class="cover" :src="row.artwork?.replace(/[`\s]/g, '') || defaultCover" alt="" />
@@ -179,13 +179,10 @@ const removeSong = (song, index) => {
 
 /* 歌曲名字（文本溢出省略） */
 .title {
+  flex: 1;
   font-size: 15px;
   font-weight: 500;
   color: #333;
-  max-width: 180px;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
   transition: color 0.2s ease;
 }
 

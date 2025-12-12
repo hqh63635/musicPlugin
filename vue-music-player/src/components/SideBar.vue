@@ -19,6 +19,7 @@ const router = useRouter();
 
 // 侧边栏导航项
 const navItems = ref([
+  { icon: IdentificationIcon, text: '搜索', active: true, path: '/search' },
   { icon: TrophyIcon, text: '排行榜', active: true, path: '/ranklist' },
   // { icon: CdIcon, text: '我的音乐', active: true, path: '/' },
   { icon: HeartIcon, text: '我喜欢的音乐', path: '/favorite' },
