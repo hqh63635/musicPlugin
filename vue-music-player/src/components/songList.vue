@@ -1,218 +1,248 @@
-<template>
-  <a-row class="song-header">
-    <a-col :span="2" class="">序号 </a-col>
-    <a-col :span="12" class=""> 歌曲 </a-col>
-    <a-col :span="4" class="">歌手 </a-col>
-    <a-col :span="4" class=""> 时长 </a-col>
-    <a-col :span="2" class=""> 操作 </a-col>
-  </a-row>
-  <a-list
-    class="demo-loadmore-list"
-    :loading="initLoading"
-    item-layout="horizontal"
-    :data-source="listSongs"
-  >
-    <template #loadMore>
-      <div
-        v-if="!initLoading && !isEnd"
-        :style="{ textAlign: 'center', marginTop: '12px', height: '32px', lineHeight: '32px' }"
-      >
-        <a-button @click="onLoadMore">加载更多</a-button>
-      </div>
-    </template>
-    <template #renderItem="{ item, index }">
-      <a-list-item>
-        <template #actions>
-          <slot name="actions" :item="item" :index="index"></slot>
-          <PlusCircleOutlined v-if="isShowAdd" font-size="16px" @click="addToPlaylist(item)" />
-          <DeleteOutlined v-if="isShowDelete" font-size="16px" @click="removeSong(item, index)" />
+﻿<template>
+  <div class="song-table-wrapper">
+    <vxe-table
+      ref="xTable"
+      :data="listSongs"
+      height="100%"
+      border="none"
+      row-config="{ isHover: true }"
+      :scroll-y="{ enabled: true, gt: 10 }"
+      @scroll="handleScroll"
+    >
+      <!-- 序号 -->
+      <vxe-column title="序号" width="60">
+        <template #default="{ rowIndex }">
+          {{ rowIndex + 1 }}
         </template>
-        <!-- 歌曲列表 -->
-        <div class="song-list-container">
-          <div class="song-list">
-            <a-row class="song-item">
-              <a-col :span="2" class="song-rank">{{ index + 1 }}</a-col>
-              <a-col :span="12">
-                <div class="list-song-info">
-                  <div class="song-cover" style="width: 60px; height: 60px">
-                    <img
-                      :src="item.artwork?.replace(/[`\s]/g, '') || '@/assets/default-cover.jpg'"
-                      :alt="item.title"
-                      width="60px"
-                      height="60px"
-                    />
-                  </div>
-                  <div class="list-song-info-title" style="flex: 1; min-width: 0">
-                    <div style="flex: 1; min-width: 0">
-                      <span>{{ item.title }}</span>
-                      <!-- <span> {{ song.subtitle }}</span> -->
-                    </div>
-                    <span class="song-actions">
-                      <PlayCircleOutlined font-size="16px" @click="playSong(item, index)" />
-                      <!-- <img :src="playIcon" alt="播放" @click="playSong(song, index)" />
-                  <img :src="plusIcon" alt="添加" @click="addToPlaylist(song)" /> -->
-                    </span>
-                  </div>
-                </div>
-              </a-col>
-              <a-col :span="6" class="song-rank">
-                {{ item.artist }}
-              </a-col>
-              <a-col :span="4" class="song-rank"></a-col>
-            </a-row>
+      </vxe-column>
+
+      <!-- 歌曲 -->
+      <vxe-column title="歌曲" width="400">
+        <template #default="{ row }">
+          <div class="song-info">
+            <img class="cover" :src="row.artwork?.replace(/[`\s]/g, '') || defaultCover" alt="" />
+            <span class="title">{{ row.title }}</span>
+            <PlayCircleOutlined class="play-btn" @click="playSong(row)" />
           </div>
-        </div>
-      </a-list-item>
-    </template>
-  </a-list>
+        </template>
+      </vxe-column>
+
+      <!-- 歌手 -->
+      <vxe-column title="歌手" field="artist" width="200" />
+
+      <!-- 操作 -->
+      <vxe-column title="操作" width="120">
+        <template #default="{ row, rowIndex }">
+          <slot name="actions" :item="row" :index="rowIndex"></slot>
+
+          <PlusCircleOutlined v-if="isShowAdd" class="icon add" @click="addToPlaylist(row)" />
+          <DeleteOutlined
+            v-if="isShowDelete"
+            class="icon delete"
+            @click="removeSong(row, rowIndex)"
+          />
+        </template>
+      </vxe-column>
+    </vxe-table>
+  </div>
 </template>
 
 <script setup>
 import { ref } from 'vue';
-import { useMusicStore } from '../store/music.js';
-import playIcon from '@/assets/icons/play.svg?url';
-import plusIcon from '@/assets/icons/plus.svg?url';
 import { PlayCircleOutlined, PlusCircleOutlined, DeleteOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
-// 移除循环导入
-// import SongList from '../components/songList.vue';
-
-// 正确导入分页组件
-// 恢复标准导入方式
-// 恢复分页组件导入
-// 使用全局注册的组件，无需本地导入
-// import { Pagination } from 'ant-design-vue';
+import { useMusicStore } from '@/store/music.js';
 
 const musicStore = useMusicStore();
 const props = defineProps({
-  listSongs: {
-    type: Array,
-    default: () => [],
-  },
-  isShowAdd: {
-    type: Boolean,
-    default: true,
-  },
-  isShowDelete: {
-    type: Boolean,
-    default: false,
-  },
-  isEnd: {
-    type: Boolean,
-    default: false,
-  },
-  currentPage: {
-    type: Number,
-    default: 1,
-  },
+  listSongs: Array,
+  isShowAdd: Boolean,
+  isShowDelete: Boolean,
+  isEnd: Boolean,
+  currentPage: Number,
 });
-const initLoading = ref(false);
-// 播放歌曲
-const playSong = (song, index) => {
-  musicStore.playSong(song);
-};
 const emit = defineEmits(['pageChange']);
 
-const handlePageChange = (page, pageSize) => {
-  emit('pageChange', page, pageSize);
-};
-const onLoadMore = () => {
-  if (props.isEnd) return;
-  const newPage = props.currentPage + 1;
-  emit('pageChange', newPage);
+const defaultCover = '@/assets/default-cover.jpg';
+const xTable = ref(null);
+
+// 播放歌曲
+const playSong = song => {
+  musicStore.playSong(song);
 };
 
+// 触底自动加载更多
+const handleScroll = ({ scrollTop, $table }) => {
+  const scrollInfo = $table.getScroll();
+  const { scrollHeight, clientHeight } = scrollInfo;
+
+  // 判断是否滚动到底
+  if (scrollTop + clientHeight >= scrollHeight - 10) {
+    onLoadMore();
+  }
+};
+
+const onLoadMore = () => {
+  if (props.isEnd) return;
+  emit('pageChange', props.currentPage + 1);
+};
+
+// 添加歌曲
 const addToPlaylist = song => {
   musicStore.addToPlaylist(song);
   message.success('添加到播放列表成功');
 };
-// 移除歌曲
+
+// 删除歌曲
 const removeSong = (song, index) => {
   musicStore.removeSong(song, index);
   message.success('移除成功');
 };
 </script>
+
 <style scoped>
-.demo-loadmore-list {
-  flex: 1;
-  overflow: auto;
-}
-.ranklist-detail {
-  flex: 1;
-  padding: 12px;
+/* .song-table-wrapper {
+  height: 100%;
   display: flex;
   flex-direction: column;
 }
-.list-song-info {
-  display: flex;
-  flex: 1;
-  min-width: 0;
-}
-.list-song-info-title {
-  flex: 1;
-  min-width: 0;
-  font-size: 16px;
-  font-weight: 500;
-  margin-left: 20px;
-  align-self: center;
-  justify-items: center;
-  display: flex;
-}
-.song-rank {
-  text-align: center;
-  font-size: 16px;
-  font-weight: 500;
-}
-.song-header {
-  text-align: center;
-  height: 40px;
-  line-height: 40px;
-  font-size: 16px;
-  font-weight: 500;
-  color: #666;
-  background-color: #f9f9f9;
-}
-/* 歌曲列表优化 */
-.song-item {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 60px;
-  padding: 0 12px;
-  border-radius: 8px;
-  transition: all 0.2s;
-  width: 100%;
-  box-sizing: border-box;
+.cover {
+  width: 50px;
+  height: 50px;
+  border-radius: 6px;
+  margin-right: 12px;
 }
 .song-info {
-  flex: 1;
   display: flex;
   align-items: center;
-  gap: 15px;
-  min-width: 0;
-  padding-right: 15px;
 }
-.song-item:hover {
-  background-color: #f0f7ff;
+.play-btn {
+  margin-left: 10px;
   cursor: pointer;
+  font-size: 18px;
 }
-.pagination-container {
-  margin-top: 20px;
-  text-align: right;
-  padding: 10px;
-}
-.song-list-container {
-  width: 100%;
-}
-:deep(.anticon-delete:hover) {
+.icon {
   cursor: pointer;
-  color: #ff4d4f;
+  font-size: 18px;
+  margin-left: 10px;
 }
-:deep(.anticon-plus-circle:hover) {
-  cursor: pointer;
+.icon.add:hover {
   color: #409eff;
 }
-:deep(.ant-list-item) {
-  padding: 8px 0;
+.icon.delete:hover {
+  color: #ff4d4f;
+}
+.load-more {
+  text-align: center;
+  padding: 16px;
+} */
+.song-table-wrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+}
+
+/* ------------ 行 Hover 效果（网易云风格） ------------ */
+:deep(.vxe-body--row:hover) {
+  background: #f5f7fa !important;
+  transition: background 0.25s ease;
+}
+
+/* 序号样式（网易云：灰色 -> hover 红色） */
+:deep(.vxe-body--row:hover .song-index) {
+  color: #ec4141 !important;
+}
+
+/* 行内布局 */
+.song-info {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+/* 封面图（网易云风格：圆角 + hover 放大） */
+.cover {
+  width: 48px;
+  height: 48px;
+  border-radius: 6px;
+  margin-right: 12px;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.song-info:hover .cover {
+  transform: scale(1.06);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* 歌曲名字（文本溢出省略） */
+.title {
+  font-size: 15px;
+  font-weight: 500;
+  color: #333;
+  max-width: 180px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  transition: color 0.2s ease;
+}
+
+.song-info:hover .title {
+  color: #000;
+}
+
+/* 播放按钮默认隐藏，hover 逐渐出现 */
+.play-btn {
+  font-size: 20px;
+  margin-left: 10px;
+  opacity: 0;
+  cursor: pointer;
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+
+.song-info:hover .play-btn {
+  opacity: 1;
+  transform: scale(1.1);
+  color: #ec4141;
+}
+
+/* 操作图标样式 */
+.icon {
+  cursor: pointer;
+  font-size: 18px;
+  margin-left: 10px;
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+/* 添加按钮 hover 蓝色（QQ 音乐风格） */
+.icon.add:hover {
+  color: #31c27c;
+  transform: scale(1.15);
+}
+
+/* 删除按钮 hover 红色 */
+.icon.delete:hover {
+  color: #ff4d4f;
+  transform: scale(1.15);
+}
+
+/* 加载更多按钮 */
+.load-more {
+  text-align: center;
+  padding: 16px;
+}
+
+/* VXE 列头样式（贴近网易云） */
+:deep(.vxe-header--row .vxe-header--column) {
+  font-size: 14px;
+  font-weight: 600;
+  color: #666;
+  background: #fafafa;
 }
 </style>

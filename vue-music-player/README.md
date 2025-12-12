@@ -1,5 +1,63 @@
-# Vue 3 + Vite
+## 音乐播放器应用
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+这是一个基于Vue 3和Vite构建的现代化音乐播放器应用，提供直观的用户界面和丰富的音乐管理功能。
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+### TODO
+
+- [ ] 播放列表组件换成VxeTable，支持虚拟滚动和向下无限滚动
+- [ ] 增加搜索路由，搜索组件优化，顶部放搜索选项（歌曲、歌手、专辑）
+- [ ] routeview 组件优化，保持样式滚动出现的统一性
+- [ ] 增加设置路由，设置页面优化，提供用户自定义选项（如音乐质量）
+- [ ] 增加插件路由，支持自定义上传插件，上传的插件存在本地，与qq.js保持一致，动态加载这些js
+- [ ] 性能优化，本地化存储优化，减少不必要的参数持续化存在本地
+- [ ] 优化移动端布局，提供更好的用户体验
+
+### 技术栈
+
+- Vue 3
+- Vite
+- Vue Router
+- Vuex
+- Element Plus（用于UI组件）
+
+### 功能特性
+
+- 🎵 播放列表管理，支持添加、移除歌曲
+- ⏱️ 最近播放功能，按播放时间倒序排列
+- ❤️ 收藏功能，标记喜爱的歌曲
+- 🎛️ 完整的播放控制（播放/暂停、上一曲/下一曲）
+- 📃 分页浏览歌曲列表
+- 🔄 实时同步播放状态和收藏状态
+
+### 安装与设置
+
+1. 克隆项目到本地
+2. 进入项目目录
+   ```bash
+   cd vue-music-player
+   ```
+3. 安装依赖
+   ```bash
+   npm install
+   ```
+4. 启动开发服务器
+   ```bash
+   npm run dev
+   ```
+5. 在浏览器中访问 http://localhost:5173
+
+### 项目结构
+
+- `src/views/` - 包含主要页面组件
+  - `RecentPlay.vue` - 最近播放页面
+  - `FavoriteList.vue` - 收藏列表页面
+- `src/store/music.js` - 音乐状态管理
+- `src/components/` - 可复用组件
+- `src/router/` - 路由配置
+
+### 使用说明
+
+- **播放音乐**：点击歌曲名称或播放按钮
+- **添加到收藏**：点击音乐控制栏中的爱心图标
+- **查看最近播放**：导航到"最近播放"页面
+- **管理收藏**：在收藏列表中可以取消收藏歌曲
