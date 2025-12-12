@@ -136,7 +136,7 @@
     "editor.defaultFormatter": "DotJoshJohnson.xml"
   },
   "[vue]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "prettier.prettier-vscode"
   },
   "[java]": {
     "editor.defaultFormatter": "redhat.java"
