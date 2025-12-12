@@ -110,14 +110,13 @@ const handleTypeChange = () => {
 }
 .artist-detail-container {
   margin: 0 auto;
-  padding: 12px;
-  border-radius: 12px;
+  padding: 8px;
   background-color: #f5f5f5;
 }
 
 .artist-detail-content {
   height: 100%;
-  padding: 12px;
+  padding: 8px;
   border-radius: 12px;
   background-color: #fff;
 }

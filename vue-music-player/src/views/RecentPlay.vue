@@ -77,7 +77,7 @@ const removeSong = song => {
 
 <style scoped>
 .playlist-page {
-  padding: 12px;
+  padding: 8px;
   background: #f5f5f5;
 }
 

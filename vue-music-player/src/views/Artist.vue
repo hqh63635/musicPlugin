@@ -189,7 +189,7 @@ const goToArtistDetail = singer => {
 <style scoped>
 .artist-page {
   position: relative;
-  padding: 12px;
+  padding: 8px;
   color: #333;
   border-radius: 12px;
   background-color: #f5f5f5;

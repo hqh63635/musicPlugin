@@ -147,7 +147,7 @@ const switchNavItem = index => {
 /* 歌单列表 */
 .playlist-section {
   flex: 1;
-  padding: 16px 20px;
+  padding: 12px;
 }
 
 .section-header {

@@ -118,7 +118,7 @@ const removeSong = song => {
 <style scoped>
 /* 样式与Playlist.vue保持一致 */
 .playlist-page {
-  padding: 12px;
+  padding: 8px;
   background: #f5f5f5;
 }
 

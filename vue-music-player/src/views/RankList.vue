@@ -180,7 +180,7 @@ const formatNumber = value => {
 
 <style scoped>
 .ranklist-page {
-  padding: 12px;
+  padding: 8px;
   color: #333;
   border-radius: 4px;
   background-color: #f5f5f5;

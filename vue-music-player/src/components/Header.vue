@@ -102,7 +102,7 @@ const handleBlur = () => {
   justify-content: space-between;
   align-items: center;
   height: 60px;
-  padding: 0 20px;
+  padding: 0 20px 0 0;
   background-color: #ffffff;
   border-bottom: 1px solid #e0e0e0;
 }

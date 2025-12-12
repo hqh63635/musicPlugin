@@ -23,7 +23,7 @@ const contentStyle = {
 const lyricStyle = {
   maxWidth: 'auto',
   minWidth: '0',
-  padding: '12px 12px 12px 0',
+  padding: '8px 8px 8px 0',
   background: 'transparent',
 };
 const footerStyle = {
@@ -33,20 +33,6 @@ const footerStyle = {
 </script>
 
 <template>
-  <!-- <div class="app-container">
-    <Header />
-    <div class="body-container">
-      <SideBar />
-      <keep-alive>
-        <router-view class="main-content" />
-      </keep-alive>
-      <div class="lyric-container-box" v-if="musicStore.showLyricDrawer">
-        <Lyric />
-      </div>
-    </div>
-    <MusicBar />
-  </div> -->
-
   <a-layout style="height: 100vh">
     <a-layout-header :style="headerStyle" height="60px">
       <Header />

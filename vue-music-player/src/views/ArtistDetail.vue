@@ -135,7 +135,7 @@ const handlePageChange = page => {
 
 .artist-detail-container {
   margin: 0 auto;
-  padding: 12px;
+  padding: 8px;
   background-color: #f5f5f5;
   overflow: auto;
 }
