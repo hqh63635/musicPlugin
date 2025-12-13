@@ -119,27 +119,4 @@ onBeforeUnmount(() => {
   padding: 12px 12px 12px 0;
   background-color: #f5f5f5;
 }
-
-/* 媒体查询 - 中等屏幕 */
-@media (max-width: 1600px) {
-  .lyric-container-box {
-    width: 450px;
-  }
-}
-
-/* 媒体查询 - 小屏幕 */
-@media (max-width: 992px) {
-  .lyric-container-box {
-    width: 350px;
-  }
-}
-
-/* 媒体查询 - 超小屏幕 */
-@media (max-width: 768px) {
-  .lyric-container-box {
-    width: 100%;
-    padding: 12px;
-    order: -1;
-  }
-}
 </style>
