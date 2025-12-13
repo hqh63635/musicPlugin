@@ -49,6 +49,15 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: path => path.replace(/^\/qqmusic/, ''),
       },
+      '/qzone': {
+        target: 'http://i.y.qq.com',
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/qzone/, ''),
+        headers: {
+          Referer: 'http://i.y.qq.com/',
+          Host: 'i.y.qq.com',
+        },
+      },
     },
   },
 });

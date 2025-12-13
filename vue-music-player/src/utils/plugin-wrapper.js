@@ -28,6 +28,9 @@ axios.interceptors.request.use(
     } else if (config.url.includes('c.y.qq.com')) {
       // 转换为 /api 代理路径，同时处理HTTP和HTTPS协议
       config.url = config.url.replace(/https?:\/\/c\.y\.qq\.com/, '/api');
+    } else if (config.url.includes('i.y.qq.com')) {
+      // 转换为 /qqapi 代理路径
+      config.url = config.url.replace('http://i.y.qq.com', '/qzone');
     }
     return config;
   },

@@ -365,6 +365,26 @@ export async function importMusicSheet(url) {
 }
 
 /**
+ * 获取歌单详情
+ * @param {string} platform - 平台名称
+ * @param {string} id - 歌单ID
+ * @param {number} page - 页码
+ * @returns {Promise<Object>} 歌单详情和歌曲列表
+ */
+export async function getMusicSheetInfo(platform, id, page = 1) {
+  try {
+    if (!platform || !id) {
+      console.error('获取歌单详情失败: 平台和ID不能为空');
+      return { sheetItem: null, musicList: [], isEnd: true };
+    }
+    return await plugin.getMusicSheetInfo({ platform, id }, page);
+  } catch (error) {
+    console.error('获取歌单详情失败:', error);
+    return { sheetItem: null, musicList: [], isEnd: true };
+  }
+}
+
+/**
  * 获取推荐歌单标签
  * @returns {Promise<Object>} 推荐歌单标签
  */
@@ -531,4 +551,5 @@ export default {
   getQQArtistInfo,
   getSingerCategories,
   getSingerList,
+  getMusicSheetInfo,
 };

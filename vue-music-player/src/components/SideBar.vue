@@ -1,9 +1,8 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import MusicSheet from './MusicSheet.vue';
 
-// 导入SVG图标
-import CdIcon from '@/assets/icons/cd.svg';
 import HeartIcon from '@/assets/icons/heart.svg';
 import ClockIcon from '@/assets/icons/clock.svg';
 import FolderOpenIcon from '@/assets/icons/folder-open.svg';
@@ -58,25 +57,8 @@ const switchNavItem = index => {
         <div class="nav-text">{{ item.text }}</div>
       </router-link>
     </div>
-
     <!-- 歌单列表 -->
-    <div class="playlist-section">
-      <div class="section-header">
-        <span>我的歌单</span>
-        <DocumentPlusIcon alt="添加" />
-      </div>
-      <div class="playlist-list">
-        <div class="playlist-item">
-          <div class="playlist-cover">
-            <CdIcon alt="歌单封面" />
-          </div>
-          <div class="playlist-info">
-            <div class="playlist-name">我创建的歌单</div>
-            <div class="playlist-count">0首</div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <MusicSheet />
   </div>
 </template>
 
@@ -142,94 +124,6 @@ const switchNavItem = index => {
 
 .nav-item.active .nav-text {
   color: #1890ff;
-}
-
-/* 歌单列表 */
-.playlist-section {
-  flex: 1;
-  padding: 12px;
-}
-
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-}
-
-.section-header span {
-  font-size: 14px;
-  color: #666;
-  font-weight: 500;
-}
-
-.section-header svg {
-  width: 18px;
-  height: 18px;
-  opacity: 0.6;
-  cursor: pointer;
-  transition: opacity 0.3s;
-}
-
-.section-header svg:hover {
-  opacity: 1;
-}
-
-.playlist-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.playlist-item {
-  display: flex;
-  gap: 12px;
-  padding: 8px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.playlist-item:hover {
-  background-color: #f5f5f5;
-}
-
-.playlist-cover {
-  width: 48px;
-  height: 48px;
-  background-color: #f0f0f0;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.playlist-cover svg {
-  width: 24px;
-  height: 24px;
-  opacity: 0.6;
-}
-
-.playlist-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  min-width: 0;
-}
-
-.playlist-name {
-  font-size: 14px;
-  color: #333;
-  margin-bottom: 4px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.playlist-count {
-  font-size: 12px;
-  color: #999;
 }
 
 /* 响应式设计 */

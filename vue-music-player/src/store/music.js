@@ -41,6 +41,9 @@ export const useMusicStore = defineStore(
     // 歌词抽屉状态
     const showLyricDrawer = ref(true);
 
+    // 收藏歌单
+    const favoriteSheets = ref([]);
+
     // 格式化时间
     const formatTime = seconds => {
       if (isNaN(seconds)) return '00:00';
@@ -370,6 +373,30 @@ export const useMusicStore = defineStore(
       showLyricDrawer.value = !showLyricDrawer.value;
     };
 
+    // 切换歌单收藏状态
+    const toggleFavoriteSheet = sheet => {
+      if (!sheet) return;
+      
+      const index = favoriteSheets.value.findIndex(
+        item => item.platform === sheet.platform && item.id === sheet.id
+      );
+      
+      if (index === -1) {
+        // 收藏歌单
+        favoriteSheets.value.push(sheet);
+      } else {
+        // 取消收藏
+        favoriteSheets.value.splice(index, 1);
+      }
+    };
+
+    // 检查歌单是否已收藏
+    const isSheetFavorite = (platform, id) => {
+      return favoriteSheets.value.some(
+        item => item.platform === platform && item.id === id
+      );
+    };
+
     return {
       // 状态
       currentSong,
@@ -387,6 +414,7 @@ export const useMusicStore = defineStore(
       fullLyric,
       currentLyricIndex,
       showLyricDrawer,
+      favoriteSheets,
       addSongsToPlaylist,
       // 计算属性
       formatTime,
@@ -411,6 +439,8 @@ export const useMusicStore = defineStore(
       updateCurrentLyric,
       setLyric,
       toggleLyricDrawer,
+      toggleFavoriteSheet,
+      isSheetFavorite,
     };
   },
   {

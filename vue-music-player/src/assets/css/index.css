@@ -87,6 +87,10 @@ th {
   background: #d9d9d9;
 }
 
+.mr8 {
+  margin-right: 8px;
+}
+
 .ant-spin-nested-loading,
 .ant-spin-container {
   height: 100%;
