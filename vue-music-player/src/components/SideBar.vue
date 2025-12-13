@@ -73,7 +73,21 @@ const switchNavItem = index => {
   overflow-y: auto;
   transition: width 0.3s;
 }
+.sidebar-container::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  background: transparent;
+}
 
+/* Firefox */
+.sidebar-container {
+  scrollbar-width: none;
+}
+
+/* IE/Edge */
+.sidebar-container {
+  -ms-overflow-style: none;
+}
 /* 导航菜单 */
 .nav-menu {
   padding: 12px 0;
