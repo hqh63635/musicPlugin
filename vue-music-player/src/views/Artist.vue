@@ -86,11 +86,7 @@ onMounted(() => {
   return () => observer.disconnect();
 });
 
-// 监听路由变化
-watch(
-  () => route.params.id,
-  () => initPage()
-);
+// 移除了路由参数监听，因为现在Artist组件只用于歌手列表
 
 // 初始化页面状态
 const initPage = () => {
@@ -188,6 +184,7 @@ const goToArtistDetail = singer => {
 
 <style scoped>
 .artist-page {
+  height: 100%;
   position: relative;
   padding: 8px;
   color: #333;

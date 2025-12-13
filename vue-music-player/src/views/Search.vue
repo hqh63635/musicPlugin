@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, watch, h } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import api from '../services/api.js';
 import SongList from '../components/SongList.vue';
 import { useMusicStore } from '@/store/music.js';
@@ -9,7 +9,8 @@ import { Tabs, TabPane } from 'ant-design-vue';
 
 const musicStore = useMusicStore();
 const route = useRoute();
-const keyword = ref('');
+const router = useRouter();
+const keyword = ref('zhou');
 const searchResults = ref([]);
 const loading = ref(false);
 const currentPage = ref(1);
@@ -20,9 +21,7 @@ const currentType = ref('music'); // 搜索类型：music, artist, album
 // 当路由参数变化时重新搜索
 onMounted(() => {
   keyword.value = route.query.keyword || '';
-  if (keyword.value) {
-    performSearch();
-  }
+  performSearch();
 });
 
 watch(
@@ -69,10 +68,19 @@ const formatDuration = seconds => {
   return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
 };
 // 新增：处理搜索类型切换
-const handleTypeChange = () => {
+const handleTypeChange = key => {
+  currentType.value = key;
   currentPage.value = 1;
   searchResults.value = [];
   performSearch();
+};
+
+const goToArtistDetail = singer => {
+  router.push(`/artist/${singer?.singerMID}?singer=${encodeURIComponent(JSON.stringify(singer))}`);
+};
+
+const goToAlbumDetail = album => {
+  router.push(`/album/${album?.albumMID}?singer=${encodeURIComponent(JSON.stringify(album))}`);
 };
 </script>
 
@@ -80,17 +88,14 @@ const handleTypeChange = () => {
   <div class="artist-detail-container">
     <div class="artist-detail-content">
       <a-tabs v-model:value="currentType" @change="handleTypeChange" class="search-tabs">
-        <a-tab-pane key="song" tab="歌曲"></a-tab-pane>
+        <a-tab-pane key="music" tab="歌曲"></a-tab-pane>
         <a-tab-pane key="artist" tab="歌手"></a-tab-pane>
         <a-tab-pane key="album" tab="专辑"></a-tab-pane>
       </a-tabs>
-      <div v-if="loading" class="loading">搜索中...</div>
-
-      <div v-else-if="searchResults.length === 0" class="no-results">没有找到相关结果</div>
-
       <a-spin :spinning="loading" :indicator="indicator" class="loading-spin">
         <div v-if="searchResults.length" class="search-results">
           <SongList
+            v-if="currentType === 'music'"
             :listSongs="searchResults"
             :isEnd="isEnd"
             :currentPage="currentPage"
@@ -99,6 +104,42 @@ const handleTypeChange = () => {
             :isShowDelete="false"
           >
           </SongList>
+
+          <!-- 歌手列表 -->
+          <div class="singer-grid" v-if="currentType === 'artist'">
+            <div
+              v-for="singer in searchResults"
+              :key="singer.singerMID"
+              class="singer-card"
+              @click="goToArtistDetail(singer)"
+            >
+              <div class="singer-avatar">
+                <img
+                  :src="singer.avatar || singer.artwork || '@/assets/default-avatar.jpg'"
+                  :alt="singer.title"
+                />
+              </div>
+              <h3 class="singer-name">{{ singer.name }}</h3>
+            </div>
+          </div>
+
+          <!-- 专辑列表 -->
+          <div class="singer-grid" v-if="currentType === 'album'">
+            <div
+              v-for="singer in searchResults"
+              :key="singer.albumMID"
+              class="singer-card"
+              @click="goToAlbumDetail(singer)"
+            >
+              <div class="singer-avatar">
+                <img
+                  :src="singer.avatar || singer.artwork || '@/assets/default-avatar.jpg'"
+                  :alt="singer.title"
+                />
+              </div>
+              <h3 class="singer-name">{{ singer.title }}</h3>
+            </div>
+          </div>
         </div>
       </a-spin>
     </div>
@@ -228,5 +269,42 @@ const handleTypeChange = () => {
 :deep(.ant-spin-nested-loading) {
   height: calc(100% - 35px);
   overflow: auto;
+}
+.singer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 20px;
+}
+
+.singer-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+
+.singer-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.singer-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.singer-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
 }
 </style>

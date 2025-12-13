@@ -146,9 +146,9 @@ const changeCategory = key => {
   fetchSingerList();
 };
 
-// 新增：跳转到歌手详情
-const goToArtistDetail = singer => {
-  router.push(`/artist/${singer?.singerMID}?singer=${encodeURIComponent(JSON.stringify(singer))}`);
+// 新增：跳转到专辑详情
+const goToAlbumDetail = album => {
+  router.push(`/album/${album?.albumMID}?singer=${encodeURIComponent(JSON.stringify(album))}`);
 };
 </script>
 
@@ -173,7 +173,7 @@ const goToArtistDetail = singer => {
           v-for="singer in singerList"
           :key="singer.albumMID"
           class="singer-card"
-          @click="goToArtistDetail(singer)"
+          @click="goToAlbumDetail(singer)"
         >
           <div class="singer-avatar">
             <img :src="singer.artwork || '@/assets/default-avatar.jpg'" :alt="singer.title" />
@@ -188,6 +188,7 @@ const goToArtistDetail = singer => {
 
 <style scoped>
 .artist-page {
+  height: 100%;
   position: relative;
   padding: 8px;
   color: #333;

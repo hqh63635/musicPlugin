@@ -5,6 +5,7 @@ import MusicBar from './components/MusicBar.vue';
 import SideBar from './components/SideBar.vue';
 import Lyric from './components/Lyric.vue';
 import { useMusicStore } from './store/music.js';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 
 // 使用音乐store
 const musicStore = useMusicStore();
@@ -30,6 +31,33 @@ const footerStyle = {
   padding: 0,
   background: '#fff',
 };
+
+// 响应式歌词侧边栏宽度
+const lyricWidth = ref(400);
+
+// 根据屏幕宽度更新歌词侧边栏宽度
+const updateLyricWidth = () => {
+  const screenWidth = window.innerWidth;
+  if (screenWidth <= 768) {
+    lyricWidth.value = '100%';
+  } else if (screenWidth <= 992) {
+    lyricWidth.value = 350;
+  } else if (screenWidth <= 1600) {
+    lyricWidth.value = 450;
+  } else {
+    lyricWidth.value = 600;
+  }
+};
+
+// 监听窗口大小变化
+onMounted(() => {
+  updateLyricWidth();
+  window.addEventListener('resize', updateLyricWidth);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', updateLyricWidth);
+});
 </script>
 
 <template>
@@ -49,7 +77,7 @@ const footerStyle = {
       <a-layout-sider
         class="lyric-container-box"
         :style="lyricStyle"
-        :width="400"
+        :width="lyricWidth"
         v-if="musicStore.showLyricDrawer"
       >
         <Lyric />

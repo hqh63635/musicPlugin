@@ -86,11 +86,6 @@ const removeSong = (song, index) => {
       >
       </SongList>
     </div>
-
-    <!-- 歌单不存在 -->
-    <!-- <div v-else class="not-found">
-      <p>歌单不存在或已被删除</p>
-    </div> -->
   </div>
 </template>
 

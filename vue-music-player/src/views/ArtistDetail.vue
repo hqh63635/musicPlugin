@@ -3,10 +3,14 @@
     <div class="artist-detail-content">
       <a-spin :spinning="loading" :indicator="indicator" class="loading-spin">
         <div class="artist-info">
-          <img :src="singer?.avatar" :alt="artistInfo?.name" class="artist-avatar" />
+          <img
+            :src="singer?.avatar || singer?.artwork || '@/assets/default-avatar.jpg'"
+            :alt="artistInfo?.name"
+            class="artist-avatar"
+          />
           <div class="artist-details">
-            <p><strong>简介:</strong> {{ singer?.name || '暂无简介' }}</p>
-            <p><strong>地区:</strong> {{ singer?.area || '未知' }}</p>
+            <p><strong>简介:</strong> {{ singer?.name || singer?.title || '暂无简介' }}</p>
+            <p><strong>地区:</strong> {{ singer?.area || singer?.artist || '未知' }}</p>
             <p><strong>流派:</strong> {{ singer?.name || '未知' }}</p>
           </div>
           <div class="play-active">
@@ -134,6 +138,7 @@ const handlePageChange = page => {
 }
 
 .artist-detail-container {
+  height: calc(100vh - 120px);
   margin: 0 auto;
   padding: 8px;
   background-color: #f5f5f5;

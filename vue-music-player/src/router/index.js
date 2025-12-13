@@ -12,6 +12,7 @@ const Playlist = () => import('../views/Playlist.vue');
 const RecentPlay = () => import('../views/RecentPlay.vue');
 const Download = () => import('../views/Download.vue');
 const FavoriteList = () => import('../views/FavoriteList.vue');
+import Layout from '../components/Layout.vue';
 
 // 创建路由实例
 const router = createRouter({
@@ -34,17 +35,38 @@ const router = createRouter({
     {
       path: '/artist',
       name: 'Artist',
-      component: Artist,
-    },
-    {
-      path: '/artist/:id',
-      name: 'ArtistDetail',
-      component: ArtistDetail,
+      component: Layout,
+      redirect: { name: 'ArtistList' },
+      children: [
+        {
+          path: '',
+          name: 'ArtistList',
+          component: Artist,
+        },
+        {
+          path: ':id',
+          name: 'ArtistDetail',
+          component: ArtistDetail,
+        },
+      ],
     },
     {
       path: '/album',
       name: 'Album',
-      component: Album,
+      component: Layout,
+      redirect: { name: 'AlbumList' },
+      children: [
+        {
+          path: '',
+          name: 'AlbumList',
+          component: Album,
+        },
+        {
+          path: ':id',
+          name: 'AlbumDetail',
+          component: ArtistDetail,
+        },
+      ],
     },
     {
       path: '/search',
