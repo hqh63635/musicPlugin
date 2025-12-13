@@ -19,6 +19,10 @@ import listBulletIcon from '@/assets/icons/list-bullet.svg';
 import { PlayCircleOutlined, DeleteOutlined, PauseCircleOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
 
+// 导入 vxe-table 组件和样式
+import 'vxe-table/lib/style.css';
+import { VxeTable, VxeColumn } from 'vxe-table';
+
 // 使用音乐store
 const musicStore = useMusicStore();
 
@@ -143,71 +147,9 @@ const toggleLyricDrawer = () => {
   musicStore.toggleLyricDrawer();
 };
 
-// 播放列表表格列定义
-const columns = [
-  {
-    title: '序号',
-    dataIndex: 'index',
-    width: 60,
-    align: 'center',
-    customRender: ({ index }) => index + 1,
-  },
-  {
-    title: '歌曲',
-    dataIndex: 'title',
-    ellipsis: true,
-    customRender: ({ record }) => {
-      return record.title || '未知歌曲';
-    },
-  },
-  {
-    title: '歌手',
-    dataIndex: 'title',
-    ellipsis: true,
-    customRender: ({ record }) => {
-      return record.artist || '未知歌手';
-    },
-  },
-  {
-    title: '专辑',
-    dataIndex: 'album',
-    ellipsis: true,
-  },
-  {
-    title: '操作',
-    dataIndex: 'operation',
-    width: 120,
-    align: 'center',
-    customRender: ({ record, index }) => {
-      const isPlaying = record.id === musicStore.currentSong.id;
-
-      return h(
-        'div',
-        {
-          style: 'display:flex; justify-content:center; gap:12px; cursor:pointer;',
-        },
-        [
-          // ▶️ / ⏸ 播放 / 暂停
-          h(isPlaying ? PauseCircleOutlined : PlayCircleOutlined, {
-            style: `font-size:20px; color:${isPlaying ? '#52c41a' : '#1677ff'};`,
-            onClick: () => musicStore.playSong(record, index),
-          }),
-
-          // ❌ 删除
-          h(DeleteOutlined, {
-            style: 'font-size:20px; color:#ff4d4f;',
-            onClick: () => musicStore.removeSong(record),
-          }),
-        ]
-      );
-    },
-  },
-];
-
 // 播放歌曲
-const playSong = item => {
-  const index = musicStore.playlist.findIndex(song => song.id === item.id);
-  musicStore.setCurrentSong(item, index);
+const handlePlaySong = item => {
+  musicStore.playSong(item);
 };
 
 // 添加到播放列表
@@ -240,9 +182,10 @@ const toggleFavorite = () => {
 
   message.success(musicStore.currentSong.isFavorite ? '收藏成功' : '取消收藏');
 };
-const handleRowClick = record => {
-  debugger;
-  playSong(record);
+
+const cellClickEvent = ({ row, column }) => {
+  console.log(`单击行：${row.id} 单击列：${column.title}`);
+  handlePlaySong(row);
 };
 </script>
 
@@ -396,18 +339,54 @@ const handleRowClick = record => {
   >
     <div class="playlist-container">
       <div class="playlist-list">
-        <a-table
-          class="ant-table-striped"
-          size="middle"
-          :columns="columns"
-          :data-source="musicStore.playlist"
-          row-key="id"
-          :pagination="false"
-          :scroll="{ y: 'calc(100vh - 120px)' }"
-          :rowClassName="rowClassName"
-          virtual
-          @row-click="handleRowClick"
-        />
+        <vxe-table
+          :height="'100%'"
+          :scroll-y="'calc(100vh - 120px)'"
+          :data="musicStore.playlist"
+          :row-config="{ keyField: 'id' }"
+          :row-class-name="rowClassName"
+          @cell-dblclick="cellClickEvent"
+          stripe
+          :virtual-y-config="{ enabled: true, gt: 0 }"
+        >
+          <vxe-column title="序号" type="seq" width="60" align="center" />
+          <vxe-column
+            title="歌曲"
+            field="title"
+            ellipsis
+            :formatter="({ row }) => row.title || '未知歌曲'"
+          />
+          <vxe-column
+            title="歌手"
+            field="artist"
+            ellipsis
+            :formatter="({ row }) => row.artist || '未知歌手'"
+          />
+          <vxe-column title="专辑" field="album" ellipsis />
+          <vxe-column title="操作" width="120" align="center">
+            <template #default="{ row, $rowIndex }">
+              <div style="display: flex; justify-content: center; gap: 12px; cursor: pointer">
+                <!-- 播放 / 暂停 -->
+                <component
+                  :is="
+                    row.id === musicStore.currentSong.id ? PauseCircleOutlined : PlayCircleOutlined
+                  "
+                  :style="{
+                    fontSize: '20px',
+                    color: row.id === musicStore.currentSong.id ? '#52c41a' : '#1677ff',
+                  }"
+                  @click="musicStore.playSong(row)"
+                />
+
+                <!-- 删除 -->
+                <DeleteOutlined
+                  style="font-size: 20px; color: #ff4d4f"
+                  @click="removeSong(row, $rowIndex)"
+                />
+              </div>
+            </template>
+          </vxe-column>
+        </vxe-table>
 
         <div v-if="!musicStore.playlist || musicStore.playlist.length === 0" class="playlist-empty">
           播放列表为空
@@ -792,6 +771,7 @@ const handleRowClick = record => {
 }
 
 .playlist-list {
+  height: 100%;
   padding: 0 0;
 }
 

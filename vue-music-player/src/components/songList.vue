@@ -9,6 +9,7 @@
       :aggregate-config="{ padding: false }"
       :scroll-y="{ enabled: true, gt: 10 }"
       @scroll="handleScroll"
+      stripe
     >
       <!-- 序号 -->
       <vxe-column title="序号" width="60">
