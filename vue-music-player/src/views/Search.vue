@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watch, h } from 'vue';
+import { ref, onMounted, watch, h, nextTick } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import api from '../services/api.js';
 import SongList from '../components/SongList.vue';
@@ -68,7 +68,7 @@ watch(
 
 // 执行搜索
 const performSearch = async () => {
-  if (!keyword.value) return;
+  if (!keyword.value || loading.value) return;
 
   loading.value = true;
   try {
@@ -79,10 +79,17 @@ const performSearch = async () => {
       searchResults.value.push(...result.data);
     }
     isEnd.value = result.isEnd;
+    // 移除这里的currentPage增加，统一在调用处处理
   } catch (error) {
     console.error('搜索失败:', error);
   } finally {
     loading.value = false;
+    if (currentType.value !== 'music') {
+      // 加载完成后检查是否需要继续填充
+      nextTick(() => {
+        checkAndLoadMore();
+      });
+    }
   }
 };
 
@@ -107,6 +114,36 @@ const handleTypeChange = key => {
   performSearch();
 };
 
+// 检查是否需要自动加载更多（内容未填满视口时）
+const checkAndLoadMore = () => {
+  const container = document.querySelector('.singer-grid');
+  if (!container) return;
+
+  const contentHeight = container.scrollHeight; // 使用scrollHeight获取实际内容高度
+  const containerHeight = container.offsetHeight;
+  const viewportHeight = window.innerHeight;
+
+  // 添加调试日志
+  console.log('checkAndLoadMore:', {
+    contentHeight,
+    containerHeight,
+    viewportHeight,
+    isEnd: isEnd.value,
+    loading: loading.value,
+  });
+
+  // 当容器高度小于视口高度、内容高度接近容器高度（表示内容已填满）、有更多数据且没有请求进行中时继续加载
+  // 只有当内容确实在增长时才继续加载，避免无限循环
+  if (
+    containerHeight < viewportHeight - 200 &&
+    contentHeight > containerHeight * 0.8 &&
+    !isEnd.value &&
+    !loading.value
+  ) {
+    currentPage.value++;
+    performSearch();
+  }
+};
 const goToArtistDetail = singer => {
   router.push(`/artist/${singer?.singerMID}?singer=${encodeURIComponent(JSON.stringify(singer))}`);
 };
