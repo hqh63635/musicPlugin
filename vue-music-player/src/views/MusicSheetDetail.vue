@@ -82,8 +82,14 @@ const playSong = (song, index) => {
 };
 
 // 添加到播放列表
-const addToPlaylist = song => {
-  musicStore.addToPlaylist(song);
+const addToPlaylist = item => {
+  if (item) {
+    musicStore.addToPlaylist(item, 0);
+    message.success(`$(item.title)添加到播放列表`);
+  } else {
+    musicStore.addSongsToPlaylist(playlist.value || [], 0);
+    message.success(`添加${playlist.value.length}首歌曲到播放列表`);
+  }
 };
 
 // 从播放列表移除歌曲
@@ -128,7 +134,7 @@ const clearPlaylist = () => {
     <div class="playlist-detail">
       <div class="playlist-actions">
         <a-button class="mr12" type="primary" @click="playAll">播放全部</a-button>
-        <a-button class="mr12" type="primary" @click="addToPlaylist">添加到播放列表</a-button>
+        <a-button class="mr12" type="primary" @click="addToPlaylist()">添加到播放列表</a-button>
         <a-button @click="clearPlaylist">清空歌单</a-button>
       </div>
       <div class="playlist-content">
