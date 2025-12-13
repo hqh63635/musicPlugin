@@ -21,9 +21,11 @@ const currentType = ref('music'); // 搜索类型：music, artist, album
 // 当路由参数变化时重新搜索
 onMounted(() => {
   keyword.value = route.query.keyword || '';
+  currentType.value = route.query.type || 'music'; // 从URL查询参数读取搜索类型
   performSearch();
 });
 
+// 监听keyword变化
 watch(
   () => route.query.keyword,
   newValue => {
@@ -33,6 +35,37 @@ watch(
     }
   }
 );
+
+// 监听type变化，更新URL查询参数
+watch(
+  () => currentType.value,
+  newValue => {
+    router.push(
+      {
+        path: route.path,
+        query: {
+          ...route.query,
+          type: newValue,
+        },
+      },
+      { replace: true }
+    );
+  }
+);
+
+// 监听URL查询参数中的type变化，保持界面与URL同步
+watch(
+  () => route.query.type,
+  newValue => {
+    if (newValue && newValue !== currentType.value) {
+      currentType.value = newValue;
+      currentPage.value = 1;
+      searchResults.value = [];
+      performSearch();
+    }
+  }
+);
+
 // 执行搜索
 const performSearch = async () => {
   if (!keyword.value) return;
@@ -67,9 +100,8 @@ const formatDuration = seconds => {
   const remainingSeconds = seconds % 60;
   return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
 };
-// 新增：处理搜索类型切换
+// 处理搜索类型切换
 const handleTypeChange = key => {
-  currentType.value = key;
   currentPage.value = 1;
   searchResults.value = [];
   performSearch();
@@ -87,7 +119,7 @@ const goToAlbumDetail = album => {
 <template>
   <div class="artist-detail-container">
     <div class="artist-detail-content">
-      <a-tabs v-model:value="currentType" @change="handleTypeChange" class="search-tabs">
+      <a-tabs v-model:activeKey="currentType" @change="handleTypeChange" class="search-tabs">
         <a-tab-pane key="music" tab="歌曲"></a-tab-pane>
         <a-tab-pane key="artist" tab="歌手"></a-tab-pane>
         <a-tab-pane key="album" tab="专辑"></a-tab-pane>
