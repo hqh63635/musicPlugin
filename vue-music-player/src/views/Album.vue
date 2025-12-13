@@ -191,7 +191,6 @@ const goToArtistDetail = singer => {
   position: relative;
   padding: 8px;
   color: #333;
-  border-radius: 12px;
   background-color: #f5f5f5;
 }
 
@@ -539,6 +538,7 @@ const goToArtistDetail = singer => {
 }
 .artist-page-container {
   height: 100%;
+  border-radius: 12px;
   padding: 118px 12px 12px;
   background-color: #fff;
   overflow: auto;

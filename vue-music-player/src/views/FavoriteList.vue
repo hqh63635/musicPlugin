@@ -21,36 +21,7 @@ const pageSize = ref(20);
 
 // 获取完整的最近播放歌曲列表并按播放时间排序
 const fullSongList = computed(() => {
-  return musicStore.playlist
-    .filter(song => song.isFavorite)
-    .sort((a, b) => new Date(b.playTime) - new Date(a.playTime));
-});
-
-// 计算当前页的歌曲列表（本地分页）
-const songList = computed(() => {
-  const startIndex = (currentPage.value - 1) * pageSize.value;
-  const endIndex = startIndex + pageSize.value;
-  return fullSongList.value.slice(0, endIndex);
-});
-
-// 计算总页数
-const totalPages = computed(() => {
-  return Math.ceil(fullSongList.value.length / pageSize.value);
-});
-
-// 监听当前页变化，确保不超过总页数
-const handlePageChange = page => {
-  if (page >= 1 && page <= totalPages.value) {
-    currentPage.value = page;
-    isEnd.value = page >= totalPages.value;
-  }
-};
-
-// 初始化时检查是否为最后一页
-onMounted(() => {
-  handlePageChange(1);
-  // 这里应该有获取最近播放列表的API调用
-  // musicStore.getRecentPlaylist();
+  return musicStore.playlist.filter(song => song.isFavorite);
 });
 
 // 播放全部歌曲
@@ -95,21 +66,21 @@ const removeSong = song => {
 <template>
   <div class="playlist-page">
     <div class="playlist-detail">
-      <!-- 加载状态 -->
-      <div v-if="loading" class="loading">加载中...</div>
       <SongList
-        :listSongs="songList || []"
+        :listSongs="fullSongList || []"
         :isEnd="isEnd"
         :currentPage="currentPage"
-        @pageChange="handlePageChange"
         :isShowAdd="false"
         :isShowDelete="false"
-        ><div class="control-button" @click="toggleFavorite">
-          <component
-            :is="musicStore.currentSong?.isFavorite ? heartFilledIcon : heartOutlineIcon"
-            :alt="musicStore.currentSong?.isFavorite ? '已喜欢' : '喜欢'"
-          />
-        </div>
+      >
+        <template #actions="{ item }">
+          <div class="control-button" @click="toggleFavorite(item)">
+            <component
+              :is="item?.isFavorite ? heartFilledIcon : heartOutlineIcon"
+              :alt="item?.isFavorite ? '已喜欢' : '喜欢'"
+            />
+          </div>
+        </template>
       </SongList>
     </div>
   </div>
@@ -137,5 +108,11 @@ const removeSong = song => {
   border-radius: 12px;
   padding: 12px;
   overflow: auto;
+}
+.control-button {
+  width: 32px;
+  height: 32px;
+  color: #ff4d4f;
+  cursor: pointer;
 }
 </style>
