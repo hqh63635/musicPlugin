@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { Input } from 'ant-design-vue';
 
@@ -16,6 +16,8 @@ import XMarkIcon from '@/assets/icons/x-mark.svg';
 const router = useRouter();
 const inputValue = ref('');
 const showSearchHistory = ref(false);
+// 主题状态管理
+const isDarkTheme = ref(false);
 
 // 模拟搜索历史
 const searchHistory = ref(['周杰伦', '五月天', '陈奕迅', 'Taylor Swift']);
@@ -41,6 +43,32 @@ const search = keyword => {
 const handleBlur = () => {
   setTimeout(() => (showSearchHistory.value = false), 200);
 };
+
+// 主题切换函数
+const toggleTheme = () => {
+  isDarkTheme.value = !isDarkTheme.value;
+  updateTheme();
+};
+
+// 更新主题样式
+const updateTheme = () => {
+  if (isDarkTheme.value) {
+    document.documentElement.classList.add('dark-theme');
+    localStorage.setItem('theme', 'dark');
+  } else {
+    document.documentElement.classList.remove('dark-theme');
+    localStorage.setItem('theme', 'light');
+  }
+};
+
+// 初始化主题
+onMounted(() => {
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme === 'dark') {
+    isDarkTheme.value = true;
+    updateTheme();
+  }
+});
 </script>
 
 <template>
@@ -86,7 +114,7 @@ const handleBlur = () => {
 
     <div class="right-part">
       <!-- 功能按钮 -->
-      <div class="header-button" title="主题">
+      <div class="header-button" title="主题" @click="toggleTheme">
         <TShirtLineIcon alt="主题" />
       </div>
       <div class="header-button" title="设置">
@@ -279,5 +307,61 @@ const handleBlur = () => {
   width: 1px;
   height: 24px;
   background-color: #e0e0e0;
+}
+/* 暗黑主题样式 */
+.dark-theme .header-container {
+  background-color: #1f2937;
+  border-bottom-color: #374151;
+}
+
+.dark-theme .header-search {
+  background-color: #374151;
+}
+
+.dark-theme .header-search-input {
+  color: #e5e7eb;
+}
+
+.dark-theme .header-search-input::placeholder {
+  color: #9ca3af;
+}
+
+.dark-theme .search-submit:hover {
+  background-color: #4b5563;
+}
+
+.dark-theme .search-history {
+  background-color: #1f2937;
+  border: 1px solid #374151;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.dark-theme .history-header {
+  color: #9ca3af;
+  border-bottom-color: #374151;
+}
+
+.dark-theme .history-item {
+  color: #e5e7eb;
+}
+
+.dark-theme .history-item:hover {
+  background-color: #374151;
+}
+
+.dark-theme .history-item span {
+  color: #e5e7eb;
+}
+
+.dark-theme .header-button {
+  color: #e5e7eb;
+}
+
+.dark-theme .header-button:hover {
+  background-color: #374151;
+}
+
+.dark-theme .header-divider {
+  background-color: #374151;
 }
 </style>
