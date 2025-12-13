@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup>
 import { ref, onMounted, watch, h, nextTick } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import api from '../services/api.js';
@@ -10,7 +10,7 @@ import { Tabs, TabPane } from 'ant-design-vue';
 const musicStore = useMusicStore();
 const route = useRoute();
 const router = useRouter();
-const keyword = ref('zhou');
+const keyword = ref('');
 const searchResults = ref([]);
 const loading = ref(false);
 const currentPage = ref(1);
@@ -18,11 +18,14 @@ const isEnd = ref(false);
 const indicator = h(LoadingOutlined, { style: { fontSize: '24px' }, spin: true });
 const currentType = ref('music'); // 搜索类型：music, artist, album
 
-// 当路由参数变化时重新搜索
+// 当路由参数变化时初始化
 onMounted(() => {
   keyword.value = route.query.keyword || '';
   currentType.value = route.query.type || 'music'; // 从URL查询参数读取搜索类型
-  performSearch();
+  // 如果URL中有keyword参数，自动执行搜索
+  if (route.query.keyword) {
+    performSearch();
+  }
 });
 
 // 监听keyword变化
@@ -151,66 +154,109 @@ const goToArtistDetail = singer => {
 const goToAlbumDetail = album => {
   router.push(`/album/${album?.albumMID}?singer=${encodeURIComponent(JSON.stringify(album))}`);
 };
+
+// 处理搜索触发
+const handleSearch = () => {
+  if (!keyword.value.trim()) return;
+
+  // 重置分页和结果
+  currentPage.value = 1;
+  searchResults.value = [];
+
+  // 更新URL参数
+  router.push({
+    path: route.path,
+    query: {
+      ...route.query,
+      keyword: keyword.value,
+      type: currentType.value,
+    },
+  });
+
+  // 执行搜索
+  performSearch();
+};
 </script>
 
 <template>
   <div class="artist-detail-container">
     <div class="artist-detail-content">
-      <a-tabs v-model:activeKey="currentType" @change="handleTypeChange" class="search-tabs">
-        <a-tab-pane key="music" tab="歌曲"></a-tab-pane>
-        <a-tab-pane key="artist" tab="歌手"></a-tab-pane>
-        <a-tab-pane key="album" tab="专辑"></a-tab-pane>
-      </a-tabs>
-      <a-spin :spinning="loading" :indicator="indicator" class="loading-spin">
-        <div v-if="searchResults.length" class="search-results">
-          <SongList
-            v-if="currentType === 'music'"
-            :listSongs="searchResults"
-            :isEnd="isEnd"
-            :currentPage="currentPage"
-            @pageChange="handlePageChange"
-            :isShowAdd="true"
-            :isShowDelete="false"
-          >
-          </SongList>
-
-          <!-- 歌手列表 -->
-          <div class="singer-grid" v-if="currentType === 'artist'">
-            <div
-              v-for="singer in searchResults"
-              :key="singer.singerMID"
-              class="singer-card"
-              @click="goToArtistDetail(singer)"
-            >
-              <div class="singer-avatar">
-                <img
-                  :src="singer.avatar || singer.artwork || '@/assets/default-avatar.jpg'"
-                  :alt="singer.title"
-                />
-              </div>
-              <h3 class="singer-name">{{ singer.name }}</h3>
-            </div>
-          </div>
-
-          <!-- 专辑列表 -->
-          <div class="singer-grid" v-if="currentType === 'album'">
-            <div
-              v-for="singer in searchResults"
-              :key="singer.albumMID"
-              class="singer-card"
-              @click="goToAlbumDetail(singer)"
-            >
-              <div class="singer-avatar">
-                <img
-                  :src="singer.avatar || singer.artwork || '@/assets/default-avatar.jpg'"
-                  :alt="singer.title"
-                />
-              </div>
-              <h3 class="singer-name">{{ singer.title }}</h3>
-            </div>
-          </div>
+      <!-- 搜索框 -->
+      <div v-if="!searchResults.length && !loading" class="search-input-container">
+        <div class="search-input-wrapper">
+          <input
+            v-model="keyword"
+            type="text"
+            placeholder="请输入歌曲、歌手或专辑名称"
+            class="search-input"
+            @keyup.enter="handleSearch"
+          />
+          <button @click="handleSearch" class="search-button">搜索</button>
         </div>
-      </a-spin>
+      </div>
+
+      <!-- 搜索结果区域 -->
+      <div v-if="searchResults.length || loading" class="search-results-section">
+        <a-tabs v-model:activeKey="currentType" @change="handleTypeChange" class="search-tabs">
+          <a-tab-pane key="music" tab="歌曲"></a-tab-pane>
+          <a-tab-pane key="artist" tab="歌手"></a-tab-pane>
+          <a-tab-pane key="album" tab="专辑"></a-tab-pane>
+        </a-tabs>
+        <a-spin :spinning="loading" :indicator="indicator" class="loading-spin">
+          <div v-if="searchResults.length" class="search-results">
+            <SongList
+              v-if="currentType === 'music'"
+              :listSongs="searchResults"
+              :isEnd="isEnd"
+              :currentPage="currentPage"
+              @pageChange="handlePageChange"
+              :isShowAdd="true"
+              :isShowDelete="false"
+            >
+            </SongList>
+
+            <!-- 歌手列表 -->
+            <div class="singer-grid" v-if="currentType === 'artist'">
+              <div
+                v-for="singer in searchResults"
+                :key="singer.singerMID"
+                class="singer-card"
+                @click="goToArtistDetail(singer)"
+              >
+                <div class="singer-avatar">
+                  <img
+                    :src="singer.avatar || singer.artwork || '@/assets/default-avatar.jpg'"
+                    :alt="singer.title"
+                  />
+                </div>
+                <h3 class="singer-name">{{ singer.name }}</h3>
+              </div>
+            </div>
+
+            <!-- 专辑列表 -->
+            <div class="singer-grid" v-if="currentType === 'album'">
+              <div
+                v-for="singer in searchResults"
+                :key="singer.albumMID"
+                class="singer-card"
+                @click="goToAlbumDetail(singer)"
+              >
+                <div class="singer-avatar">
+                  <img
+                    :src="singer.avatar || singer.artwork || '@/assets/default-avatar.jpg'"
+                    :alt="singer.title"
+                  />
+                </div>
+                <h3 class="singer-name">{{ singer.title }}</h3>
+              </div>
+            </div>
+          </div>
+          <div v-else-if="!loading && keyword.value" class="no-results">
+            <h3>没有找到相关结果</h3>
+            <p>请尝试其他关键词或搜索类型</p>
+          </div>
+        </a-spin>
+      </div>
     </div>
   </div>
 </template>
@@ -218,6 +264,64 @@ const goToAlbumDetail = album => {
 <style scoped>
 .search-tabs {
 }
+
+/* 搜索框样式 */
+.search-input-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 20px;
+  min-height: 200px;
+}
+
+.search-input-wrapper {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 600px;
+  border-radius: 24px;
+  border: 1px solid #dfe1e5;
+  overflow: hidden;
+  box-shadow: 0 1px 6px rgba(32, 33, 36, 0.28);
+  transition: box-shadow 0.3s;
+}
+
+.search-input-wrapper:hover {
+  box-shadow: 0 1px 10px rgba(32, 33, 36, 0.35);
+}
+
+.search-input {
+  flex: 1;
+  padding: 12px 20px;
+  font-size: 16px;
+  border: none;
+  outline: none;
+  background-color: transparent;
+}
+
+.search-button {
+  padding: 12px 24px;
+  font-size: 16px;
+  color: #fff;
+  background-color: #1890ff;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.search-button:hover {
+  background-color: #40a9ff;
+}
+
+.search-button:active {
+  background-color: #096dd9;
+}
+
+.search-results-section {
+  height: 100%;
+}
+/* 搜索结果区域 */
 .artist-detail-container {
   margin: 0 auto;
   padding: 8px;
