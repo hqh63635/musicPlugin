@@ -1,14 +1,20 @@
-<script setup>
-import { ref, onMounted, computed } from 'vue';
+﻿<script setup>
+import { ref, onMounted, computed, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import api from '../services/api.js';
 import { useMusicStore } from '../store/music.js';
 import SongList from '../components/SongList.vue';
 import { DeleteOutlined } from '@ant-design/icons-vue';
 import { Modal } from 'ant-design-vue';
+// 导入IndexedDB Hook
+import { useMusicSheetsDB } from '../composables/useMusicSheetsDB.js';
+// 导入消息提示组件
+import { message } from 'ant-design-vue';
 
 const route = useRoute();
 const musicStore = useMusicStore();
+
+// 初始化IndexedDB Hook
+const { getSheetById, clearSheetSongs } = useMusicSheetsDB();
 
 // 歌单详情
 const playlist = ref(null);
@@ -19,40 +25,54 @@ const currentPage = ref(1);
 // 每页显示的歌曲数量
 const pageSize = ref(20);
 
-// 获取完整的歌曲列表
-const fullSongList = computed(() => {
-  return musicStore?.playlist || [];
+// 计算当前歌单
+const currentSheet = computed(() => {
+  return musicStore.musicSheets.find(sheet => sheet.id === Number(route.params.id));
 });
 
-// 计算当前页的歌曲列表（本地分页）
-const songList = computed(() => {
-  const startIndex = (currentPage.value - 1) * pageSize.value;
-  const endIndex = startIndex + pageSize.value;
-  return fullSongList.value.slice(0, endIndex);
-});
+// 监听当前歌单变化，自动更新播放列表
+watch(
+  currentSheet,
+  newSheet => {
+    if (newSheet) {
+      playlist.value = newSheet.musicList;
+    }
+  },
+  { deep: true }
+);
 
-// 计算总页数
-const totalPages = computed(() => {
-  return Math.ceil(fullSongList.value.length / pageSize.value);
-});
+// 获取歌单详情
+const getPlaylistDetail = async () => {
+  const sheetId = route.params.id;
+  if (!sheetId) return;
 
-// 监听当前页变化，确保不超过总页数
-const handlePageChange = page => {
-  if (page >= 1 && page <= totalPages.value) {
-    currentPage.value = page;
-    isEnd.value = page >= totalPages.value;
+  loading.value = true;
+  try {
+    const sheet = await getSheetById(sheetId);
+    if (sheet) {
+      playlist.value = sheet.musicList;
+      // 设置当前歌单到Pinia store
+      musicStore.setCurrentSheet(sheet);
+    }
+  } catch (error) {
+    console.error('获取歌单详情失败:', error);
+  } finally {
+    loading.value = false;
   }
 };
 
-// 初始化时检查是否为最后一页
+// 初始化时获取歌单详情
 onMounted(() => {
-  handlePageChange(1);
+  getPlaylistDetail();
 });
+
+watch(() => route.params.id, getPlaylistDetail);
 
 // 播放全部歌曲
 const playAll = () => {
-  if (playlist.value?.songs?.length > 0) {
-    musicStore.setPlaylist(playlist.value.songs, 0);
+  if (playlist.value?.length > 0) {
+    musicStore.setPlaylist(playlist.value, 0);
+    playSong(playlist.value[0], 0);
   }
 };
 
@@ -70,15 +90,34 @@ const addToPlaylist = song => {
 const removeSong = (song, index) => {
   musicStore.removeSong(song, index);
 };
-const removeAll = () => {
+
+// 清空播放列表
+const clearPlaylist = () => {
   Modal.confirm({
-    title: '确认清空播放列表吗？',
-    okText: '确认',
-    okType: 'primary',
+    title: '确认清空歌单',
+    content: '确定要清空当前歌单中的所有歌曲吗？此操作不可恢复。',
+    okText: '确定',
     cancelText: '取消',
-    centered: true,
-    onOk: () => {
-      musicStore.removeAll();
+    center: true,
+    onOk: async () => {
+      try {
+        await clearSheetSongs(route.params.id);
+
+        // 更新Pinia store中的歌单列表
+        const { getAllSheets } = useMusicSheetsDB();
+        const sheets = await getAllSheets();
+        musicStore.setMusicSheets(sheets);
+
+        // 更新本地播放列表显示
+        playlist.value = [];
+        message.success('歌单已清空');
+      } catch (error) {
+        console.error('清空歌单失败:', error);
+        Modal.error({
+          title: '操作失败',
+          content: '清空歌单时发生错误，请稍后重试',
+        });
+      }
     },
   });
 };
@@ -87,20 +126,20 @@ const removeAll = () => {
 <template>
   <div class="playlist-page">
     <div class="playlist-detail">
-      <!-- 加载状态 -->
-      <div v-if="loading" class="loading">加载中...</div>
-      <div class="play-actions">
-        <a-button type="primary" @click="removeAll">清空播放列表</a-button>
+      <div class="playlist-actions">
+        <a-button class="mr12" type="primary" @click="playAll">播放全部</a-button>
+        <a-button class="mr12" type="primary" @click="addToPlaylist">添加到播放列表</a-button>
+        <a-button @click="clearPlaylist">清空歌单</a-button>
       </div>
-      <div class="song-list-container">
+      <div class="playlist-content">
         <SongList
-          :listSongs="fullSongList || []"
+          :listSongs="playlist || []"
           :isEnd="true"
           :currentPage="currentPage"
-          @pageChange="handlePageChange"
-          :isShowAdd="false"
-          :isShowDelete="true"
-        ></SongList>
+          :isShowAdd="true"
+          :isShowDelete="false"
+        >
+        </SongList>
       </div>
     </div>
   </div>
@@ -130,11 +169,11 @@ const removeAll = () => {
   padding: 12px;
   overflow: auto;
 }
-.play-actions {
+.playlist-actions {
   margin-bottom: 8px;
 }
-.song-list-container {
-  height: calc(100% - 44px);
+.playlist-content {
+  height: calc(100% - 40px);
 }
 /* 歌单头部 */
 .playlist-header {

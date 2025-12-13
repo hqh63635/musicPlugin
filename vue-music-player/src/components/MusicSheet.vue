@@ -9,45 +9,95 @@
       </span>
     </div>
     <div class="playlist-list">
-      <div class="playlist-item" v-for="item in musicsSheetList" :key="item.id">
-        <div class="playlist-cover">
-          <CdIcon alt="歌单封面" />
+      <div
+        class="playlist-item"
+        v-for="item in musicStore.musicSheets"
+        :key="item.id"
+        :class="{ 'is-selected': +route.params.id === item.id }"
+      >
+        <div class="playlist-content" @click="goToMusicSheetDetail(item.id)">
+          <div class="playlist-cover">
+            <CdIcon alt="歌单封面" />
+          </div>
+          <div class="playlist-info">
+            <div class="playlist-name">{{ item.name }}</div>
+            <div class="playlist-count">{{ item.trackCount }}首</div>
+          </div>
         </div>
-        <div class="playlist-info">
-          <div class="playlist-name">{{ item.name }}</div>
-          <div class="playlist-count">{{ item.trackCount }}首</div>
+        <div class="playlist-actions">
+          <TrashIcon class="trash-icon" alt="删除歌单" @click.stop="showDeleteConfirm(item)" />
         </div>
       </div>
     </div>
-    <a-modal v-model:visible="visible" title="导入歌单">
+    <a-modal
+      v-model:visible="visible"
+      title="导入歌单"
+      maskClosable="false"
+      @cancel="visible = false"
+      @ok="handleImport"
+      okText="导入"
+      cancelText="取消"
+      centered
+    >
       <div class="modal-content">
-        <div class="modal-header">
-          <div class="modal-title">导入歌单</div>
-        </div>
         <div class="modal-body">
           <div class="modal-text">请输入歌单链接或ID</div>
-          <a-input v-model:value="importUrl" placeholder="请输入歌单链接或ID" />
-          <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
-        </div>
-        <div class="modal-footer">
-          <a-button @click="visible = false">取消</a-button>
-          <a-button type="primary" @click="handleImport" :loading="loading"> 导入 </a-button>
+          <a-form :model="importForm" :rules="importRules" ref="importFormRef">
+            <a-form-item name="url" :label="null">
+              <a-input v-model:value="importForm.url" placeholder="请输入歌单链接或ID" />
+            </a-form-item>
+          </a-form>
         </div>
       </div>
     </a-modal>
-    <a-modal v-model:visible="createVisible" title="创建歌单">
+    <a-modal
+      v-model:visible="createVisible"
+      title="创建歌单"
+      :maskClosable="false"
+      @cancel="closeCreateSheetModal"
+      @ok="handleCreateSheet"
+      okText="创建"
+      cancelText="取消"
+      centered
+    >
       <div class="modal-content">
-        <div class="modal-header">
-          <div class="modal-title">创建歌单</div>
-        </div>
         <div class="modal-body">
           <div class="modal-text">请输入歌单名称</div>
-          <a-input v-model:value="newSheetName" placeholder="请输入歌单名称" />
-          <div v-if="createError" class="error-message">{{ createError }}</div>
+          <a-form :model="formData" :rules="rules" ref="formRef">
+            <a-form-item name="name" :label="null">
+              <a-input v-model:value="formData.name" placeholder="请输入歌单名称" />
+            </a-form-item>
+          </a-form>
         </div>
-        <div class="modal-footer">
-          <a-button @click="createVisible = false">取消</a-button>
-          <a-button type="primary" @click="handleCreateSheet" :loading="creating"> 创建 </a-button>
+      </div>
+    </a-modal>
+
+    <a-modal
+      v-model:visible="selectSheetVisible"
+      title="选择歌单"
+      maskClosable="false"
+      @cancel="closeSelectSheetModal"
+      @ok="handleAddToSelectedSheet"
+      okText="添加到所选歌单"
+      cancelText="取消"
+      centered
+    >
+      <div class="modal-content">
+        <div class="modal-body">
+          <div class="modal-text">请选择要添加到的歌单</div>
+          <a-button type="primary" @click="handleCreateNewSheet"> 创建新歌单 </a-button>
+          <div class="playlist-select-list">
+            <div
+              v-for="item in musicStore.musicSheets"
+              :key="item.id"
+              class="playlist-select-item"
+              :class="{ 'is-selected': selectedSheetId === item.id }"
+              @click="selectedSheetId = item.id"
+            >
+              <div class="playlist-select-name">{{ item.name }}</div>
+              <div class="playlist-select-count">{{ item.trackCount }}首</div>
+            </div>
+          </div>
         </div>
       </div>
     </a-modal>
@@ -55,174 +105,221 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, reactive, computed } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+// 导入ant-design-vue组件
+import { Modal } from 'ant-design-vue';
 // 导入SVG图标
 import CdIcon from '@/assets/icons/cd.svg';
 import DocumentPlusIcon from '@/assets/icons/document-plus.svg';
 import arrowleftendonrectangle from '@/assets/icons/arrow-left-end-on-rectangle.svg';
+import TrashIcon from '@/assets/icons/trash.svg';
 // 导入API方法
 import { importMusicSheet } from '../services/api.js';
+// 导入IndexedDB Hook
+import { useMusicSheetsDB } from '../composables/useMusicSheetsDB.js';
+// 导入Pinia状态管理
+import { useMusicStore } from '../store/music.js';
 
+// 路由实例
+const router = useRouter();
+const route = useRoute();
+
+// 初始化Pinia store
+const musicStore = useMusicStore();
+
+// 初始化IndexedDB Hook
+const { getAllSheets, saveSheet, addSongsToSheet, deleteSheet } = useMusicSheetsDB();
+
+/* ---------------- 弹窗状态 ---------------- */
 const visible = ref(false);
-const importUrl = ref(
-  'https://i.y.qq.com/n2/m/share/details/taoge.html?hosteuin=7wvAoKoP7KvA&id=9596296646&appversion=140805&ADTAG=wxfshare&appshare=iphone_wx'
-);
-const loading = ref(false);
-const errorMessage = ref('');
-
-// 创建歌单相关变量
 const createVisible = ref(false);
-const newSheetName = ref('');
-const creating = ref(false);
-const createError = ref('');
+const selectSheetVisible = ref(false);
 
-// 处理导入歌单
+/* ---------------- 导入 ---------------- */
+const loading = ref(false);
+const tempImportedSongs = ref([]);
+
+/* 导入表单验证 */
+const importFormRef = ref(null);
+const importForm = reactive({
+  url: 'https://i.y.qq.com/n2/m/share/details/taoge.html?hosteuin=7wvAoKoP7KvA&id=9596296646&appversion=140805&ADTAG=wxfshare&appshare=iphone_wx',
+});
+const importRules = {
+  url: [
+    { required: true, message: '请输入歌单链接或ID', trigger: 'blur' },
+    { type: 'string', message: '请输入有效的歌单链接或ID', trigger: 'blur' },
+  ],
+};
+
+/* ---------------- 创建歌单 ---------------- */
+const creating = ref(false);
+
+/* 表单验证 */
+const formRef = ref(null);
+const formData = reactive({
+  name: '',
+});
+const rules = {
+  name: [
+    { required: true, message: '请输入歌单名称', trigger: 'blur' },
+    { min: 1, max: 20, message: '歌单名称长度在1-20个字符之间', trigger: 'blur' },
+    {
+      pattern: /^[^\\/:*?"<>|]+$/,
+      message: '歌单名称不能包含特殊字符(\\/:*?"<>|)',
+      trigger: 'blur',
+    },
+  ],
+};
+
+/* ---------------- 歌单 ---------------- */
+// 使用Pinia store中的歌单列表
+const selectedSheetId = ref(null);
+
+/* ========================================================================
+   业务逻辑
+   ======================================================================== */
+
+/* 导入歌单 */
 const handleImport = async () => {
-  if (!importUrl.value.trim()) {
-    errorMessage.value = '请输入歌单链接或ID';
-    return;
-  }
+  // 表单验证
+  await importFormRef.value.validate();
 
   loading.value = true;
-  errorMessage.value = '';
-
   try {
-    const result = await importMusicSheet(importUrl.value.trim());
-    console.log('导入歌单结果:', result);
-    // 导入成功后可以添加一些逻辑，比如更新歌单列表
+    const list = await importMusicSheet(importForm.url.trim());
+    tempImportedSongs.value = list || [];
+
     visible.value = false;
-    importUrl.value = '';
+    selectSheetVisible.value = true;
+
+    // 重置表单
+    if (importFormRef.value) {
+      importFormRef.value.resetFields();
+    }
   } catch (error) {
-    console.error('导入歌单失败:', error);
-    errorMessage.value = '导入失败，请检查链接是否正确';
+    // 如果是表单验证错误，会自动显示，这里处理其他错误
+    if (error.message && error.message !== 'Validation failed') {
+      Modal.error({
+        title: '导入失败',
+        content: '导入歌单时发生错误，请确保链接有效并稍后重试。',
+      });
+    }
   } finally {
     loading.value = false;
   }
 };
 
-// IndexedDB操作方法
-const DB_NAME = 'MusicSheetsDB';
-const DB_VERSION = 1;
-const STORE_NAME = 'sheets';
+/* 添加到已存在歌单 */
+const handleAddToSelectedSheet = async () => {
+  await addSongsToSheet(Number(selectedSheetId.value), tempImportedSongs.value);
 
-// 初始化数据库
-const initDB = () => {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, DB_VERSION);
+  // 更新Pinia store中的歌单列表
+  const sheets = await getAllSheets();
+  musicStore.setMusicSheets(sheets);
 
-    request.onupgradeneeded = event => {
-      const db = event.target.result;
-      if (!db.objectStoreNames.contains(STORE_NAME)) {
-        db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
-      }
-    };
-
-    request.onsuccess = event => {
-      resolve(event.target.result);
-    };
-
-    request.onerror = event => {
-      reject(event.target.error);
-    };
-  });
+  tempImportedSongs.value = [];
+  selectedSheetId.value = null;
+  selectSheetVisible.value = false;
 };
 
-// 获取所有歌单
-const getAllSheets = async () => {
-  const db = await initDB();
-  const result = [];
-
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(STORE_NAME, 'readonly');
-    const store = tx.objectStore(STORE_NAME);
-    const request = store.openCursor();
-
-    request.onsuccess = e => {
-      const cursor = e.target.result;
-      if (cursor) {
-        result.push(cursor.value);
-        cursor.continue();
-      } else {
-        resolve(result);
-      }
-    };
-
-    request.onerror = () => reject(request.error);
-    tx.onerror = () => reject(tx.error);
-    tx.oncomplete = () => db.close();
-  });
+/* 选择新建歌单 */
+const handleCreateNewSheet = () => {
+  selectSheetVisible.value = false;
+  createVisible.value = true;
 };
 
-// 添加或更新歌单
-const addSheet = async sheet => {
-  const db = await initDB();
-
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(STORE_NAME, 'readwrite');
-    const store = tx.objectStore(STORE_NAME);
-
-    // put：存在则更新，不存在则新增
-    const request = store.put(sheet);
-
-    request.onsuccess = () => {
-      resolve(request.result);
-    };
-
-    request.onerror = () => {
-      reject(request.error);
-    };
-
-    tx.onerror = () => {
-      reject(tx.error);
-    };
-
-    tx.oncomplete = () => {
-      db.close();
-    };
-  });
-};
-
-// 处理创建歌单
+/* 创建歌单并写入 songlist */
 const handleCreateSheet = async () => {
-  if (!newSheetName.value.trim()) {
-    createError.value = '请输入歌单名称';
-    return;
-  }
+  // 表单验证
+  await formRef.value.validate();
 
   creating.value = true;
-  createError.value = '';
-
   try {
-    const newSheet = {
-      name: newSheetName.value.trim(),
-      createTime: new Date().toISOString(),
-      trackCount: 0,
-      musicList: [],
-    };
+    await saveSheet({
+      name: formData.name.trim(),
+      createTime: Date.now(),
+      musicList: JSON.parse(JSON.stringify(tempImportedSongs.value)),
+      trackCount: tempImportedSongs.value.length,
+    });
 
-    await addSheet(newSheet);
+    // 更新Pinia store中的歌单列表
+    const sheets = await getAllSheets();
+    musicStore.setMusicSheets(sheets);
+    tempImportedSongs.value = [];
+
+    // 重置表单
+    formData.name = '';
+    if (formRef.value) {
+      formRef.value.resetFields();
+    }
+
     createVisible.value = false;
-    newSheetName.value = '';
-
-    // 重新加载歌单列表
-    musicsSheetList.value = await getAllSheets();
   } catch (error) {
-    console.error('创建歌单失败:', error);
-    createError.value = '创建歌单失败，请重试';
+    // 如果是表单验证错误，会自动显示，这里处理其他错误
+    if (error.message && error.message !== 'Validation failed') {
+      Modal.error({
+        title: '创建失败',
+        content: '创建歌单时发生错误，请稍后重试。',
+      });
+    }
   } finally {
     creating.value = false;
   }
 };
 
-const musicsSheetList = ref([]);
+/* 显示删除确认对话框 */
+const showDeleteConfirm = item => {
+  Modal.confirm({
+    title: '确认删除歌单',
+    content: `确定要删除歌单「${item.name}」吗？删除后将无法恢复。`,
+    okText: '确定',
+    cancelText: '取消',
+    center: true,
+    onOk() {
+      handleDeleteSheet(item.id);
+    },
+  });
+};
 
-// 组件初始化时加载歌单列表
-onMounted(async () => {
+/* 删除歌单 */
+const handleDeleteSheet = async sheetId => {
   try {
-    musicsSheetList.value = await getAllSheets();
+    await deleteSheet(sheetId);
+    // 更新Pinia store中的歌单列表
+    const sheets = await getAllSheets();
+    musicStore.setMusicSheets(sheets);
   } catch (error) {
-    console.error('初始化加载歌单失败:', error);
+    console.error('删除歌单失败:', error);
+    Modal.error({
+      title: '删除失败',
+      content: '删除歌单时发生错误，请稍后重试。',
+    });
   }
+};
+
+/* 跳转到歌单详情页面 */
+const goToMusicSheetDetail = id => {
+  selectedSheetId.value = id;
+  router.push(`/musicsheet/${id}`);
+};
+
+// 关闭创建歌单弹窗
+const closeCreateSheetModal = () => {
+  createVisible.value = false;
+  formData.name = '';
+};
+
+// 关闭选择歌单弹窗
+const closeSelectSheetModal = () => {
+  selectSheetVisible.value = false;
+  selectedSheetId.value = null;
+};
+
+/* 初始化 */
+onMounted(async () => {
+  const sheets = await getAllSheets();
+  musicStore.setMusicSheets(sheets);
 });
 </script>
 
@@ -264,6 +361,8 @@ onMounted(async () => {
 
 .playlist-item {
   display: flex;
+  justify-content: space-between;
+  align-items: center;
   gap: 12px;
   padding: 8px;
   border-radius: 6px;
@@ -271,8 +370,44 @@ onMounted(async () => {
   transition: background-color 0.3s;
 }
 
+.playlist-content {
+  display: flex;
+  gap: 12px;
+  flex: 1;
+}
+
+.playlist-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.playlist-item:hover .playlist-actions {
+  opacity: 1;
+}
+
+.trash-icon {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.3s;
+}
+
+.trash-icon:hover {
+  opacity: 1;
+  color: #ff4d4f;
+}
+
 .playlist-item:hover {
   background-color: #f5f5f5;
+}
+
+.playlist-item.is-selected {
+  background-color: #e6f7ff;
+  color: #1890ff;
 }
 
 .playlist-cover {
@@ -324,5 +459,42 @@ onMounted(async () => {
   margin-top: 10px;
   font-size: 12px;
   color: #ff4d4f;
+}
+
+/* 选择歌单弹窗样式 */
+.playlist-select-list {
+  max-height: 300px;
+  overflow-y: auto;
+  margin-top: 10px;
+}
+
+.playlist-select-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-bottom: 8px;
+}
+
+.playlist-select-item:hover {
+  background-color: #f5f5f5;
+}
+
+.playlist-select-item.is-selected {
+  background-color: #e6f7ff;
+  border: 1px solid #1890ff;
+}
+
+.playlist-select-name {
+  font-size: 14px;
+  color: #333;
+}
+
+.playlist-select-count {
+  font-size: 12px;
+  color: #999;
 }
 </style>

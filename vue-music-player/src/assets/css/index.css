@@ -87,9 +87,19 @@ th {
   background: #d9d9d9;
 }
 
+.ml8 {
+  margin-left: 8px;
+}
 .mr8 {
   margin-right: 8px;
 }
+.ml12 {
+  margin-left: 12px;
+}
+.mr12 {
+  margin-right: 12px;
+}
+
 
 .ant-spin-nested-loading,
 .ant-spin-container {
@@ -148,4 +158,7 @@ th {
 .ant-layout .ant-layout-header {
   height: 60px;
   line-height: 60px;
+}
+.vxe-table--render-default .vxe-body--column.is--padding .vxe-cell {
+  min-height: 64px;
 }

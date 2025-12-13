@@ -12,8 +12,8 @@ const Playlist = () => import('../views/Playlist.vue');
 const RecentPlay = () => import('../views/RecentPlay.vue');
 const Download = () => import('../views/Download.vue');
 const FavoriteList = () => import('../views/FavoriteList.vue');
-const RemoteSheet = () => import('../views/RemoteSheet.vue');
 import Layout from '../components/Layout.vue';
+const MusicSheetDetail = () => import('../views/MusicSheetDetail.vue');
 
 // 创建路由实例
 const router = createRouter({
@@ -96,9 +96,9 @@ const router = createRouter({
       component: FavoriteList,
     },
     {
-      path: '/remote-sheet/:platform/:id',
-      name: 'RemoteSheet',
-      component: RemoteSheet,
+      path: '/musicsheet/:id',
+      name: 'MusicSheetDetail',
+      component: MusicSheetDetail,
     },
   ],
 });

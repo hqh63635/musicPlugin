@@ -240,6 +240,10 @@ const toggleFavorite = () => {
 
   message.success(musicStore.currentSong.isFavorite ? '收藏成功' : '取消收藏');
 };
+const handleRowClick = record => {
+  debugger;
+  playSong(record);
+};
 </script>
 
 <template>
@@ -402,6 +406,7 @@ const toggleFavorite = () => {
           :scroll="{ y: 'calc(100vh - 120px)' }"
           :rowClassName="rowClassName"
           virtual
+          @row-click="handleRowClick"
         />
 
         <div v-if="!musicStore.playlist || musicStore.playlist.length === 0" class="playlist-empty">

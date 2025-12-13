@@ -5,7 +5,8 @@
       :data="listSongs"
       height="100%"
       border="none"
-      row-config="{ isHover: true }"
+      :row-config="{ isHover: true }"
+      :aggregate-config="{ padding: false }"
       :scroll-y="{ enabled: true, gt: 10 }"
       @scroll="handleScroll"
     >
@@ -156,6 +157,7 @@ const removeSong = (song, index) => {
 
 /* 行内布局 */
 .song-info {
+  height: 48px;
   display: flex;
   align-items: center;
   min-width: 0;

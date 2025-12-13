@@ -44,6 +44,12 @@ export const useMusicStore = defineStore(
     // 收藏歌单
     const favoriteSheets = ref([]);
 
+    // 歌单列表
+    const musicSheets = ref([]);
+
+    // 当前查看的歌单
+    const currentSheet = ref(null);
+
     // 格式化时间
     const formatTime = seconds => {
       if (isNaN(seconds)) return '00:00';
@@ -397,6 +403,58 @@ export const useMusicStore = defineStore(
       );
     };
 
+    // 设置歌单列表
+    const setMusicSheets = sheets => {
+      musicSheets.value = sheets;
+    };
+
+    // 添加歌单
+    const addMusicSheet = sheet => {
+      musicSheets.value.push(sheet);
+    };
+
+    // 更新歌单
+    const updateMusicSheet = updatedSheet => {
+      const index = musicSheets.value.findIndex(sheet => sheet.id === updatedSheet.id);
+      if (index !== -1) {
+        musicSheets.value[index] = updatedSheet;
+      }
+    };
+
+    // 删除歌单
+    const deleteMusicSheet = sheetId => {
+      musicSheets.value = musicSheets.value.filter(sheet => sheet.id !== sheetId);
+      // 如果删除的是当前歌单，清除当前歌单
+      if (currentSheet.value && currentSheet.value.id === sheetId) {
+        currentSheet.value = null;
+      }
+    };
+
+    // 设置当前歌单
+    const setCurrentSheet = sheet => {
+      currentSheet.value = sheet;
+    };
+
+    // 清空歌单歌曲
+    const clearSheetSongs = sheetId => {
+      const sheet = musicSheets.value.find(sheet => sheet.id === sheetId);
+      if (sheet) {
+        sheet.musicList = [];
+        sheet.trackCount = 0;
+        updateMusicSheet(sheet);
+        // 如果是当前歌单，同步更新当前歌单
+        if (currentSheet.value && currentSheet.value.id === sheetId) {
+          currentSheet.value = { ...sheet };
+        }
+      }
+    };
+
+    // 清空播放列表
+    const removeAll = () => {
+      playlist.value = [];
+      currentIndex.value = -1;
+    };
+
     return {
       // 状态
       currentSong,
@@ -415,6 +473,8 @@ export const useMusicStore = defineStore(
       currentLyricIndex,
       showLyricDrawer,
       favoriteSheets,
+      musicSheets,
+      currentSheet,
       addSongsToPlaylist,
       // 计算属性
       formatTime,
@@ -441,6 +501,13 @@ export const useMusicStore = defineStore(
       toggleLyricDrawer,
       toggleFavoriteSheet,
       isSheetFavorite,
+      setMusicSheets,
+      addMusicSheet,
+      updateMusicSheet,
+      deleteMusicSheet,
+      setCurrentSheet,
+      clearSheetSongs,
+      removeAll,
     };
   },
   {
