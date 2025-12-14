@@ -64,8 +64,8 @@ const removeSong = song => {
 </script>
 
 <template>
-  <div class="playlist-page">
-    <div class="playlist-detail">
+  <div class="playlist-page main-detail-container">
+    <div class="playlist-detail main-detail-content">
       <SongList
         :listSongs="fullSongList || []"
         :isEnd="isEnd"
@@ -88,11 +88,6 @@ const removeSong = song => {
 
 <style scoped>
 /* 样式与Playlist.vue保持一致 */
-.playlist-page {
-  padding: 8px;
-  background: #f5f5f5;
-}
-
 .loading {
   display: flex;
   justify-content: center;
@@ -104,9 +99,6 @@ const removeSong = song => {
 
 .playlist-detail {
   height: 100%;
-  background: #fff;
-  border-radius: 12px;
-  padding: 12px;
   overflow: auto;
 }
 .control-button {

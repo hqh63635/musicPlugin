@@ -1,4 +1,4 @@
-import { createApp } from 'vue';
+﻿import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import AntDesign from 'ant-design-vue';
 import 'ant-design-vue/dist/reset.css';
@@ -10,6 +10,9 @@ import VxeUITable from 'vxe-table';
 import 'vxe-table/es/style.css';
 import './style.css';
 import './assets/css/index.css';
+import './styles/theme.css';
+import './styles/common.css';
+
 import App from './App.vue';
 import router from './router';
 

@@ -333,7 +333,7 @@ onMounted(async () => {
 
 .section-header span {
   font-size: 14px;
-  color: #666;
+  color: var(--theme-text-primary);
   font-weight: 500;
 }
 
@@ -393,27 +393,27 @@ onMounted(async () => {
   height: 16px;
   cursor: pointer;
   opacity: 0.6;
-  transition: opacity 0.3s;
+  transition: opacity 0.3s, color 0.3s;
 }
 
 .trash-icon:hover {
   opacity: 1;
-  color: #ff4d4f;
+  color: var(--theme-accent-primary);
 }
 
 .playlist-item:hover {
-  background-color: #f5f5f5;
+  background-color: var(--theme-bg-hover);
 }
 
 .playlist-item.is-selected {
-  background-color: #e6f7ff;
-  color: #1890ff;
+  background-color: var(--theme-bg-secondary);
+  color: var(--theme-accent-primary);
 }
 
 .playlist-cover {
   width: 48px;
   height: 48px;
-  background-color: #f0f0f0;
+  background-color: var(--theme-bg-secondary);
   border-radius: 4px;
   display: flex;
   align-items: center;
@@ -436,7 +436,7 @@ onMounted(async () => {
 
 .playlist-name {
   font-size: 14px;
-  color: #333;
+  color: var(--theme-text-primary);
   margin-bottom: 4px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -445,20 +445,20 @@ onMounted(async () => {
 
 .playlist-count {
   font-size: 12px;
-  color: #999;
+  color: var(--theme-text-secondary);
 }
 
 /* 导入歌单模态框样式 */
 .modal-text {
   margin-bottom: 10px;
   font-size: 14px;
-  color: #666;
+  color: var(--theme-text-primary);
 }
 
 .error-message {
   margin-top: 10px;
   font-size: 12px;
-  color: #ff4d4f;
+  color: var(--theme-accent-primary);
 }
 
 /* 选择歌单弹窗样式 */
@@ -475,26 +475,26 @@ onMounted(async () => {
   padding: 12px;
   border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s, border-color 0.3s;
   margin-bottom: 8px;
 }
 
 .playlist-select-item:hover {
-  background-color: #f5f5f5;
+  background-color: var(--theme-bg-hover);
 }
 
 .playlist-select-item.is-selected {
-  background-color: #e6f7ff;
-  border: 1px solid #1890ff;
+  background-color: var(--theme-bg-secondary);
+  border: 1px solid var(--theme-accent-primary);
 }
 
 .playlist-select-name {
   font-size: 14px;
-  color: #333;
+  color: var(--theme-text-primary);
 }
 
 .playlist-select-count {
   font-size: 12px;
-  color: #999;
+  color: var(--theme-text-secondary);
 }
 </style>

@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import MusicSheet from './MusicSheet.vue';
@@ -66,12 +66,12 @@ const switchNavItem = index => {
 .sidebar-container {
   width: 100%;
   height: 100%;
-  background-color: #ffffff;
-  border-right: 1px solid #e0e0e0;
+  background-color: var(--theme-bg-primary);
+  border-right: 1px solid var(--theme-border-primary);
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  transition: width 0.3s;
+  transition: width 0.3s, background-color 0.3s, border-right-color 0.3s;
 }
 .sidebar-container::-webkit-scrollbar {
   width: 0;
@@ -103,12 +103,12 @@ const switchNavItem = index => {
 }
 
 .nav-item:hover {
-  background-color: #f5f5f5;
+  background-color: var(--theme-bg-hover);
 }
 
 .nav-item.active {
-  background-color: #e6f7ff;
-  border-right: 3px solid #1890ff;
+  background-color: var(--theme-bg-active);
+  border-right: 3px solid var(--theme-accent-primary);
 }
 
 .nav-icon {
@@ -133,12 +133,15 @@ const switchNavItem = index => {
 
 .nav-text {
   font-size: 14px;
-  color: #333;
+  color: var(--theme-text-primary);
+  transition: color 0.3s;
 }
 
 .nav-item.active .nav-text {
-  color: #1890ff;
+  color: var(--theme-accent-primary);
 }
+
+
 
 /* 响应式设计 */
 @media (max-width: 1024px) {

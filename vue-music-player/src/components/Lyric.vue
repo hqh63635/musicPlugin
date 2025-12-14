@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="lyric-container">
     <div
       class="lyric-scroll-container"
@@ -17,7 +17,7 @@
               backgroundRepeat: 'no-repeat',
             }
           : {
-              backgroundColor: 'rgb(163, 198, 207)',
+              backgroundColor: 'var(--theme-bg-primary)',
             }
       "
     >
@@ -93,7 +93,7 @@ const stopMomentum = () => cancelAnimationFrame(momentumFrame);
 // ----------------------
 // 按住拖动
 // ----------------------
-const onMouseDown = (e) => {
+const onMouseDown = e => {
   isDown.value = true;
   startY = e.clientY;
   scrollStart = scrollContainer.value.scrollTop;
@@ -102,7 +102,7 @@ const onMouseDown = (e) => {
   lastY = e.clientY;
 };
 
-const onMouseMove = (e) => {
+const onMouseMove = e => {
   if (!isDown.value) return;
   const deltaY = e.clientY - startY;
   scrollContainer.value.scrollTop = scrollStart - deltaY;
@@ -120,9 +120,9 @@ const onMouseUp = () => {
 // ----------------------
 // 鼠标滚轮惯性滚动
 // ----------------------
-const onWheel = (e) => {
+const onWheel = e => {
   stopMomentum();
-    velocity += e.deltaY * 0.1; // 滚轮量适配
+  velocity += e.deltaY * 0.1; // 滚轮量适配
   applyMomentum();
 };
 
@@ -133,7 +133,7 @@ const applyMomentum = () => {
   const container = scrollContainer.value;
   if (!container) return;
 
-  const friction = 0.92;   // 滑动衰减
+  const friction = 0.92; // 滑动衰减
   const minVelocity = 0.3; // 停止阈值
 
   const step = () => {
@@ -183,15 +183,19 @@ const applyMomentum = () => {
   padding: 4px 0;
 }
 
+.dark-theme .lyric-line {
+  color: rgba(255, 255, 255, 0.7);
+}
+
 .lyric-line.active {
-  color: #ffd700;
-  font-size: 18px;
+  color: var(--theme-accent-primary);
+  font-size: 24px;
   font-weight: bold;
-  text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+  text-shadow: 0 0 8px var(--theme-accent-primary);
 }
 
 .no-lyric {
-  color: white;
+  color: var(--theme-text-primary);
   font-size: 24px;
   text-align: center;
 }

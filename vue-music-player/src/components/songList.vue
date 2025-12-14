@@ -129,10 +129,12 @@ const removeSong = (song, index) => {
   margin-left: 10px;
 }
 .icon.add:hover {
-  color: #409eff;
+  color: var(--theme-accent-primary);
+  transition: color 0.3s;
 }
 .icon.delete:hover {
-  color: #ff4d4f;
+  color: var(--theme-accent-error);
+  transition: color 0.3s;
 }
 .load-more {
   text-align: center;
@@ -142,18 +144,18 @@ const removeSong = (song, index) => {
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: #fff;
+  background: var(--theme-bg-primary);
 }
 
 /* ------------ 行 Hover 效果（网易云风格） ------------ */
 :deep(.vxe-body--row:hover) {
-  background: #f5f7fa !important;
+  background: var(--theme-bg-hover) !important;
   transition: background 0.25s ease;
 }
 
 /* 序号样式（网易云：灰色 -> hover 红色） */
 :deep(.vxe-body--row:hover .song-index) {
-  color: #ec4141 !important;
+  color: var(--theme-accent-primary) !important;
 }
 
 /* 行内布局 */
@@ -177,7 +179,7 @@ const removeSong = (song, index) => {
 
 .song-info:hover .cover {
   transform: scale(1.06);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 10px var(--theme-shadow-primary);
 }
 
 /* 歌曲名字（文本溢出省略） */
@@ -185,13 +187,14 @@ const removeSong = (song, index) => {
   flex: 1;
   font-size: 15px;
   font-weight: 500;
-  color: #333;
+  color: var(--theme-text-primary);
   transition: color 0.2s ease;
   min-width: 0;
 }
 
 .song-info:hover .title {
-  color: #000;
+  color: var(--theme-text-primary);
+  opacity: 0.8;
 }
 
 /* 播放按钮默认隐藏，hover 逐渐出现 */
@@ -208,7 +211,7 @@ const removeSong = (song, index) => {
 .song-info:hover .play-btn {
   opacity: 1;
   transform: scale(1.1);
-  color: #ec4141;
+  color: var(--theme-accent-primary);
 }
 
 /* 操作图标样式 */
@@ -223,13 +226,13 @@ const removeSong = (song, index) => {
 
 /* 添加按钮 hover 蓝色（QQ 音乐风格） */
 .icon.add:hover {
-  color: #31c27c;
+  color: var(--theme-accent-primary);
   transform: scale(1.15);
 }
 
 /* 删除按钮 hover 红色 */
 .icon.delete:hover {
-  color: #ff4d4f;
+  color: var(--theme-accent-primary);
   transform: scale(1.15);
 }
 
@@ -243,7 +246,7 @@ const removeSong = (song, index) => {
 :deep(.vxe-header--row .vxe-header--column) {
   font-size: 14px;
   font-weight: 600;
-  color: #666;
-  background: #fafafa;
+  color: var(--theme-text-secondary);
+  background: var(--theme-bg-secondary);
 }
 </style>

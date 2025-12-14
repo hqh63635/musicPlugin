@@ -11,15 +11,18 @@ import { ref, onMounted, onBeforeUnmount } from 'vue';
 const musicStore = useMusicStore();
 const headerStyle = {
   padding: 0,
-  background: '#fff',
+  background: 'var(--theme-bg-primary)',
+  transition: 'background-color 0.3s',
 };
 const siderStyle = {
   padding: 0,
-  background: '#fff',
+  background: 'var(--theme-bg-primary)',
+  transition: 'background-color 0.3s',
 };
 const contentStyle = {
   padding: 0,
-  background: '#fff',
+  background: 'var(--theme-bg-primary)',
+  transition: 'background-color 0.3s',
 };
 const lyricStyle = {
   maxWidth: 'auto',
@@ -29,7 +32,8 @@ const lyricStyle = {
 };
 const footerStyle = {
   padding: 0,
-  background: '#fff',
+  background: 'var(--theme-bg-primary)',
+  transition: 'background-color 0.3s',
 };
 
 // 响应式歌词侧边栏宽度
@@ -117,6 +121,7 @@ onBeforeUnmount(() => {
   height: 100%;
   flex-shrink: 0;
   padding: 12px 12px 12px 0;
-  background-color: #f5f5f5;
+  background-color: var(--theme-bg-secondary);
+  transition: background-color 0.3s;
 }
 </style>

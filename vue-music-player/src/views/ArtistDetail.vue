@@ -1,6 +1,6 @@
-<template>
-  <div class="artist-detail-container">
-    <div class="artist-detail-content">
+﻿<template>
+  <div class="artist-detail-container main-detail-container">
+    <div class="artist-detail-content main-detail-content">
       <a-spin :spinning="loading" :indicator="indicator" class="loading-spin">
         <div class="artist-info">
           <img
@@ -139,17 +139,11 @@ const handlePageChange = page => {
 
 .artist-detail-container {
   height: calc(100vh - 120px);
-  margin: 0 auto;
-  padding: 8px;
-  background-color: #f5f5f5;
   overflow: auto;
 }
 
 .artist-detail-content {
   height: 100%;
-  padding: 12px;
-  border-radius: 12px;
-  background-color: #fff;
 }
 
 .loading,
@@ -160,7 +154,8 @@ const handlePageChange = page => {
 }
 
 .error {
-  color: #ff4d4f;
+  color: var(--theme-accent-primary);
+  transition: color 0.3s;
 }
 
 .artist-info {
@@ -183,7 +178,8 @@ const handlePageChange = page => {
 .artist-details p {
   margin-bottom: 8px;
   font-size: 14px;
-  color: #666;
+  color: var(--theme-text-secondary);
+  transition: color 0.3s;
 }
 
 .songs-list {
@@ -193,19 +189,21 @@ const handlePageChange = page => {
 
 .song-item {
   padding: 10px 0;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--theme-border-primary);
   cursor: pointer;
+  transition: border-bottom-color 0.3s;
   transition: background-color 0.2s;
 }
 
 .song-item:hover {
-  background-color: #f5f5f5;
+  background-color: var(--theme-bg-hover);
 }
 
 .no-songs {
   text-align: center;
   padding: 20px;
-  color: #999;
+  color: var(--theme-text-tertiary);
+  transition: color 0.3s;
 }
 .mr-12 {
   margin-right: 12px;

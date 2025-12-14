@@ -34,8 +34,8 @@ const removeSong = song => {
 </script>
 
 <template>
-  <div class="playlist-page">
-    <div class="playlist-detail">
+  <div class="playlist-page main-detail-container">
+    <div class="playlist-detail main-detail-content">
       <SongList
         :listSongs="fullSongList || []"
         :isEnd="isEnd"
@@ -49,16 +49,8 @@ const removeSong = song => {
 </template>
 
 <style scoped>
-.playlist-page {
-  padding: 8px;
-  background: #f5f5f5;
-}
-
 .playlist-detail {
   height: 100%;
-  background: #fff;
-  border-radius: 12px;
-  padding: 12px;
   overflow: auto;
 }
 </style>

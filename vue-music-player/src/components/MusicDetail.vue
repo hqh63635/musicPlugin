@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup>
 import { ref } from 'vue';
 
 // 音乐详情是否显示
@@ -126,8 +126,8 @@ const hideDetail = () => {
   right: 0;
   width: 350px;
   height: calc(100vh - 80px);
-  background-color: #fff;
-  border-left: 1px solid #ccc;
+  background-color: var(--theme-bg-primary);
+  border-left: 1px solid var(--theme-border-primary);
   transform: translateX(100%);
   transition: transform 0.3s ease;
   overflow-y: auto;
@@ -154,7 +154,7 @@ const hideDetail = () => {
 }
 
 .close-button:hover {
-  background-color: #333;
+  background-color: var(--theme-bg-secondary);
 }
 
 .close-button img {
@@ -182,19 +182,19 @@ const hideDetail = () => {
 .song-name {
   font-size: 24px;
   font-weight: bold;
-  color: #fff;
+  color: var(--theme-text-primary);
   margin-bottom: 8px;
 }
 
 .song-artist {
   font-size: 16px;
-  color: #ddd;
+  color: var(--theme-text-primary);
   margin-bottom: 4px;
 }
 
 .song-album {
   font-size: 14px;
-  color: #888;
+  color: var(--theme-text-secondary);
   margin-bottom: 16px;
 }
 
@@ -202,7 +202,7 @@ const hideDetail = () => {
   display: flex;
   gap: 16px;
   font-size: 12px;
-  color: #888;
+  color: var(--theme-text-secondary);
   margin-bottom: 20px;
 }
 
@@ -224,18 +224,19 @@ const hideDetail = () => {
 }
 
 .action-button.primary {
-  background-color: #1890ff;
+  background-color: var(--theme-accent-primary);
   color: #fff;
   font-weight: 500;
 }
 
 .action-button.primary:hover {
-  background-color: #40a9ff;
+  background-color: var(--theme-accent-primary);
+  opacity: 0.9;
 }
 
 .action-button.secondary {
-  background-color: #333;
-  color: #ddd;
+  background-color: var(--theme-bg-secondary);
+  color: var(--theme-text-primary);
   width: 40px;
   height: 40px;
   padding: 0;
@@ -243,7 +244,7 @@ const hideDetail = () => {
 }
 
 .action-button.secondary:hover {
-  background-color: #444;
+  background-color: var(--theme-bg-hover);
 }
 
 .action-button img {
@@ -259,13 +260,13 @@ const hideDetail = () => {
 .lyrics-section,
 .related-section {
   padding: 20px;
-  border-top: 1px solid #333;
+  border-top: 1px solid var(--theme-border-primary);
 }
 
 .section-title {
   font-size: 16px;
   font-weight: 500;
-  color: #fff;
+  color: var(--theme-text-primary);
   margin-bottom: 16px;
 }
 
@@ -280,19 +281,19 @@ const hideDetail = () => {
   gap: 12px;
   padding: 4px 0;
   font-size: 14px;
-  color: #888;
+  color: var(--theme-text-secondary);
   transition: all 0.3s;
 }
 
 .lyric-line.active {
-  color: #1890ff;
+  color: var(--theme-accent-primary);
   transform: translateX(8px);
 }
 
 .lyric-time {
   width: 40px;
   font-size: 12px;
-  color: #666;
+  color: var(--theme-text-secondary);
 }
 
 .related-list {
@@ -311,7 +312,8 @@ const hideDetail = () => {
 }
 
 .related-item:hover {
-  background-color: #333;
+  background-color: var(--theme-bg-tertiary);
+  transition: background-color 0.3s;
 }
 
 .related-cover {
@@ -335,9 +337,13 @@ const hideDetail = () => {
   min-width: 0;
 }
 
+.related-item:hover {
+  background-color: var(--theme-bg-hover);
+}
+
 .related-name {
   font-size: 14px;
-  color: #ddd;
+  color: var(--theme-text-primary);
   margin-bottom: 4px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -346,7 +352,7 @@ const hideDetail = () => {
 
 .related-artist {
   font-size: 12px;
-  color: #888;
+  color: var(--theme-text-secondary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

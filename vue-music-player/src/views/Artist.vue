@@ -149,8 +149,8 @@ const goToArtistDetail = singer => {
 </script>
 
 <template>
-  <div class="artist-page">
-    <div class="artist-page-container">
+  <div class="artist-page main-detail-container">
+    <div class="artist-page-container main-detail-content">
       <!-- A-Z分类导航 -->
       <a-radio-group
         v-model:value="selectedCategory"
@@ -176,7 +176,6 @@ const goToArtistDetail = singer => {
           </div>
           <h3 class="singer-name">{{ singer.name }}</h3>
         </div>
-        <div v-if="isLoading" class="loading-indicator">加载中...</div>
       </div>
     </div>
   </div>
@@ -186,9 +185,6 @@ const goToArtistDetail = singer => {
 .artist-page {
   height: 100%;
   position: relative;
-  padding: 8px;
-  color: #333;
-  background-color: #f5f5f5;
 }
 
 /* 艺术家头部信息 */
@@ -477,14 +473,15 @@ const goToArtistDetail = singer => {
   flex-wrap: wrap;
   gap: 8px;
   padding: 16px;
-  background-color: rgba(245, 245, 245, 0.8);
+  background-color: var(--theme-bg-secondary);
   border-radius: 8px;
   margin-bottom: 24px;
+  transition: background-color 0.3s;
 }
 
 .category-nav > div {
   padding: 6px 12px;
-  background-color: #fff;
+  background-color: var(--theme-bg-primary);
   border-radius: 16px;
   font-size: 14px;
   cursor: pointer;
@@ -492,8 +489,11 @@ const goToArtistDetail = singer => {
 }
 
 .category-nav > div.active {
-  background-color: #1890ff;
-  color: #fff;
+  background-color: var(--theme-accent-primary);
+  color: var(--theme-bg-primary);
+  transition:
+    background-color 0.3s,
+    color 0.3s;
 }
 
 .singer-grid {
@@ -526,7 +526,7 @@ const goToArtistDetail = singer => {
 .singer-name {
   font-size: 14px;
   font-weight: 500;
-  color: #333;
+  color: var(--theme-text-primary);
   text-align: center;
   white-space: nowrap;
   overflow: hidden;
@@ -535,9 +535,7 @@ const goToArtistDetail = singer => {
 }
 .artist-page-container {
   height: 100%;
-  border-radius: 12px;
   padding: 118px 12px 12px;
-  background-color: #fff;
   overflow: auto;
 }
 </style>

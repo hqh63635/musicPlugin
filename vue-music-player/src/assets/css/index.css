@@ -79,12 +79,16 @@ th {
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
-  background: transparent;
+  background: var(--theme-bg-secondary);
 }
 ::-webkit-scrollbar-thumb {
   border-radius: 10px;
   box-shadow: none;
-  background: #d9d9d9;
+  background: var(--theme-border-primary);
+  transition: background 0.3s;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--theme-border-secondary);
 }
 
 .ml8 {
@@ -106,7 +110,7 @@ th {
   height: 100%;
 }
 .playlist-drawer .ant-table-wrapper .ant-table-tbody > tr.ant-table-row:hover > td {
-  background: #f5f5dc !important;
+  background: var(--theme-bg-hover) !important;
 }
 
 .playlist-drawer .ant-drawer-body {
@@ -135,21 +139,24 @@ th {
   width: 60px;
   text-align: center;
   margin: 0 !important;
+  color: var(--theme-text-primary) !important;
   border-radius: 6px !important;
-  border: 1px solid #d9d9d9 !important;
+  border: 1px solid var(--theme-border-primary) !important;
+  background: var(--theme-bg-primary) !important;
+  transition: all 0.3s;
 }
 
 /* 选中状态（solid风格） */
 .category-nav .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
-  background: #1677ff !important;
-  border-color: #1677ff !important;
-  color: white !important;
+  background: var(--theme-accent-primary) !important;
+  border-color: var(--theme-accent-primary) !important;
+  color: var(--theme-bg-primary) !important;
 }
 
 /* hover */
 .category-nav .ant-radio-button-wrapper:hover {
-  color: #1677ff !important;
-  border-color: #1677ff !important;
+  color: var(--theme-accent-primary) !important;
+  border-color: var(--theme-accent-primary) !important;
 }
 .category-nav .ant-radio-button-wrapper:not(:first-child)::before {
   display: none;
@@ -161,4 +168,83 @@ th {
 }
 .song-list-container .vxe-table--render-default .vxe-body--column.is--padding .vxe-cell {
   min-height: 64px;
+}
+
+/* Ant Design Modal 主题适配 */
+.ant-modal {
+  background-color: var(--theme-bg-primary) !important;
+  transition: background-color 0.3s !important;
+}
+.ant-modal-content {
+  background-color: var(--theme-bg-primary) !important;
+  border-color: var(--theme-border-primary) !important;
+  transition: background-color 0.3s, border-color 0.3s !important;
+}
+.ant-modal-header {
+  background-color: var(--theme-bg-primary) !important;
+  border-bottom-color: var(--theme-border-primary) !important;
+  transition: background-color 0.3s, border-bottom-color 0.3s !important;
+}
+.ant-modal-title {
+  color: var(--theme-text-primary) !important;
+  transition: color 0.3s !important;
+}
+.ant-modal-body {
+  color: var(--theme-text-primary) !important;
+  transition: color 0.3s !important;
+}
+.ant-modal-footer {
+  background-color: var(--theme-bg-primary) !important;
+  border-top-color: var(--theme-border-primary) !important;
+  transition: background-color 0.3s, border-top-color 0.3s !important;
+}
+.ant-modal-mask {
+  background-color: rgba(0, 0, 0, 0.45) !important;
+  transition: background-color 0.3s !important;
+}
+.dark-theme .ant-modal-mask {
+  background-color: rgba(0, 0, 0, 0.6) !important;
+}
+.ant-modal .ant-modal-close {
+  color: var(--theme-text-primary) !important;
+  transition: color 0.3s !important;
+}
+
+/* Ant Design Drawer 主题适配 */
+.ant-drawer {
+  transition: background-color 0.3s !important;
+}
+.ant-drawer-content {
+  background-color: var(--theme-bg-primary) !important;
+  border-color: var(--theme-border-primary) !important;
+  transition: background-color 0.3s, border-color 0.3s !important;
+}
+.ant-drawer-header {
+  background-color: var(--theme-bg-primary) !important;
+  border-bottom-color: var(--theme-border-primary) !important;
+  transition: background-color 0.3s, border-bottom-color 0.3s !important;
+}
+.ant-drawer-title {
+  color: var(--theme-text-primary) !important;
+  transition: color 0.3s !important;
+}
+.ant-drawer-body {
+  color: var(--theme-text-primary) !important;
+  transition: color 0.3s !important;
+}
+.ant-drawer-footer {
+  background-color: var(--theme-bg-primary) !important;
+  border-top-color: var(--theme-border-primary) !important;
+  transition: background-color 0.3s, border-top-color 0.3s !important;
+}
+.ant-drawer-mask {
+  background-color: rgba(0, 0, 0, 0.45) !important;
+  transition: background-color 0.3s !important;
+}
+.ant-drawer .ant-drawer-close {
+  color: var(--theme-text-primary) !important;
+  transition: color 0.3s !important;
+}
+.dark-theme .ant-drawer-mask {
+  background-color: rgba(0, 0, 0, 0.6) !important;
 }

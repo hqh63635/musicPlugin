@@ -12,5 +12,7 @@
 .layout-container {
   width: 100%;
   height: 100%;
+  background-color: var(--theme-bg-primary);
+  transition: background-color 0.3s;
 }
 </style>

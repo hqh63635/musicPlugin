@@ -179,8 +179,8 @@ const handleSearch = () => {
 </script>
 
 <template>
-  <div class="artist-detail-container">
-    <div class="artist-detail-content">
+  <div class="artist-detail-container main-detail-container">
+    <div class="artist-detail-content main-detail-content">
       <!-- 搜索框 -->
       <div v-if="!searchResults.length && !loading" class="search-input-container">
         <div class="search-input-wrapper">
@@ -262,9 +262,6 @@ const handleSearch = () => {
 </template>
 
 <style scoped>
-.search-tabs {
-}
-
 /* 搜索框样式 */
 .search-input-container {
   display: flex;
@@ -276,18 +273,19 @@ const handleSearch = () => {
 
 .search-input-wrapper {
   display: flex;
-  align-items: center;
   width: 100%;
   max-width: 600px;
   border-radius: 24px;
-  border: 1px solid #dfe1e5;
+  border: 1px solid var(--theme-border-secondary);
   overflow: hidden;
-  box-shadow: 0 1px 6px rgba(32, 33, 36, 0.28);
-  transition: box-shadow 0.3s;
+  box-shadow: 0 1px 6px var(--theme-shadow-primary);
+  transition:
+    box-shadow 0.3s,
+    border-color 0.3s;
 }
 
 .search-input-wrapper:hover {
-  box-shadow: 0 1px 10px rgba(32, 33, 36, 0.35);
+  box-shadow: 0 1px 10px var(--theme-shadow-secondary);
 }
 
 .search-input {
@@ -303,7 +301,7 @@ const handleSearch = () => {
   padding: 12px 24px;
   font-size: 16px;
   color: #fff;
-  background-color: #1890ff;
+  background-color: var(--theme-accent-primary);
   border: none;
   outline: none;
   cursor: pointer;
@@ -311,39 +309,33 @@ const handleSearch = () => {
 }
 
 .search-button:hover {
-  background-color: #40a9ff;
+  background-color: var(--theme-accent-primary);
+  opacity: 0.9;
 }
 
 .search-button:active {
-  background-color: #096dd9;
+  background-color: var(--theme-accent-primary);
+  opacity: 0.8;
 }
 
 .search-results-section {
   height: 100%;
 }
-/* 搜索结果区域 */
-.artist-detail-container {
-  margin: 0 auto;
-  padding: 8px;
-  background-color: #f5f5f5;
-}
-
 .artist-detail-content {
   height: 100%;
-  padding: 8px;
-  border-radius: 12px;
-  background-color: #fff;
 }
 .loading {
   text-align: center;
   padding: 40px;
-  color: #888;
+  color: var(--theme-text-secondary);
+  transition: color 0.3s;
 }
 
 .no-results {
   text-align: center;
   padding: 40px;
-  color: #888;
+  color: var(--theme-text-secondary);
+  transition: color 0.3s;
 }
 
 .search-results {

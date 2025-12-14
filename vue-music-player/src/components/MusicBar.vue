@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup>
 import { ref, onMounted, onBeforeUnmount, h, computed } from 'vue';
 import { useMusicStore } from '@/store/music.js';
 import albumCover from '@/assets/imgs/album-cover.jpg';
@@ -343,7 +343,8 @@ const cellClickEvent = ({ row, column }) => {
           :height="'100%'"
           :scroll-y="'calc(100vh - 120px)'"
           :data="musicStore.playlist"
-          :row-config="{ keyField: 'id' }"
+          border="none"
+          :row-config="{ isHover: true, keyField: 'id' }"
           :row-class-name="rowClassName"
           @cell-dblclick="cellClickEvent"
           stripe
@@ -373,14 +374,17 @@ const cellClickEvent = ({ row, column }) => {
                   "
                   :style="{
                     fontSize: '20px',
-                    color: row.id === musicStore.currentSong.id ? '#52c41a' : '#1677ff',
+                    color:
+                      row.id === musicStore.currentSong.id
+                        ? 'var(--theme-accent-success)'
+                        : 'var(--theme-accent-blue)',
                   }"
                   @click="musicStore.playSong(row)"
                 />
 
                 <!-- 删除 -->
                 <DeleteOutlined
-                  style="font-size: 20px; color: #ff4d4f"
+                  style="font-size: 20px; color: var(--theme-accent-error)"
                   @click="removeSong(row, $rowIndex)"
                 />
               </div>
@@ -410,7 +414,7 @@ const cellClickEvent = ({ row, column }) => {
 }
 
 :deep(.playing-row) {
-  background-color: #f5f5dc !important;
+  background-color: var(--theme-bg-hover) !important;
 }
 
 .music-bar-container {
@@ -419,9 +423,12 @@ const cellClickEvent = ({ row, column }) => {
   justify-content: space-between;
   height: 80px;
   padding: 0 20px;
-  background-color: #ffffff;
-  border-top: 1px solid #e5e5e5;
+  background-color: var(--theme-bg-primary);
+  border-top: 1px solid var(--theme-border-primary);
   gap: 20px;
+  transition:
+    background-color 0.3s,
+    border-color 0.3s;
 }
 
 /* 音乐信息 */
@@ -451,7 +458,7 @@ const cellClickEvent = ({ row, column }) => {
 
 .music-name {
   font-size: 14px;
-  color: #333;
+  color: var(--theme-text-primary);
   margin-bottom: 4px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -460,7 +467,7 @@ const cellClickEvent = ({ row, column }) => {
 
 .music-artist {
   font-size: 12px;
-  color: #999;
+  color: var(--theme-text-secondary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -483,7 +490,7 @@ const cellClickEvent = ({ row, column }) => {
 
 .time-info {
   font-size: 12px;
-  color: #999;
+  color: var(--theme-text-secondary);
   width: 40px;
 }
 
@@ -496,7 +503,7 @@ const cellClickEvent = ({ row, column }) => {
   position: relative;
   width: 100%;
   height: 100%;
-  background-color: #e0e0e0;
+  background-color: var(--theme-border-primary);
   border-radius: 2px;
   cursor: pointer;
 }
@@ -506,7 +513,7 @@ const cellClickEvent = ({ row, column }) => {
   top: 0;
   left: 0;
   height: 100%;
-  background-color: #1890ff;
+  background-color: var(--theme-accent-primary);
   border-radius: 2px;
   transition: width 0.3s;
 }
@@ -517,11 +524,14 @@ const cellClickEvent = ({ row, column }) => {
   transform: translate(-50%, -50%);
   width: 12px;
   height: 12px;
-  background-color: #fff;
+  background-color: var(--theme-bg-primary);
   border-radius: 50%;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 4px var(--theme-shadow-secondary);
   cursor: pointer;
-  transition: transform 0.2s;
+  transition:
+    transform 0.2s,
+    background-color 0.3s,
+    box-shadow 0.3s;
 }
 
 .progress-thumb:hover {
@@ -545,20 +555,23 @@ const cellClickEvent = ({ row, column }) => {
 }
 
 .control-button:hover {
-  background-color: #f5f5f5;
+  background-color: var(--theme-bg-hover);
 }
 
 .control-button svg {
   width: 20px;
   height: 20px;
   opacity: 0.8;
-  transition: opacity 0.3s;
+  transition:
+    opacity 0.3s,
+    color 0.3s;
   display: block;
   margin: auto;
+  color: var(--theme-text-primary);
 }
 
 .control-button.active svg {
-  color: #1890ff;
+  color: var(--theme-accent-primary);
   opacity: 1;
 }
 .control-button.lyric-button svg {
@@ -567,7 +580,7 @@ const cellClickEvent = ({ row, column }) => {
 }
 
 .favorite-button.active svg {
-  color: #ff4d4f;
+  color: var(--theme-accent-primary);
 }
 
 .play-mode-button svg {
@@ -582,11 +595,12 @@ const cellClickEvent = ({ row, column }) => {
 .play-button {
   width: 44px;
   height: 44px;
-  background-color: #1890ff;
+  background-color: var(--theme-accent-primary);
 }
 
 .play-button:hover {
-  background-color: #40a9ff;
+  background-color: var(--theme-accent-primary);
+  opacity: 0.9;
 }
 
 .play-button svg {
@@ -776,7 +790,7 @@ const cellClickEvent = ({ row, column }) => {
 }
 
 .table-striped {
-  background-color: #f9f9f9;
+  background-color: var(--theme-bg-secondary);
 }
 
 .song-info {
@@ -785,7 +799,7 @@ const cellClickEvent = ({ row, column }) => {
 
 .song-name {
   font-size: 14px;
-  color: #333;
+  color: var(--theme-text-primary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -793,7 +807,7 @@ const cellClickEvent = ({ row, column }) => {
 
 .song-artist {
   font-size: 12px;
-  color: #999;
+  color: var(--theme-text-secondary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -810,7 +824,7 @@ const cellClickEvent = ({ row, column }) => {
   justify-content: center;
   height: 200px;
   font-size: 14px;
-  color: #999;
+  color: var(--theme-text-secondary);
 }
 
 .playlist-item {
@@ -819,26 +833,27 @@ const cellClickEvent = ({ row, column }) => {
   padding: 8px 16px;
   cursor: pointer;
   transition: background-color 0.3s;
+  color: var(--theme-text-primary);
 }
 
 .playlist-item:hover {
-  background-color: #f5f5f5;
+  background-color: var(--theme-bg-hover);
 }
 
 .playlist-item.active {
-  background-color: #e6f7ff;
-  color: #1890ff;
+  background-color: var(--theme-bg-secondary);
+  color: var(--theme-accent-primary);
 }
 
 .playlist-item-index {
   width: 30px;
   font-size: 14px;
-  color: #999;
+  color: var(--theme-text-secondary);
   margin-right: 12px;
 }
 
 .playlist-item.active .playlist-item-index {
-  color: #1890ff;
+  color: var(--theme-accent-primary);
 }
 
 .playlist-item-info {
@@ -848,7 +863,7 @@ const cellClickEvent = ({ row, column }) => {
 
 .playlist-item-name {
   font-size: 14px;
-  color: #333;
+  color: var(--theme-text-primary);
   margin-bottom: 4px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -856,12 +871,12 @@ const cellClickEvent = ({ row, column }) => {
 }
 
 .playlist-item.active .playlist-item-name {
-  color: #1890ff;
+  color: var(--theme-accent-primary);
 }
 
 .playlist-item-artist {
   font-size: 12px;
-  color: #999;
+  color: var(--theme-text-secondary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -873,7 +888,8 @@ const cellClickEvent = ({ row, column }) => {
   justify-content: center;
   height: 200px;
   font-size: 14px;
-  color: #999;
+  color: var(--theme-text-tertiary);
+  transition: color 0.3s;
 }
 
 /* 歌词抽屉样式 */
@@ -883,6 +899,7 @@ const cellClickEvent = ({ row, column }) => {
   align-items: center;
   justify-content: center;
   background-color: rgba(0, 0, 0, 0.35);
+  transition: background-color 0.3s;
 }
 
 .lyric-drawer-container :deep(.lyric-container) {

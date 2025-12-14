@@ -131,8 +131,11 @@ onMounted(() => {
   align-items: center;
   height: 60px;
   padding: 0 20px 0 0;
-  background-color: #ffffff;
-  border-bottom: 1px solid #e0e0e0;
+  background-color: var(--theme-bg-primary);
+  border-bottom: 1px solid var(--theme-border-primary);
+  transition:
+    background-color 0.3s,
+    border-bottom-color 0.3s;
 }
 
 .left-part {
@@ -148,6 +151,8 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   overflow: visible;
+  color: var(--theme-text-primary) !important;
+  transition: color 0.3s !important;
 }
 
 .logo svg {
@@ -155,6 +160,7 @@ onMounted(() => {
   max-width: 100%;
   object-fit: contain;
   transform: scale(2);
+  fill: currentColor !important;
 }
 
 .navigator {
@@ -163,18 +169,18 @@ onMounted(() => {
 }
 
 .nav-item {
-  color: #666;
+  color: var(--theme-text-secondary);
   font-size: 16px;
   cursor: pointer;
   transition: color 0.3s;
 }
 
 .nav-item:hover {
-  color: #333;
+  color: var(--theme-text-primary);
 }
 
 .nav-item.active {
-  color: #1890ff;
+  color: var(--theme-accent-primary);
   font-weight: 500;
 }
 
@@ -183,9 +189,10 @@ onMounted(() => {
   width: 300px;
   height: 36px;
   line-height: 36px;
-  background-color: #f5f5f5;
+  background-color: var(--theme-bg-secondary);
   border-radius: 18px;
   overflow: hidden;
+  transition: background-color 0.3s;
 }
 
 .header-search-input {
@@ -194,13 +201,15 @@ onMounted(() => {
   padding: 0 40px 0 16px;
   background: transparent;
   border: none;
-  color: #333;
+  color: var(--theme-text-primary);
   font-size: 14px;
   outline: none;
+  transition: color 0.3s;
 }
 
 .header-search-input::placeholder {
-  color: #999;
+  color: var(--theme-text-placeholder);
+  transition: color 0.3s;
 }
 
 .search-submit {
@@ -213,13 +222,19 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.search-submit:hover {
+  background-color: var(--theme-bg-hover);
 }
 
 .search-submit svg {
   width: 18px;
   height: 18px;
   opacity: 0.7;
-  transition: opacity 0.3s;
+  fill: currentColor !important;
+  transition: fill 0.3s !important;
 }
 
 .search-submit:hover svg {
@@ -233,18 +248,24 @@ onMounted(() => {
   width: 100%;
   max-height: 300px;
   overflow-y: auto;
-  background-color: #f9f9f9;
+  background-color: var(--theme-bg-tertiary);
   border-radius: 8px;
   margin-top: 4px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px var(--theme-shadow-primary);
   z-index: 1000;
+  transition:
+    background-color 0.3s,
+    box-shadow 0.3s;
 }
 
 .history-header {
   padding: 12px 16px;
-  color: #999;
+  color: var(--theme-text-tertiary);
   font-size: 12px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--theme-border-primary);
+  transition:
+    color 0.3s,
+    border-bottom-color 0.3s;
 }
 
 .history-item {
@@ -257,18 +278,23 @@ onMounted(() => {
 }
 
 .history-item:hover {
-  background-color: #f5f5f5;
+  background-color: var(--theme-bg-hover);
 }
 
 .history-item svg {
   width: 16px;
   height: 16px;
   opacity: 0.6;
+  fill: currentColor !important;
+  transition:
+    opacity 0.3s,
+    fill 0.3s !important;
 }
 
 .history-item span {
-  color: #333;
+  color: var(--theme-text-primary) !important;
   font-size: 14px;
+  transition: color 0.3s !important;
 }
 
 .right-part {
@@ -285,18 +311,24 @@ onMounted(() => {
   justify-content: center;
   cursor: pointer;
   border-radius: 4px;
-  transition: background-color 0.3s;
+  color: var(--theme-text-primary) !important;
+  transition:
+    background-color 0.3s,
+    color 0.3s !important;
 }
 
 .header-button:hover {
-  background-color: #f5f5f5;
+  background-color: var(--theme-bg-hover);
 }
 
 .header-button svg {
   width: 20px;
   height: 20px;
   opacity: 0.7;
-  transition: opacity 0.3s;
+  fill: currentColor !important;
+  transition:
+    opacity 0.3s,
+    fill 0.3s !important;
 }
 
 .header-button:hover svg {
@@ -306,62 +338,7 @@ onMounted(() => {
 .header-divider {
   width: 1px;
   height: 24px;
-  background-color: #e0e0e0;
-}
-/* 暗黑主题样式 */
-.dark-theme .header-container {
-  background-color: #1f2937;
-  border-bottom-color: #374151;
-}
-
-.dark-theme .header-search {
-  background-color: #374151;
-}
-
-.dark-theme .header-search-input {
-  color: #e5e7eb;
-}
-
-.dark-theme .header-search-input::placeholder {
-  color: #9ca3af;
-}
-
-.dark-theme .search-submit:hover {
-  background-color: #4b5563;
-}
-
-.dark-theme .search-history {
-  background-color: #1f2937;
-  border: 1px solid #374151;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
-.dark-theme .history-header {
-  color: #9ca3af;
-  border-bottom-color: #374151;
-}
-
-.dark-theme .history-item {
-  color: #e5e7eb;
-}
-
-.dark-theme .history-item:hover {
-  background-color: #374151;
-}
-
-.dark-theme .history-item span {
-  color: #e5e7eb;
-}
-
-.dark-theme .header-button {
-  color: #e5e7eb;
-}
-
-.dark-theme .header-button:hover {
-  background-color: #374151;
-}
-
-.dark-theme .header-divider {
-  background-color: #374151;
+  background-color: var(--theme-border-primary);
+  transition: background-color 0.3s;
 }
 </style>

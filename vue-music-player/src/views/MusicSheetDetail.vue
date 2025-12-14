@@ -130,8 +130,8 @@ const clearPlaylist = () => {
 </script>
 
 <template>
-  <div class="playlist-page">
-    <div class="playlist-detail">
+  <div class="playlist-page main-detail-container">
+    <div class="playlist-detail main-detail-content">
       <div class="playlist-actions">
         <a-button class="mr12" type="primary" @click="playAll">播放全部</a-button>
         <a-button class="mr12" type="primary" @click="addToPlaylist()">添加到播放列表</a-button>
@@ -152,11 +152,6 @@ const clearPlaylist = () => {
 </template>
 
 <style scoped>
-.playlist-page {
-  padding: 8px;
-  background: #f5f5f5;
-}
-
 /* 加载状态 */
 .loading {
   display: flex;
@@ -170,9 +165,6 @@ const clearPlaylist = () => {
 /* 歌单详情 */
 .playlist-detail {
   height: 100%;
-  background: #fff;
-  border-radius: 12px;
-  padding: 12px;
   overflow: auto;
 }
 .playlist-actions {

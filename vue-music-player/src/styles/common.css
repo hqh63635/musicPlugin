@@ -1,0 +1,13 @@
+﻿.main-detail-container {
+  margin: 0 auto;
+  padding: 8px;
+  background-color: var(--theme-bg-secondary);
+  transition: background-color 0.3s;
+}
+
+.main-detail-content {
+  padding: 8px;
+  border-radius: 12px;
+  background-color: var(--theme-bg-primary);
+  transition: background-color 0.3s;
+}

@@ -101,9 +101,9 @@ const formatNumber = value => {
 </script>
 
 <template>
-  <div class="ranklist-page">
+  <div class="ranklist-page main-detail-container">
     <!-- 排行榜容器 -->
-    <div class="ranklist-container">
+    <div class="ranklist-container main-detail-content">
       <!-- 排行榜列表 -->
       <div class="ranklist-sidebar">
         <div v-for="group in topLists" :key="group.groupName" class="ranklist-group">
@@ -179,20 +179,11 @@ const formatNumber = value => {
 </template>
 
 <style scoped>
-.ranklist-page {
-  padding: 8px;
-  color: #333;
-  border-radius: 4px;
-  background-color: #f5f5f5;
-}
-
 /* 排行榜容器 */
 .ranklist-container {
   display: flex;
   height: 100%;
-  background-color: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 10px var(--theme-shadow-primary);
 }
 
 /* 排行榜侧边栏 */
@@ -200,21 +191,27 @@ const formatNumber = value => {
   width: 300px;
   border-radius: 12px 0 0 12px;
   overflow-y: auto;
-  background-color: #fff;
-  border-right: 1px solid #eee;
+  background-color: var(--theme-bg-primary);
+  border-right: 1px solid var(--theme-border-primary);
+  transition:
+    background-color 0.3s,
+    border-right-color 0.3s;
 }
 
 .ranklist-group {
-  padding: 15px;
+  padding: 8px;
 }
 
 .group-title {
   font-size: 16px;
   margin-bottom: 15px;
-  color: #666;
+  color: var(--theme-text-secondary);
   font-weight: 600;
   padding-left: 10px;
-  border-left: 3px solid #1890ff;
+  border-left: 3px solid var(--theme-accent-primary);
+  transition:
+    color 0.3s,
+    border-left-color 0.3s;
 }
 
 .ranklist-item {
@@ -229,12 +226,12 @@ const formatNumber = value => {
 }
 
 .ranklist-item:hover {
-  background-color: #f0f7ff;
+  background-color: var(--theme-bg-hover);
 }
 
 .ranklist-item.active {
-  background-color: #e6f7ff;
-  border-left: 3px solid #1890ff;
+  background-color: var(--theme-bg-active);
+  border-left: 3px solid var(--theme-accent-primary);
 }
 
 .ranklist-cover {
@@ -253,19 +250,21 @@ const formatNumber = value => {
 .ranklist-name {
   font-size: 15px;
   font-weight: 500;
-  color: #333;
+  color: var(--theme-text-primary);
   margin-bottom: 4px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  transition: color 0.3s;
 }
 
 .ranklist-update {
   font-size: 12px;
-  color: #888;
+  color: var(--theme-text-tertiary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  transition: color 0.3s;
 }
 
 /* 歌曲列表优化 */
@@ -292,11 +291,12 @@ const formatNumber = value => {
 }
 
 .song-duration {
-  color: #999;
+  color: var(--theme-text-tertiary);
   font-size: 14px;
   padding-left: 15px;
   white-space: nowrap;
   flex-shrink: 0;
+  transition: color 0.3s;
   min-width: 50px;
 }
 
@@ -316,7 +316,8 @@ const formatNumber = value => {
   color: #faad14;
 }
 .rank-normal {
-  color: #888;
+  color: var(--theme-text-secondary);
+  transition: color 0.3s;
 }
 
 .song-info {
@@ -351,17 +352,18 @@ const formatNumber = value => {
 
 .song-name {
   font-size: 16px;
-  color: #333;
+  color: var(--theme-text-primary);
   margin-bottom: 6px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   font-weight: 500;
+  transition: color 0.3s;
 }
 
 .song-artist {
   font-size: 13px;
-  color: #666;
+  color: var(--theme-text-secondary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -371,26 +373,30 @@ const formatNumber = value => {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  transition: color 0.3s;
 }
 
 .meta-separator {
-  color: #ddd;
+  color: var(--theme-border-primary);
+  transition: color 0.3s;
 }
 
 .song-album {
   font-size: 13px;
-  color: #999;
+  color: var(--theme-text-tertiary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  transition: color 0.3s;
 }
 
 .song-duration {
-  color: #999;
+  color: var(--theme-text-tertiary);
   font-size: 14px;
   padding-left: 15px;
   white-space: nowrap;
   flex-shrink: 0;
+  transition: color 0.3s;
 }
 
 /* 排行榜详情头部优化 */
@@ -398,9 +404,7 @@ const formatNumber = value => {
   height: 120px;
   display: flex;
   gap: 20px;
-  padding: 12px;
-  background-color: #f9f9f9;
-  border-radius: 12px;
+  padding-bottom: 8px;
 }
 
 .header-cover {
@@ -408,7 +412,8 @@ const formatNumber = value => {
   height: 100px;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 15px var(--theme-shadow-primary);
+  transition: box-shadow 0.3s;
 }
 
 .header-cover img {
@@ -426,7 +431,7 @@ const formatNumber = value => {
   font-size: 20px;
   line-height: 20px;
   font-weight: bold;
-  color: #333;
+  color: var(--theme-text-primary);
   margin-bottom: 8px;
 }
 
@@ -453,7 +458,7 @@ const formatNumber = value => {
 }
 
 .info-description {
-  color: #666;
+  color: var(--theme-text-secondary);
   line-height: 1.2;
   font-size: 12px;
 }
@@ -497,7 +502,7 @@ const formatNumber = value => {
 .ranklist-detail {
   flex: 1;
   min-width: 0;
-  padding: 12px;
+  padding: 8px;
   display: flex;
   flex-direction: column;
 }
