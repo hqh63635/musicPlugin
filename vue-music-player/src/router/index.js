@@ -2,7 +2,6 @@ import { createRouter, createWebHistory } from 'vue-router';
 
 // 定义路由组件
 // 注意：这里使用了动态导入来实现路由懒加载
-const Recommend = () => import('../views/Recommend.vue');
 const RankList = () => import('../views/RankList.vue');
 import Artist from '../views/Artist.vue';
 import ArtistDetail from '../views/ArtistDetail.vue';
@@ -22,11 +21,6 @@ const router = createRouter({
     {
       path: '/',
       redirect: '/ranklist',
-    },
-    {
-      path: '/recommend',
-      name: 'Recommend',
-      component: Recommend,
     },
     {
       path: '/ranklist',
