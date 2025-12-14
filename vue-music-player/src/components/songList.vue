@@ -3,6 +3,7 @@
     <vxe-table
       ref="xTable"
       :data="listSongs"
+      row-id="songmid"
       height="100%"
       border="none"
       :row-config="{ isHover: true }"
