@@ -382,11 +382,11 @@ export const useMusicStore = defineStore(
     // 切换歌单收藏状态
     const toggleFavoriteSheet = sheet => {
       if (!sheet) return;
-      
+
       const index = favoriteSheets.value.findIndex(
         item => item.platform === sheet.platform && item.id === sheet.id
       );
-      
+
       if (index === -1) {
         // 收藏歌单
         favoriteSheets.value.push(sheet);
@@ -398,9 +398,7 @@ export const useMusicStore = defineStore(
 
     // 检查歌单是否已收藏
     const isSheetFavorite = (platform, id) => {
-      return favoriteSheets.value.some(
-        item => item.platform === platform && item.id === id
-      );
+      return favoriteSheets.value.some(item => item.platform === platform && item.id === id);
     };
 
     // 设置歌单列表
@@ -513,6 +511,23 @@ export const useMusicStore = defineStore(
   {
     persist: {
       storage: localStorage,
+      pick: [
+        'currentSong',
+        'isPlaying',
+        'progressPercentage',
+        'volume',
+        'isMuted',
+        'playMode',
+        'playlist',
+        'currentIndex',
+        'parsedLrc',
+        'fullLyric',
+        'currentLyricIndex',
+        'showLyricDrawer',
+        'favoriteSheets',
+        'musicSheets',
+        'currentSheet',
+      ],
     },
   }
 );
