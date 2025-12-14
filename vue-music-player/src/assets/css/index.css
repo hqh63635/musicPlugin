@@ -166,7 +166,7 @@ th {
   height: 60px;
   line-height: 60px;
 }
-.song-list-container .vxe-table--render-default .vxe-body--column.is--padding .vxe-cell {
+.song-table-wrapper .vxe-table--render-default .vxe-body--column.is--padding .vxe-cell {
   min-height: 64px;
 }
 
