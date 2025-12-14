@@ -539,6 +539,7 @@ const goToAlbumDetail = album => {
 }
 .artist-page-container {
   height: 100%;
+  padding-top: 118px;
   overflow: auto;
 }
 </style>
