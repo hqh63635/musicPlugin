@@ -87,8 +87,6 @@ const removeAll = () => {
 <template>
   <div class="playlist-page main-detail-container">
     <div class="playlist-detail main-detail-content">
-      <!-- 加载状态 -->
-      <div v-if="loading" class="loading">加载中...</div>
       <div class="play-actions">
         <a-button type="primary" @click="removeAll">清空播放列表</a-button>
       </div>
