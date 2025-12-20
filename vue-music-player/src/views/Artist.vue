@@ -155,7 +155,7 @@ const goToArtistDetail = singer => {
       <a-radio-group
         v-model:value="selectedCategory"
         button-style="solid"
-        class="category-nav"
+        class="category-nav radio-button"
         @change="changeCategory"
       >
         <a-radio-button v-for="category in categories" :key="category.id" :value="category.id">

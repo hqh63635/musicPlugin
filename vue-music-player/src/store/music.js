@@ -1,6 +1,7 @@
 ﻿import { defineStore } from 'pinia';
 import { ref, computed, watch } from 'vue';
 import api from '@/services/api.js';
+import { message } from 'ant-design-vue';
 
 export const useMusicStore = defineStore(
   'music',
@@ -28,9 +29,10 @@ export const useMusicStore = defineStore(
     const playlist = ref([]);
     // 当前播放索引
     const currentIndex = ref(-1);
-    // 当前播放的音频元素
     // 音频元素
     const audioElement = ref(new Audio());
+    // 音质设置
+    const quality = ref('exhigh'); // low, standard, high, super
     // 当前播放歌曲
     const parsedLrc = ref(null);
     // 完整歌词数组
@@ -193,7 +195,7 @@ export const useMusicStore = defineStore(
 
       try {
         // 获取当前音质设置
-        const currentQuality = 'standard'; // 这里可以从用户设置中获取，暂时使用默认值
+        const currentQuality = quality.value; // 使用store中的音质设置
 
         // 获取音乐资源 - 传入歌曲ID和音质参数
         const result = await api.getMediaSource(song, currentQuality);
@@ -272,11 +274,39 @@ export const useMusicStore = defineStore(
       currentTime.value = time;
     };
 
-    // 添加currentTime监听以更新歌词索引
+    // 监听currentTime变化以更新歌词索引
     watch(
       () => currentTime.value,
       newTime => {
         updateCurrentLyric(newTime);
+      }
+    );
+
+    // 监听音质变化，当音质变更时，如果有歌曲正在播放，重新获取媒体源
+    watch(
+      () => quality.value,
+      async (newQuality, oldQuality) => {
+        if (newQuality !== oldQuality && currentSong.value && audioElement.value) {
+          try {
+            // 获取新音质的媒体源
+            const result = await api.getMediaSource(currentSong.value, newQuality);
+            if (result.url) {
+              message.success(`音质切换为 ${newQuality}`);
+              // 保存当前播放位置
+              const currentPosition = audioElement.value.currentTime;
+              // 更新音频源
+              audioElement.value.src = result.url;
+              // 恢复播放位置
+              audioElement.value.currentTime = currentPosition;
+              // 如果之前是播放状态，继续播放
+              if (isPlaying.value) {
+                audioElement.value.play();
+              }
+            }
+          } catch (error) {
+            console.error('切换音质失败:', error);
+          }
+        }
       }
     );
 
@@ -447,6 +477,11 @@ export const useMusicStore = defineStore(
       }
     };
 
+    // 设置音质
+    const setQuality = newQuality => {
+      quality.value = newQuality;
+    };
+
     // 清空播放列表
     const removeAll = () => {
       playlist.value = [];
@@ -473,6 +508,7 @@ export const useMusicStore = defineStore(
       favoriteSheets,
       musicSheets,
       currentSheet,
+      quality,
       addSongsToPlaylist,
       // 计算属性
       formatTime,
@@ -505,6 +541,7 @@ export const useMusicStore = defineStore(
       deleteMusicSheet,
       setCurrentSheet,
       clearSheetSongs,
+      setQuality,
       removeAll,
     };
   },
@@ -524,6 +561,7 @@ export const useMusicStore = defineStore(
         'favoriteSheets',
         'musicSheets',
         'currentSheet',
+        'quality',
       ],
     },
   }

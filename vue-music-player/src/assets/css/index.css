@@ -135,8 +135,8 @@ th {
 }
 
 /* 让每个 a-radio-button 变成独立按钮，而不是连在一起 */
-.category-nav .ant-radio-button-wrapper {
-  width: 60px;
+.radio-button .ant-radio-button-wrapper {
+  min-width: 60px;
   text-align: center;
   margin: 0 !important;
   color: var(--theme-text-primary) !important;
@@ -147,18 +147,22 @@ th {
 }
 
 /* 选中状态（solid风格） */
-.category-nav .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+.radio-button .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
   background: var(--theme-accent-primary) !important;
   border-color: var(--theme-accent-primary) !important;
   color: var(--theme-bg-primary) !important;
 }
 
 /* hover */
-.category-nav .ant-radio-button-wrapper:hover {
+.radio-button .ant-radio-button-wrapper:hover {
   color: var(--theme-accent-primary) !important;
   border-color: var(--theme-accent-primary) !important;
 }
-.category-nav .ant-radio-button-wrapper:not(:first-child)::before {
+.radio-button .ant-radio-button-wrapper.ant-radio-button-wrapper-checked:hover {
+  color: var(--theme-accent-hover) !important;
+  border-color: var(--theme-accent-primary) !important;
+}
+.radio-button .ant-radio-button-wrapper:not(:first-child)::before {
   display: none;
 }
 
@@ -171,7 +175,7 @@ th {
 }
 
 /* Ant Design Modal 主题适配 */
-.ant-modal {
+.ant-modal .ant-modal-content {
   background-color: var(--theme-bg-primary) !important;
   transition: background-color 0.3s !important;
 }

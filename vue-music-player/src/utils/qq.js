@@ -1,4 +1,4 @@
-var _0xodC = 'jsjiami.com.v7';
+﻿var _0xodC = 'jsjiami.com.v7';
 ('use strict');
 const _0x2d9c31 = _0x1b16;
 ((function (_0x1bca1f, _0xa30e2e, _0x2cacd6, _0x2fe2cc, _0x1489ba, _0x3843ef, _0x1197c7) {
@@ -1347,10 +1347,11 @@ async function getMusicSheetInfo(_0x25ff71, _0x42cbca) {
   return { isEnd: !![], musicList: _0x323663 };
 }
 const qualityLevels = {
-  low: _0x2d9c31(0x1fe, '&kXq'),
-  standard: 'exhigh',
-  high: 'exhigh',
-  super: _0x2d9c31(0x104, 'm1Q9'),
+ low: 'low',
+ standard: 'standard',
+ high: 'high',
+ exhigh: 'exhigh',
+ super: _0x2d9c31(0x104, 'm1Q9'),
 };
 async function getMediaSource(_0x20874b, _0x2392d1) {
   const _0x31a1f2 = _0x2d9c31,

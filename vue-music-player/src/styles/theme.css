@@ -18,6 +18,7 @@
   --theme-border-secondary: #dfe1e5;
   
   /* 强调色 */
+  --theme-accent-hover: #e6f7ff;
   --theme-accent-primary: #1890ff;
   --theme-accent-success: #52c41a;
   --theme-accent-error: #ff4d4f;
@@ -50,6 +51,7 @@
   --theme-border-secondary: #4b5563;
   
   /* 强调色 */
+  --theme-accent-hover: rgba(59, 130, 246, 0.2);
   --theme-accent-primary: #3b82f6;
   --theme-accent-success: #52c41a;
   --theme-accent-error: #ff4d4f;
@@ -100,30 +102,22 @@ body {
   border-radius: 4px;
 }
 
-/* 暗黑主题滚动条样式 */
-.dark-theme ::-webkit-scrollbar-thumb {
-  background: var(--theme-text-tertiary);
-}
-
-.dark-theme ::-webkit-scrollbar-thumb:hover {
-  background: var(--theme-text-secondary);
-}
-
 ::-webkit-scrollbar-thumb:hover {
   background: var(--theme-border-secondary);
 }
 
-/* 暗黑模式滚动条 */
+/* 暗黑主题滚动条样式 */
 .dark-theme ::-webkit-scrollbar-track {
-  background: var(--theme-border-secondary);
+  background: var(--theme-bg-secondary);
 }
 
 .dark-theme ::-webkit-scrollbar-thumb {
-  background: var(--theme-border-primary);
+  background: var(--theme-text-tertiary);
+  border-radius: 4px;
 }
 
 .dark-theme ::-webkit-scrollbar-thumb:hover {
-  background: var(--theme-border-secondary);
+  background: var(--theme-text-secondary);
 }
 
 .dark-theme .vxe-table--render-default .vxe-table--body-wrapper {

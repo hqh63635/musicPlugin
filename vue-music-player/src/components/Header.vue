@@ -1,7 +1,8 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import { Input } from 'ant-design-vue';
+import { Input, Modal, Tabs, Radio } from 'ant-design-vue';
+import { useMusicStore } from '@/store/music.js';
 
 // 导入SVG图标
 import LogoIcon from '@/assets/icons/logo.svg';
@@ -18,6 +19,12 @@ const inputValue = ref('');
 const showSearchHistory = ref(false);
 // 主题状态管理
 const isDarkTheme = ref(false);
+// 设置弹窗状态管理
+const showSettings = ref(false);
+const activeTab = ref('general'); // 常规、播放、关于musicfree
+// 初始化music store
+const musicStore = useMusicStore();
+// 使用store中的音质设置
 
 // 模拟搜索历史
 const searchHistory = ref(['周杰伦', '五月天', '陈奕迅', 'Taylor Swift']);
@@ -47,8 +54,12 @@ const handleBlur = () => {
 // 主题切换函数
 const toggleTheme = () => {
   isDarkTheme.value = !isDarkTheme.value;
-  updateTheme();
 };
+
+// 监听isDarkTheme变化，自动更新主题
+watch(isDarkTheme, () => {
+  updateTheme();
+});
 
 // 更新主题样式
 const updateTheme = () => {
@@ -117,11 +128,64 @@ onMounted(() => {
       <div class="header-button" title="主题" @click="toggleTheme">
         <TShirtLineIcon alt="主题" />
       </div>
-      <div class="header-button" title="设置">
+      <div class="header-button" title="设置" @click="showSettings = !showSettings">
         <Cog8ToothIcon alt="设置" />
       </div>
     </div>
   </div>
+
+  <!-- 设置弹窗 (使用Ant Design Vue的Modal) -->
+  <a-modal v-model:open="showSettings" title="设置" :footer="null" width="700px" destroyOnClose>
+    <a-tabs v-model:activeKey="activeTab" class="settings-tabs">
+      <a-tab-pane tab="常规" key="general">
+        <div class="setting-item">
+          <div class="setting-label">语言</div>
+          <div class="setting-value">简体中文</div>
+        </div>
+        <div class="setting-item">
+          <div class="setting-label">主题</div>
+          <div class="setting-value">
+            <a-radio-group v-model:value="isDarkTheme" button-style="solid" class="radio-button">
+              <a-radio-button :value="false">明亮</a-radio-button>
+              <a-radio-button :value="true">暗黑</a-radio-button>
+            </a-radio-group>
+          </div>
+        </div>
+      </a-tab-pane>
+      <a-tab-pane tab="播放" key="playback">
+        <div class="setting-item">
+          <div class="setting-label">自动播放</div>
+          <div class="setting-value">开启</div>
+        </div>
+        <div class="setting-item">
+          <div class="setting-label">音质</div>
+          <div class="setting-value">
+            <a-radio-group
+              v-model:value="musicStore.quality"
+              button-style="solid"
+              class="radio-button"
+            >
+              <a-radio-button value="low">低音质</a-radio-button>
+              <a-radio-button value="standard">标准音质</a-radio-button>
+              <a-radio-button value="high">高音质</a-radio-button>
+              <a-radio-button value="exhigh">极高音质</a-radio-button>
+              <a-radio-button value="super">超高音质</a-radio-button>
+            </a-radio-group>
+          </div>
+        </div>
+      </a-tab-pane>
+      <a-tab-pane tab="关于musicfree" key="about">
+        <div class="setting-item">
+          <div class="setting-label">版本</div>
+          <div class="setting-value">1.0.0</div>
+        </div>
+        <div class="setting-item">
+          <div class="setting-label">开发者</div>
+          <div class="setting-value">xxx</div>
+        </div>
+      </a-tab-pane>
+    </a-tabs>
+  </a-modal>
 </template>
 
 <style scoped>
@@ -340,5 +404,140 @@ onMounted(() => {
   height: 24px;
   background-color: var(--theme-border-primary);
   transition: background-color 0.3s;
+}
+
+/* 设置项样式 */
+.setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--theme-border-primary);
+  transition: border-bottom-color 0.3s;
+}
+
+.setting-item:last-child {
+  border-bottom: none;
+}
+
+.setting-label {
+  font-size: 14px;
+  color: var(--theme-text-primary);
+  transition: color 0.3s;
+}
+
+.setting-value {
+  font-size: 14px;
+  color: var(--theme-text-secondary);
+  transition: color 0.3s;
+}
+
+/* Ant Design 组件样式调整 */
+:deep(.ant-tabs-tab) {
+  font-size: 14px;
+  padding: 12px 20px;
+  color: var(--theme-text-secondary);
+  transition: color 0.3s;
+}
+
+:deep(.ant-tabs-tab:hover) {
+  color: var(--theme-text-primary);
+}
+
+:deep(.ant-tabs-tab-active) {
+  color: var(--theme-accent-primary);
+}
+
+:deep(.ant-tabs-content) {
+  padding: 0;
+  height: 300px;
+}
+
+:deep(.ant-tabs-nav) {
+  color: var(--theme-text-primary);
+}
+
+/* 模态框内容颜色 */
+:deep(.ant-modal-content) {
+  color: var(--theme-text-primary);
+  background-color: var(--theme-bg-primary);
+  border-color: var(--theme-border-primary);
+}
+
+:deep(.ant-modal-header) {
+  color: var(--theme-text-primary);
+  background-color: var(--theme-bg-primary);
+  border-bottom-color: var(--theme-border-primary);
+}
+
+:deep(.ant-modal-title) {
+  color: var(--theme-text-primary);
+}
+
+/* Tabs组件主题适配 */
+:deep(.ant-tabs-nav-list) {
+  color: var(--theme-text-primary);
+}
+
+:deep(.ant-tabs-tab) {
+  color: var(--theme-text-secondary);
+}
+
+:deep(.ant-tabs-tab:hover) {
+  color: var(--theme-text-primary);
+}
+
+:deep(.ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn) {
+  color: var(--theme-accent-primary);
+}
+
+:deep(.ant-tabs-ink-bar) {
+  background-color: var(--theme-accent-primary);
+}
+
+:deep(.ant-tabs-content-holder) {
+  color: var(--theme-text-primary);
+}
+
+/* 模态框背景颜色 - 确保在暗黑模式下显示正确 */
+.dark-theme :deep(.ant-modal-content) {
+  color: var(--theme-text-primary);
+  background-color: var(--theme-bg-primary);
+  border-color: var(--theme-border-primary);
+}
+
+.dark-theme :deep(.ant-modal-header) {
+  color: var(--theme-text-primary);
+  background-color: var(--theme-bg-primary);
+  border-bottom-color: var(--theme-border-primary);
+}
+
+:deep(.ant-radio-group) {
+  display: flex;
+  gap: 16px;
+}
+
+/* 主题单选按钮样式调整 */
+:deep(.ant-radio-button-wrapper) {
+  font-size: 13px;
+  border-color: var(--theme-border-primary);
+  background-color: var(--theme-bg-secondary);
+  color: var(--theme-text-secondary);
+  transition: all 0.3s;
+}
+
+:deep(.ant-radio-button-wrapper:hover) {
+  color: var(--theme-text-primary);
+}
+
+:deep(.ant-radio-button-wrapper-checked) {
+  background-color: var(--theme-accent-primary);
+  border-color: var(--theme-accent-primary);
+  color: white;
+}
+
+:deep(.ant-radio-button-wrapper-checked:hover) {
+  background-color: var(--theme-accent-primary);
+  border-color: var(--theme-accent-primary);
 }
 </style>
