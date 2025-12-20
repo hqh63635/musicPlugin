@@ -418,6 +418,7 @@ const cellClickEvent = ({ row, column }) => {
 }
 
 .music-bar-container {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -475,10 +476,13 @@ const cellClickEvent = ({ row, column }) => {
 
 /* 播放控制器 */
 .player-controller {
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 8;
   max-width: 600px;
 }
 

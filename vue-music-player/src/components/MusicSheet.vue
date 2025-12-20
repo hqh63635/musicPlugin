@@ -47,6 +47,13 @@
               <a-input v-model:value="importForm.url" placeholder="请输入歌单链接或ID" />
             </a-form-item>
           </a-form>
+          <ul>
+            <li>
+              QQ音乐APP：自建歌单-分享-分享到微信好友/QQ好友；然后点开并复制链接，直接粘贴即可
+            </li>
+            <li>H5：复制URL并粘贴，或者直接输入纯数字歌单ID即可</li>
+            <li>导入时间和歌单大小有关，请耐心等待</li>
+          </ul>
         </div>
       </div>
     </a-modal>
@@ -143,7 +150,7 @@ const tempImportedSongs = ref([]);
 /* 导入表单验证 */
 const importFormRef = ref(null);
 const importForm = reactive({
-  url: 'https://i.y.qq.com/n2/m/share/details/taoge.html?hosteuin=7wvAoKoP7KvA&id=9596296646&appversion=140805&ADTAG=wxfshare&appshare=iphone_wx',
+  url: '',
 });
 const importRules = {
   url: [
@@ -393,7 +400,9 @@ onMounted(async () => {
   height: 16px;
   cursor: pointer;
   opacity: 0.6;
-  transition: opacity 0.3s, color 0.3s;
+  transition:
+    opacity 0.3s,
+    color 0.3s;
 }
 
 .trash-icon:hover {
@@ -475,7 +484,9 @@ onMounted(async () => {
   padding: 12px;
   border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s, border-color 0.3s;
+  transition:
+    background-color 0.3s,
+    border-color 0.3s;
   margin-bottom: 8px;
 }
 

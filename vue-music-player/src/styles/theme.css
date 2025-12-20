@@ -68,6 +68,7 @@ html.dark-theme {
   --vxe-ui-font-color: var(--theme-text-primary);
  --vxe-ui-table-row-hover-background-color: var(--theme-bg-hover);
  --vxe-ui-table-row-hover-striped-background-color: var(--theme-bg-tertiary);
+ --vxe-ui-table-header-background-color: var(--theme-bg-secondary);
 }
 
 /* 全局样式重置 */
@@ -99,13 +100,22 @@ body {
   border-radius: 4px;
 }
 
+/* 暗黑主题滚动条样式 */
+.dark-theme ::-webkit-scrollbar-thumb {
+  background: var(--theme-text-tertiary);
+}
+
+.dark-theme ::-webkit-scrollbar-thumb:hover {
+  background: var(--theme-text-secondary);
+}
+
 ::-webkit-scrollbar-thumb:hover {
   background: var(--theme-border-secondary);
 }
 
 /* 暗黑模式滚动条 */
 .dark-theme ::-webkit-scrollbar-track {
-  background: var(--theme-bg-secondary);
+  background: var(--theme-border-secondary);
 }
 
 .dark-theme ::-webkit-scrollbar-thumb {
