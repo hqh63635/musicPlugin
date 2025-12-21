@@ -1,5 +1,5 @@
 ﻿<script setup>
-import { ref } from 'vue';
+import { ref, markRaw } from 'vue';
 import { useRouter } from 'vue-router';
 import MusicSheet from './MusicSheet.vue';
 
@@ -18,14 +18,14 @@ const router = useRouter();
 
 // 侧边栏导航项
 const navItems = ref([
-  { icon: IdentificationIcon, text: '搜索', path: '/search' },
-  { icon: TrophyIcon, text: '排行榜', path: '/ranklist' },
-  { icon: HeartIcon, text: '我喜欢的音乐', path: '/favorite' },
-  { icon: ClockIcon, text: '最近播放', path: '/recent' },
-  { icon: ArrayDownloadTrayIcon, text: '下载管理', path: '/download' },
-  { icon: ListBulletIcon, text: '我的歌单', path: '/playlist' },
-  { icon: AlbumIcon, text: '专辑', path: '/album' },
-  { icon: UserIcon, text: '歌手', path: '/artist' },
+  { icon: markRaw(IdentificationIcon), text: '搜索', path: '/search' },
+  { icon: markRaw(TrophyIcon), text: '排行榜', path: '/ranklist' },
+  { icon: markRaw(HeartIcon), text: '我喜欢的音乐', path: '/favorite' },
+  { icon: markRaw(ClockIcon), text: '最近播放', path: '/recent' },
+  { icon: markRaw(ArrayDownloadTrayIcon), text: '下载管理', path: '/download' },
+  { icon: markRaw(ListBulletIcon), text: '我的歌单', path: '/playlist' },
+  { icon: markRaw(AlbumIcon), text: '专辑', path: '/album' },
+  { icon: markRaw(UserIcon), text: '歌手', path: '/artist' },
 ]);
 
 // 切换导航项
@@ -71,7 +71,10 @@ const switchNavItem = index => {
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  transition: width 0.3s, background-color 0.3s, border-right-color 0.3s;
+  transition:
+    width 0.3s,
+    background-color 0.3s,
+    border-right-color 0.3s;
 }
 .sidebar-container::-webkit-scrollbar {
   width: 0;
@@ -140,8 +143,6 @@ const switchNavItem = index => {
 .nav-item.active .nav-text {
   color: var(--theme-accent-primary);
 }
-
-
 
 /* 响应式设计 */
 @media (max-width: 1024px) {

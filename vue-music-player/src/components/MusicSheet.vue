@@ -32,7 +32,7 @@
     <a-modal
       v-model:visible="visible"
       title="导入歌单"
-      maskClosable="false"
+      :maskClosable="false"
       @cancel="visible = false"
       @ok="handleImport"
       okText="导入"
@@ -82,7 +82,7 @@
     <a-modal
       v-model:visible="selectSheetVisible"
       title="选择歌单"
-      maskClosable="false"
+      :maskClosable="false"
       @cancel="closeSelectSheetModal"
       @ok="handleAddToSelectedSheet"
       okText="添加到所选歌单"

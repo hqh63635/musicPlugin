@@ -161,9 +161,7 @@ const searchTypeMap = {
     0xc: 'mv',
   },
   headers = {
-    referer: 'https://y.qq.com',
     'user-agent': _0x2d9c31(0x1e8, '64Fn'),
-    Cookie: _0x2d9c31(0x15d, '&kXq'),
   };
 async function searchBase(_0x1ca1b5, _0x28826a, _0x25ffb1) {
   const _0x44fc72 = _0x2d9c31,
@@ -598,7 +596,7 @@ async function getLyric(_0x525af0) {
           _0xcb6c69(0x1c7, '9AM9') +
           new Date()['getTime']() +
           '&g_tk=5381&loginUin=0&hostUin=0&inCharset=utf8&outCharset=utf-8&notice=0&platform=yqq&needNewCode=0',
-        headers: { Referer: _0xcb6c69(0x10c, '64Fn'), Cookie: _0xcb6c69(0x1e5, 'tLK6') },
+        headers: {},
         method: 'get',
         xsrfCookieName: _0xaaa96c[_0xcb6c69(0x15e, '03[$')],
         withCredentials: !![],
@@ -667,10 +665,7 @@ async function importMusicSheet(_0x15d3ed) {
           'http://i.y.qq.com/qzone/fcg-bin/fcg_ucc_getcdinfo_byids_cp.fcg?type=1&utf8=1&disstid=' +
           _0x7091bb +
           _0x196e02(0x10a, '@Cq@'),
-        headers: {
-          Referer: _0x6971dd[_0x196e02(0x119, 'Etr!')],
-          Cookie: _0x6971dd[_0x196e02(0x14a, 'JK@Q')],
-        },
+        headers: {},
         method: _0x196e02(0x243, '6jKL'),
         xsrfCookieName: _0x6971dd[_0x196e02(0x102, 'Gd7F')],
         withCredentials: !![],
@@ -774,7 +769,7 @@ async function getTopLists() {
     _0xd814e6 = await (0x0, axios_1[_0x54ad51(0x224, '#Q5h')])({
       url: _0x3d4a72['jtGdD'],
       method: 'get',
-      headers: { Cookie: _0x54ad51(0x1cf, 'lt](') },
+      headers: {},
       xsrfCookieName: _0x3d4a72[_0x54ad51(0x21d, '6jUE')],
       withCredentials: !![],
     });
@@ -812,7 +807,7 @@ async function getTopListDetail(_0x3ef415) {
         : '') +
       _0x50c456(0x183, '9AM9'),
     method: _0x50c456(0x1e9, 'g]!o'),
-    headers: { Cookie: _0x1c9e24['tuPal'] },
+    headers: {},
     xsrfCookieName: _0x1c9e24[_0x50c456(0x11d, 'yaaI')],
     withCredentials: !![],
   });
@@ -841,7 +836,7 @@ async function getRecommendSheetTags() {
     },
     _0x124cbf = (
       await axios_1['default']['get'](_0xb98c0d['fksiv'], {
-        headers: { referer: _0xb98c0d[_0x2901eb(0x199, '2$a!')] },
+        headers: {},
       })
     )[_0x2901eb(0x161, '(8EC')]['data'][_0x2901eb(0x1c5, '03[$')],
     _0x38b51b = _0x124cbf[_0x2901eb(0x234, 'lt](')](0x1)[_0x2901eb(0x1ce, 'iDlc')](_0x2eced4 => ({
@@ -933,7 +928,7 @@ async function getRecommendSheetsByTag(_0x5de3ec, _0x41e04f) {
       await axios_1['default'][_0x47b66e(0x1ca, 'Uh*z')](
         'https://c.y.qq.com/splcloud/fcgi-bin/fcg_get_diss_by_tag.fcg',
         {
-          headers: { referer: _0x4c6f5e[_0x47b66e(0x1d3, 'Aijr')] },
+          headers: {},
           params: {
             inCharset: _0x4c6f5e['JkUfh'],
             outCharset: _0x4c6f5e['ZrNEy'],
