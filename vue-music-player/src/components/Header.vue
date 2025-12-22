@@ -3,6 +3,7 @@ import { ref, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { Input, Modal, Tabs, Radio } from 'ant-design-vue';
 import { useMusicStore } from '@/store/music.js';
+import { useI18n } from 'vue-i18n';
 
 // 导入SVG图标
 import LogoIcon from '@/assets/icons/logo.svg';
@@ -14,6 +15,7 @@ import MinusIcon from '@/assets/icons/minus.svg';
 import SquareIcon from '@/assets/icons/square.svg';
 import XMarkIcon from '@/assets/icons/x-mark.svg';
 
+const { t, locale } = useI18n();
 const router = useRouter();
 const inputValue = ref('');
 const showSearchHistory = ref(false);
@@ -79,7 +81,20 @@ onMounted(() => {
     isDarkTheme.value = true;
     updateTheme();
   }
+  const savedLanguage = localStorage.getItem('language');
+  if (savedLanguage) {
+    currentLanguage.value = savedLanguage;
+    locale.value = savedLanguage;
+  }
 });
+
+// 处理语言切换
+const handleLanguageChange = (newLanguage) => {
+  currentLanguage.value = newLanguage;
+  locale.value = newLanguage;
+  localStorage.setItem('language', newLanguage);
+};
+
 </script>
 
 <template>
@@ -94,7 +109,7 @@ onMounted(() => {
         <Input
           v-model:value="inputValue"
           class="header-search-input"
-          placeholder="搜索音乐、歌手、专辑"
+          :placeholder="t('header.searchPlaceholder')"
           @change="showSearchHistory = true"
           @pressEnter="onSearchSubmit"
           @focus="showSearchHistory = false"
@@ -106,7 +121,7 @@ onMounted(() => {
 
         <!-- 搜索历史 -->
         <div v-if="showSearchHistory && searchHistory.length" class="search-history">
-          <div class="history-header">搜索历史</div>
+          <div class="history-header">{{ t('header.searchHistory') }}</div>
           <div
             v-for="(item, index) in searchHistory.value"
             :key="index"
@@ -125,62 +140,67 @@ onMounted(() => {
 
     <div class="right-part">
       <!-- 功能按钮 -->
-      <div class="header-button" title="主题" @click="toggleTheme">
+      <div class="header-button" :title="t('header.theme')" @click="toggleTheme">
         <TShirtLineIcon alt="主题" />
       </div>
-      <div class="header-button" title="设置" @click="showSettings = !showSettings">
+      <div class="header-button" :title="t('header.settings')" @click="showSettings = !showSettings">
         <Cog8ToothIcon alt="设置" />
       </div>
     </div>
   </div>
 
   <!-- 设置弹窗 (使用Ant Design Vue的Modal) -->
-  <a-modal v-model:open="showSettings" title="设置" :footer="null" width="700px" destroyOnClose>
+  <a-modal v-model:open="showSettings" :title="t('settings.title')" :footer="null" width="700px" destroyOnClose>
     <a-tabs v-model:activeKey="activeTab" class="settings-tabs">
-      <a-tab-pane tab="常规" key="general">
+      <a-tab-pane :tab="t('settings.general')" key="general">
         <div class="setting-item">
-          <div class="setting-label">语言</div>
-          <div class="setting-value">简体中文</div>
+          <div class="setting-label">{{ t('settings.language') }}</div>
+          <div class="setting-value">
+            <a-radio-group v-model:value="currentLanguage" @change="handleLanguageChange" button-style="solid" class="radio-button">
+              <a-radio-button value="zh-CN">{{ t('settings.languageCN') }}</a-radio-button>
+              <a-radio-button value="en-US">{{ t('settings.languageEN') }}</a-radio-button>
+            </a-radio-group>
+          </div>
         </div>
         <div class="setting-item">
-          <div class="setting-label">主题</div>
+          <div class="setting-label">{{ t('settings.theme') }}</div>
           <div class="setting-value">
             <a-radio-group v-model:value="isDarkTheme" button-style="solid" class="radio-button">
-              <a-radio-button :value="false">明亮</a-radio-button>
-              <a-radio-button :value="true">暗黑</a-radio-button>
+              <a-radio-button :value="false">{{ t('settings.lightTheme') }}</a-radio-button>
+              <a-radio-button :value="true">{{ t('settings.darkTheme') }}</a-radio-button>
             </a-radio-group>
           </div>
         </div>
       </a-tab-pane>
-      <a-tab-pane tab="播放" key="playback">
+      <a-tab-pane :tab="t('settings.playback')" key="playback">
         <div class="setting-item">
-          <div class="setting-label">自动播放</div>
-          <div class="setting-value">开启</div>
+          <div class="setting-label">{{ t('settings.autoPlay') }}</div>
+          <div class="setting-value">{{ t('settings.enable') }}</div>
         </div>
         <div class="setting-item">
-          <div class="setting-label">音质</div>
+          <div class="setting-label">{{ t('settings.audioQuality') }}</div>
           <div class="setting-value">
             <a-radio-group
               v-model:value="musicStore.quality"
               button-style="solid"
               class="radio-button"
             >
-              <a-radio-button value="low">低音质</a-radio-button>
-              <a-radio-button value="standard">标准音质</a-radio-button>
-              <a-radio-button value="high">高音质</a-radio-button>
-              <a-radio-button value="exhigh">极高音质</a-radio-button>
-              <a-radio-button value="super">超高音质</a-radio-button>
+              <a-radio-button value="low">{{ t('settings.lowQuality') }}</a-radio-button>
+              <a-radio-button value="standard">{{ t('settings.standardQuality') }}</a-radio-button>
+              <a-radio-button value="high">{{ t('settings.highQuality') }}</a-radio-button>
+              <a-radio-button value="exhigh">{{ t('settings.veryHighQuality') }}</a-radio-button>
+              <a-radio-button value="super">{{ t('settings.ultraHighQuality') }}</a-radio-button>
             </a-radio-group>
           </div>
         </div>
       </a-tab-pane>
-      <a-tab-pane tab="关于musicfree" key="about">
+      <a-tab-pane :tab="t('settings.about')" key="about">
         <div class="setting-item">
-          <div class="setting-label">版本</div>
+          <div class="setting-label">{{ t('settings.version') }}</div>
           <div class="setting-value">1.0.0</div>
         </div>
         <div class="setting-item">
-          <div class="setting-label">开发者</div>
+          <div class="setting-label">{{ t('settings.developer') }}</div>
           <div class="setting-value">xxx</div>
         </div>
       </a-tab-pane>

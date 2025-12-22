@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup>
 import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import api from '../services/api.js';
@@ -6,6 +6,7 @@ import { useMusicStore } from '../store/music.js';
 import SongList from '../components/SongList.vue';
 import { DeleteOutlined } from '@ant-design/icons-vue';
 import { Modal } from 'ant-design-vue';
+import { useI18n } from 'vue-i18n'
 
 const route = useRoute();
 const musicStore = useMusicStore();
@@ -71,11 +72,12 @@ const removeSong = (song, index) => {
   musicStore.removeSong(song, index);
 };
 const removeAll = () => {
+  const { t } = useI18n()
   Modal.confirm({
-    title: '确认清空播放列表吗？',
-    okText: '确认',
+    title: t('playlist.confirmClear'),
+    okText: t('common.confirm'),
     okType: 'primary',
-    cancelText: '取消',
+    cancelText: t('common.cancel'),
     centered: true,
     onOk: () => {
       musicStore.removeAll();
@@ -88,7 +90,7 @@ const removeAll = () => {
   <div class="playlist-page main-detail-container">
     <div class="playlist-detail main-detail-content">
       <div class="play-actions">
-        <a-button type="primary" @click="removeAll">清空播放列表</a-button>
+        <a-button type="primary" @click="removeAll">{{ $t('playlist.clearPlaylist') }}</a-button>
       </div>
       <div class="song-list-container">
         <SongList
@@ -353,3 +355,4 @@ const removeAll = () => {
   color: #888;
 }
 </style>
+

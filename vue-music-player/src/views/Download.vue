@@ -1,11 +1,13 @@
-<script setup>
+﻿<script setup>
 import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import api from '../services/api.js';
 import { useMusicStore } from '../store/music.js';
 import SongList from '../components/SongList.vue';
 import { DeleteOutlined } from '@ant-design/icons-vue';
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const route = useRoute();
 const musicStore = useMusicStore();
 
@@ -75,7 +77,7 @@ const removeSong = (song, index) => {
   <div class="playlist-page main-detail-container">
     <div class="playlist-detail main-detail-content">
       <!-- 加载状态 -->
-      <div v-if="loading" class="loading">加载中...</div>
+      <div v-if="loading" class="loading">{{ t('download.loading') }}</div>
       <SongList
         :listSongs="songList || []"
         :isEnd="isEnd"
@@ -86,11 +88,6 @@ const removeSong = (song, index) => {
       >
       </SongList>
     </div>
-
-    <!-- 歌单不存在 -->
-    <!-- <div v-else class="not-found">
-      <p>歌单不存在或已被删除</p>
-    </div> -->
   </div>
 </template>
 
@@ -337,3 +334,4 @@ const removeSong = (song, index) => {
   color: #888;
 }
 </style>
+

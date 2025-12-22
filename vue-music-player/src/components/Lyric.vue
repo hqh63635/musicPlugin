@@ -32,7 +32,7 @@
           {{ line.lrc }}
         </div>
         <div v-if="musicStore.fullLyric.length === 0" class="no-lyric">
-          {{ displayText }}
+          {{ t('lyric.noLyric') }}
         </div>
       </div>
     </div>
@@ -42,7 +42,9 @@
 <script setup>
 import { ref, computed, watch, nextTick } from 'vue';
 import { useMusicStore } from '@/store/music';
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const musicStore = useMusicStore();
 const scrollContainer = ref(null);
 
@@ -52,7 +54,7 @@ const displayText = computed(() => {
       musicStore.currentSong.singerName || musicStore.currentSong.artist
     }`;
   }
-  return '暂无歌词';
+  return t('lyric.noLyric');
 });
 
 // 监听当前歌词索引变化，实现滚动居中
@@ -200,3 +202,4 @@ const applyMomentum = () => {
   text-align: center;
 }
 </style>
+

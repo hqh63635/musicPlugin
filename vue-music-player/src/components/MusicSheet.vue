@@ -2,10 +2,10 @@
   <!-- 歌单列表 -->
   <div class="playlist-section">
     <div class="section-header">
-      <span>我的歌单</span>
+      <span>{{ t('musicSheet.myPlaylists') }}</span>
       <span>
-        <arrowleftendonrectangle class="mr8" alt="导入" @click="visible = true" />
-        <DocumentPlusIcon alt="创建" @click="createVisible = true" />
+        <arrowleftendonrectangle class="mr8" :alt="t('musicSheet.import')" @click="visible = true" />
+        <DocumentPlusIcon :alt="t('musicSheet.create')" @click="createVisible = true" />
       </span>
     </div>
     <div class="playlist-list">
@@ -17,62 +17,60 @@
       >
         <div class="playlist-content" @click="goToMusicSheetDetail(item.id)">
           <div class="playlist-cover">
-            <CdIcon alt="歌单封面" />
+            <CdIcon :alt="t('musicSheet.playlistCover')" />
           </div>
           <div class="playlist-info">
             <div class="playlist-name">{{ item.name }}</div>
-            <div class="playlist-count">{{ item.trackCount }}首</div>
+            <div class="playlist-count">{{ item.trackCount }}{{ t('musicSheet.trackCountUnit') }}</div>
           </div>
         </div>
         <div class="playlist-actions">
-          <TrashIcon class="trash-icon" alt="删除歌单" @click.stop="showDeleteConfirm(item)" />
+          <TrashIcon class="trash-icon" :alt="t('musicSheet.deletePlaylist')" @click.stop="showDeleteConfirm(item)" />
         </div>
       </div>
     </div>
     <a-modal
       v-model:visible="visible"
-      title="导入歌单"
+      :title="t('musicSheet.importPlaylist')"
       :maskClosable="false"
       @cancel="visible = false"
       @ok="handleImport"
-      okText="导入"
-      cancelText="取消"
+      :okText="t('common.import')"
+      :cancelText="t('common.cancel')"
       centered
     >
       <div class="modal-content">
         <div class="modal-body">
-          <div class="modal-text">请输入歌单链接或ID</div>
+          <div class="modal-text">{{ t('musicSheet.enterPlaylistUrlOrId') }}</div>
           <a-form :model="importForm" :rules="importRules" ref="importFormRef">
             <a-form-item name="url" :label="null">
-              <a-input v-model:value="importForm.url" placeholder="请输入歌单链接或ID" />
+              <a-input v-model:value="importForm.url" :placeholder="t('musicSheet.enterPlaylistUrlOrIdPlaceholder')" />
             </a-form-item>
           </a-form>
           <ul>
-            <li>
-              QQ音乐APP：自建歌单-分享-分享到微信好友/QQ好友；然后点开并复制链接，直接粘贴即可
-            </li>
-            <li>H5：复制URL并粘贴，或者直接输入纯数字歌单ID即可</li>
-            <li>导入时间和歌单大小有关，请耐心等待</li>
+            <li>{{ t('musicSheet.qqMusicAppImportTip') }}</li>
+            <li>{{ t('musicSheet.h5ImportTip') }}</li>
+            <li>{{ t('musicSheet.importTimeTip') }}</li>
           </ul>
         </div>
       </div>
     </a-modal>
     <a-modal
       v-model:visible="createVisible"
-      title="创建歌单"
+      :title="t('musicSheet.createPlaylist')"
       :maskClosable="false"
       @cancel="closeCreateSheetModal"
       @ok="handleCreateSheet"
-      okText="创建"
-      cancelText="取消"
+      :okText="t('common.create')"
+      :cancelText="t('common.cancel')"
       centered
     >
       <div class="modal-content">
         <div class="modal-body">
-          <div class="modal-text">请输入歌单名称</div>
-          <a-form :model="formData" :rules="rules" ref="formRef">
+          <div class="modal-text">{{ t('musicSheet.enterPlaylistName') }}</div>
+          <a-form :model="formData" :rules="createRules" ref="formRef">
             <a-form-item name="name" :label="null">
-              <a-input v-model:value="formData.name" placeholder="请输入歌单名称" />
+              <a-input v-model:value="formData.name" :placeholder="t('musicSheet.enterPlaylistNamePlaceholder')" />
             </a-form-item>
           </a-form>
         </div>
@@ -81,18 +79,18 @@
 
     <a-modal
       v-model:visible="selectSheetVisible"
-      title="选择歌单"
+      :title="t('musicSheet.selectPlaylist')"
       :maskClosable="false"
       @cancel="closeSelectSheetModal"
       @ok="handleAddToSelectedSheet"
-      okText="添加到所选歌单"
-      cancelText="取消"
+      :okText="t('musicSheet.addToSelectedPlaylist')"
+      :cancelText="t('common.cancel')"
       centered
     >
       <div class="modal-content">
         <div class="modal-body">
-          <div class="modal-text">请选择要添加到的歌单</div>
-          <a-button type="primary" @click="handleCreateNewSheet"> 创建新歌单 </a-button>
+          <div class="modal-text">{{ t('musicSheet.selectTargetPlaylist') }}</div>
+          <a-button type="primary" @click="handleCreateNewSheet">{{ t('musicSheet.createNewPlaylist') }}</a-button>
           <div class="playlist-select-list">
             <div
               v-for="item in musicStore.musicSheets"
@@ -102,7 +100,7 @@
               @click="selectedSheetId = item.id"
             >
               <div class="playlist-select-name">{{ item.name }}</div>
-              <div class="playlist-select-count">{{ item.trackCount }}首</div>
+              <div class="playlist-select-count">{{ item.trackCount }}{{ t('musicSheet.trackCountUnit') }}</div>
             </div>
           </div>
         </div>
@@ -112,30 +110,22 @@
 </template>
 
 <script setup>
-import { ref, onMounted, reactive, computed } from 'vue';
+import { ref, onMounted, reactive } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-// 导入ant-design-vue组件
 import { Modal } from 'ant-design-vue';
-// 导入SVG图标
+import { useI18n } from 'vue-i18n';
 import CdIcon from '@/assets/icons/cd.svg';
 import DocumentPlusIcon from '@/assets/icons/document-plus.svg';
 import arrowleftendonrectangle from '@/assets/icons/arrow-left-end-on-rectangle.svg';
 import TrashIcon from '@/assets/icons/trash.svg';
-// 导入API方法
 import { importMusicSheet } from '../services/api.js';
-// 导入IndexedDB Hook
 import { useMusicSheetsDB } from '../composables/useMusicSheetsDB.js';
-// 导入Pinia状态管理
 import { useMusicStore } from '../store/music.js';
 
-// 路由实例
+const { t } = useI18n();
 const router = useRouter();
 const route = useRoute();
-
-// 初始化Pinia store
 const musicStore = useMusicStore();
-
-// 初始化IndexedDB Hook
 const { getAllSheets, saveSheet, addSongsToSheet, deleteSheet } = useMusicSheetsDB();
 
 /* ---------------- 弹窗状态 ---------------- */
@@ -154,8 +144,8 @@ const importForm = reactive({
 });
 const importRules = {
   url: [
-    { required: true, message: '请输入歌单链接或ID', trigger: 'blur' },
-    { type: 'string', message: '请输入有效的歌单链接或ID', trigger: 'blur' },
+    { required: true, message: t('musicSheet.pleaseEnterPlaylistUrlOrId'), trigger: 'blur' },
+    { type: 'string', message: t('musicSheet.pleaseEnterValidPlaylistUrlOrId'), trigger: 'blur' },
   ],
 };
 
@@ -169,11 +159,11 @@ const formData = reactive({
 });
 const rules = {
   name: [
-    { required: true, message: '请输入歌单名称', trigger: 'blur' },
-    { min: 1, max: 20, message: '歌单名称长度在1-20个字符之间', trigger: 'blur' },
+    { required: true, message: t('musicSheet.pleaseEnterPlaylistName'), trigger: 'blur' },
+    { min: 1, max: 20, message: t('musicSheet.playlistNameLengthTip'), trigger: 'blur' },
     {
       pattern: /^[^\\/:*?"<>|]+$/,
-      message: '歌单名称不能包含特殊字符(\\/:*?"<>|)',
+      message: t('musicSheet.playlistNameInvalidCharsTip'),
       trigger: 'blur',
     },
   ],
@@ -278,10 +268,10 @@ const handleCreateSheet = async () => {
 /* 显示删除确认对话框 */
 const showDeleteConfirm = item => {
   Modal.confirm({
-    title: '确认删除歌单',
-    content: `确定要删除歌单「${item.name}」吗？删除后将无法恢复。`,
-    okText: '确定',
-    cancelText: '取消',
+    title: t('musicSheet.confirmDeletePlaylist'),
+    content: t('musicSheet.deletePlaylistWarning', { name: item.name }),
+    okText: t('common.confirm'),
+    cancelText: t('common.cancel'),
     center: true,
     onOk() {
       handleDeleteSheet(item.id);

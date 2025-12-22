@@ -14,7 +14,7 @@
       :row-class-name="getRowClassName"
     >
       <!-- 序号 -->
-      <vxe-column title="序号" width="60">
+      <vxe-column :title="t('songList.index')" width="60">
         <template #default="{ row, rowIndex }">
           <span :class="['song-index', { 'current-playing-index': isCurrentPlaying(row) }]">
             {{ rowIndex + 1 }}
@@ -23,10 +23,10 @@
       </vxe-column>
 
       <!-- 歌曲 -->
-      <vxe-column title="歌曲">
+      <vxe-column :title="t('songList.song')">
         <template #default="{ row }">
           <div class="song-info">
-            <img class="cover" :src="row.artwork?.replace(/[`\s]/g, '') || defaultCover" alt="" />
+            <img class="cover" :src="row.artwork?.replace(/[`\s]/g, '') || defaultCover" :alt="row.title" />
             <span class="title">{{ row.title }}</span>
             <PlayCircleOutlined class="play-btn" @click="playSong(row)" />
           </div>
@@ -34,10 +34,10 @@
       </vxe-column>
 
       <!-- 歌手 -->
-      <vxe-column title="歌手" field="artist" />
+      <vxe-column :title="t('songList.artist')" field="artist" />
 
       <!-- 操作 -->
-      <vxe-column title="操作" width="80">
+      <vxe-column :title="t('songList.action')" width="80">
         <template #default="{ row, rowIndex }">
           <slot name="actions" :item="row" :index="rowIndex"></slot>
 
@@ -59,7 +59,9 @@ import { PlayCircleOutlined, PlusCircleOutlined, DeleteOutlined } from '@ant-des
 import { message } from 'ant-design-vue';
 import { useMusicStore } from '@/store/music.js';
 import { set } from 'xe-utils';
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const musicStore = useMusicStore();
 const props = defineProps({
   listSongs: Array,
@@ -143,13 +145,13 @@ const onLoadMore = () => {
 // 添加歌曲
 const addToPlaylist = song => {
   musicStore.addToPlaylist(song);
-  message.success('添加到播放列表成功');
+  message.success(t('songList.addToPlaylistSuccess'));
 };
 
 // 删除歌曲
 const removeSong = (song, index) => {
   musicStore.removeSong(song, index);
-  message.success('移除成功');
+  message.success(t('songList.removeSuccess'));
 };
 
 // 判断是否为当前播放歌曲
@@ -346,3 +348,4 @@ const getRowClassName = ({ row }) => {
   font-weight: 600;
 }
 </style>
+

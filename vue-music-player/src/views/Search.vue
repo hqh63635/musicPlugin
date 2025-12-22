@@ -6,7 +6,9 @@ import SongList from '../components/SongList.vue';
 import { useMusicStore } from '@/store/music.js';
 import { PlusCircleOutlined, LoadingOutlined } from '@ant-design/icons-vue';
 import { Tabs, TabPane } from 'ant-design-vue';
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const musicStore = useMusicStore();
 const route = useRoute();
 const router = useRouter();
@@ -84,7 +86,7 @@ const performSearch = async () => {
     isEnd.value = result.isEnd;
     // 移除这里的currentPage增加，统一在调用处处理
   } catch (error) {
-    console.error('搜索失败:', error);
+    console.error(t('search.searchFailed'), error);
   } finally {
     loading.value = false;
     if (currentType.value !== 'music') {
@@ -187,20 +189,20 @@ const handleSearch = () => {
           <input
             v-model="keyword"
             type="text"
-            placeholder="请输入歌曲、歌手或专辑名称"
+            :placeholder="t('search.placeholder')"
             class="search-input"
             @keyup.enter="handleSearch"
           />
-          <button @click="handleSearch" class="search-button">搜索</button>
+          <button @click="handleSearch" class="search-button">{{ $t('search.searchButton') }}</button>
         </div>
       </div>
 
       <!-- 搜索结果区域 -->
       <div v-if="searchResults.length || loading" class="search-results-section">
         <a-tabs v-model:activeKey="currentType" @change="handleTypeChange" class="search-tabs">
-          <a-tab-pane key="music" tab="歌曲"></a-tab-pane>
-          <a-tab-pane key="artist" tab="歌手"></a-tab-pane>
-          <a-tab-pane key="album" tab="专辑"></a-tab-pane>
+          <a-tab-pane key="music" :tab="$t('search.music')"></a-tab-pane>
+          <a-tab-pane key="artist" :tab="$t('search.artist')"></a-tab-pane>
+          <a-tab-pane key="album" :tab="$t('search.album')"></a-tab-pane>
         </a-tabs>
         <a-spin :spinning="loading" :indicator="indicator" class="loading-spin">
           <div v-if="searchResults.length" class="search-results">
@@ -226,7 +228,7 @@ const handleSearch = () => {
                 <div class="singer-avatar">
                   <img
                     :src="singer.avatar || singer.artwork || '@/assets/default-avatar.jpg'"
-                    :alt="singer.title"
+                    :alt="singer.title || t('search.defaultAvatarAlt')"
                   />
                 </div>
                 <h3 class="singer-name">{{ singer.name }}</h3>
@@ -244,7 +246,7 @@ const handleSearch = () => {
                 <div class="singer-avatar">
                   <img
                     :src="singer.avatar || singer.artwork || '@/assets/default-avatar.jpg'"
-                    :alt="singer.title"
+                    :alt="singer.title || t('search.defaultAvatarAlt')"
                   />
                 </div>
                 <h3 class="singer-name">{{ singer.title }}</h3>
@@ -252,8 +254,8 @@ const handleSearch = () => {
             </div>
           </div>
           <div v-else-if="!loading && keyword.value" class="no-results">
-            <h3>没有找到相关结果</h3>
-            <p>请尝试其他关键词或搜索类型</p>
+            <h3>{{ t('search.noResults') }}</h3>
+            <p>{{ t('search.tryOtherKeywords') }}</p>
           </div>
         </a-spin>
       </div>
@@ -473,3 +475,4 @@ const handleSearch = () => {
   width: 100%;
 }
 </style>
+

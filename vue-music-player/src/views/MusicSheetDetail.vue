@@ -9,6 +9,7 @@ import { Modal } from 'ant-design-vue';
 import { useMusicSheetsDB } from '../composables/useMusicSheetsDB.js';
 // 导入消息提示组件
 import { message } from 'ant-design-vue';
+import { useI18n } from 'vue-i18n';
 
 const route = useRoute();
 const musicStore = useMusicStore();
@@ -85,7 +86,7 @@ const playSong = (song, index) => {
 const addToPlaylist = item => {
   if (item) {
     musicStore.addToPlaylist(item, 0);
-    message.success(`$(item.title)添加到播放列表`);
+    message.success(`${t('musicSheetDetail.addSuccess')}${playlist.value.length}${t('musicSheetDetail.songs')}`);
   } else {
     musicStore.addSongsToPlaylist(playlist.value || [], 0);
     message.success(`添加${playlist.value.length}首歌曲到播放列表`);
@@ -100,10 +101,10 @@ const removeSong = (song, index) => {
 // 清空播放列表
 const clearPlaylist = () => {
   Modal.confirm({
-    title: '确认清空歌单',
-    content: '确定要清空当前歌单中的所有歌曲吗？此操作不可恢复。',
-    okText: '确定',
-    cancelText: '取消',
+    title: t('musicSheetDetail.confirmClearTitle'),
+    content: t('musicSheetDetail.confirmClearContent'),
+    okText: t('common.confirm'),
+    cancelText: t('common.cancel'),
     center: true,
     onOk: async () => {
       try {
@@ -116,7 +117,7 @@ const clearPlaylist = () => {
 
         // 更新本地播放列表显示
         playlist.value = [];
-        message.success('歌单已清空');
+        message.success(t('musicSheetDetail.clearSuccess'));
       } catch (error) {
         console.error('清空歌单失败:', error);
         Modal.error({
@@ -133,9 +134,9 @@ const clearPlaylist = () => {
   <div class="playlist-page main-detail-container">
     <div class="playlist-detail main-detail-content">
       <div class="playlist-actions">
-        <a-button class="mr12" type="primary" @click="playAll">播放全部</a-button>
-        <a-button class="mr12" type="primary" @click="addToPlaylist()">添加到播放列表</a-button>
-        <a-button @click="clearPlaylist">清空歌单</a-button>
+        <a-button class="mr12" type="primary" @click="playAll">{{ $t('musicSheetDetail.playAll') }}</a-button>
+        <a-button class="mr12" type="primary" @click="addToPlaylist()">{{ $t('musicSheetDetail.addToPlaylist') }}</a-button>
+        <a-button @click="clearPlaylist">{{ $t('musicSheetDetail.clearPlaylist') }}</a-button>
       </div>
       <div class="playlist-content">
         <SongList
@@ -400,3 +401,4 @@ const clearPlaylist = () => {
   color: #888;
 }
 </style>
+

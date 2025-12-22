@@ -9,13 +9,13 @@
             class="artist-avatar"
           />
           <div class="artist-details">
-            <p><strong>简介:</strong> {{ singer?.name || singer?.title || '暂无简介' }}</p>
-            <p><strong>地区:</strong> {{ singer?.area || singer?.artist || '未知' }}</p>
-            <p><strong>流派:</strong> {{ singer?.name || '未知' }}</p>
+            <p><strong>{{ $t('artistDetail.biography') }}:</strong> {{ singer?.name || singer?.title || $t('common.unknown') }}</p>
+            <p><strong>{{ $t('artistDetail.region') }}:</strong> {{ singer?.area || singer?.artist || $t('common.unknown') }}</p>
+            <p><strong>{{ $t('artistDetail.genre') }}:</strong> {{ singer?.name || $t('common.unknown') }}</p>
           </div>
           <div class="play-active">
-            <a-button class="mr-12" type="primary" @click="playAllSongs">播放全部</a-button>
-            <a-button type="primary" @click="addToPlaylist()">添加到播放列表</a-button>
+            <a-button class="mr-12" type="primary" @click="playAllSongs">{{ t('artistDetail.playAll') }}</a-button>
+            <a-button type="primary" @click="addToPlaylist()">{{ t('artistDetail.addToPlaylist') }}</a-button>
           </div>
         </div>
         <div class="songs-list">
@@ -42,6 +42,7 @@ import SongList from '@/components/SongList.vue';
 import { useMusicStore } from '../store/music.js';
 import { PlusCircleOutlined, LoadingOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
+import { useI18n } from 'vue-i18n';
 
 // 添加自定义加载指示器
 const indicator = h(LoadingOutlined, { style: { fontSize: '24px' }, spin: true });
@@ -91,7 +92,7 @@ const addToPlaylist = item => {
     message.success(`$(item.title)添加到播放列表`);
   } else {
     musicStore.addSongsToPlaylist(artistInfo.value || [], 0);
-    message.success(`添加${artistInfo.value.length}首歌曲到播放列表`);
+    message.success(`${t('artistDetail.addSuccessBulk')}${artistInfo.value.length}${t('common.songs')}`);
   }
 };
 
@@ -209,3 +210,4 @@ const handlePageChange = page => {
   margin-right: 12px;
 }
 </style>
+

@@ -1,9 +1,11 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import api from '../services/api.js';
 import { useMusicStore } from '../store/music.js';
 
+const { t } = useI18n();
 const route = useRoute();
 const router = useRouter();
 const musicStore = useMusicStore();
@@ -18,35 +20,35 @@ const albums = ref([]);
 // 新增：歌手分类相关数据
 const categories = ref([
   {
-    id: '热门',
-    name: '热门',
+    id: 'hot',
+    name: t('artist.hot'),
   },
-  { id: 'A', name: 'A' },
-  { id: 'B', name: 'B' },
-  { id: 'C', name: 'C' },
-  { id: 'D', name: 'D' },
-  { id: 'E', name: 'E' },
-  { id: 'F', name: 'F' },
-  { id: 'G', name: 'G' },
-  { id: 'H', name: 'H' },
-  { id: 'I', name: 'I' },
-  { id: 'J', name: 'J' },
-  { id: 'K', name: 'K' },
-  { id: 'L', name: 'L' },
-  { id: 'M', name: 'M' },
-  { id: 'N', name: 'N' },
-  { id: 'O', name: 'O' },
-  { id: 'P', name: 'P' },
-  { id: 'Q', name: 'Q' },
-  { id: 'R', name: 'R' },
-  { id: 'S', name: 'S' },
-  { id: 'T', name: 'T' },
-  { id: 'U', name: 'U' },
-  { id: 'V', name: 'V' },
-  { id: 'W', name: 'W' },
-  { id: 'X', name: 'X' },
-  { id: 'Y', name: 'Y' },
-  { id: 'Z', name: 'Z' },
+  { id: 'A', name: t('artist.A') },
+  { id: 'B', name: t('artist.B') },
+  { id: 'C', name: t('artist.C') },
+  { id: 'D', name: t('artist.D') },
+  { id: 'E', name: t('artist.E') },
+  { id: 'F', name: t('artist.F') },
+  { id: 'G', name: t('artist.G') },
+  { id: 'H', name: t('artist.H') },
+  { id: 'I', name: t('artist.I') },
+  { id: 'J', name: t('artist.J') },
+  { id: 'K', name: t('artist.K') },
+  { id: 'L', name: t('artist.L') },
+  { id: 'M', name: t('artist.M') },
+  { id: 'N', name: t('artist.N') },
+  { id: 'O', name: t('artist.O') },
+  { id: 'P', name: t('artist.P') },
+  { id: 'Q', name: t('artist.Q') },
+  { id: 'R', name: t('artist.R') },
+  { id: 'S', name: t('artist.S') },
+  { id: 'T', name: t('artist.T') },
+  { id: 'U', name: t('artist.U') },
+  { id: 'V', name: t('artist.V') },
+  { id: 'W', name: t('artist.W') },
+  { id: 'X', name: t('artist.X') },
+  { id: 'Y', name: t('artist.Y') },
+  { id: 'Z', name: t('artist.Z') },
 ]);
 const selectedCategory = ref('热门');
 const singerList = ref([]);
@@ -151,7 +153,7 @@ const goToArtistDetail = singer => {
 <template>
   <div class="artist-page main-detail-container">
     <div class="artist-page-container main-detail-content">
-      <!-- A-Z分类导航 -->
+      <!-- {{ t('artist.azCategoryNav') }} -->
       <a-radio-group
         v-model:value="selectedCategory"
         button-style="solid"
@@ -163,7 +165,7 @@ const goToArtistDetail = singer => {
         </a-radio-button>
       </a-radio-group>
 
-      <!-- 歌手列表 -->
+      <!-- {{ t('artist.singerList') }} -->
       <div class="singer-grid">
         <div
           v-for="singer in singerList"
@@ -172,7 +174,7 @@ const goToArtistDetail = singer => {
           @click="goToArtistDetail(singer)"
         >
           <div class="singer-avatar">
-            <img :src="singer.avatar || '@/assets/default-avatar.jpg'" :alt="singer.singer_name" />
+            <img :src="singer.avatar || '@/assets/default-avatar.jpg'" :alt="singer.singer_name || t('artist.defaultAvatarAlt')" />
           </div>
           <h3 class="singer-name">{{ singer.name }}</h3>
         </div>
@@ -539,3 +541,4 @@ const goToArtistDetail = singer => {
   overflow: auto;
 }
 </style>
+

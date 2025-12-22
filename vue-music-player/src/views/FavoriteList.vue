@@ -8,6 +8,7 @@ import { DeleteOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
 import heartOutlineIcon from '@/assets/icons/heart-outline.svg';
 import heartFilledIcon from '@/assets/icons/heart.svg';
+import { useI18n } from 'vue-i18n';
 
 const route = useRoute();
 const musicStore = useMusicStore();
@@ -59,7 +60,8 @@ const toggleFavorite = (song, forceState) => {
 // 从收藏列表移除歌曲（取消收藏）
 const removeSong = song => {
   toggleFavorite(song, false);
-  message.success('取消收藏');
+  const { t } = useI18n();
+  message.success(t('favoriteList.cancelFavorite'));
 };
 </script>
 
@@ -77,7 +79,7 @@ const removeSong = song => {
           <div class="control-button" @click="toggleFavorite(item)">
             <component
               :is="item?.isFavorite ? heartFilledIcon : heartOutlineIcon"
-              :alt="item?.isFavorite ? '已喜欢' : '喜欢'"
+              :alt="item?.isFavorite ? t('favoriteList.favorited') : t('favoriteList.favorite')"
             />
           </div>
         </template>
@@ -108,3 +110,4 @@ const removeSong = song => {
   cursor: pointer;
 }
 </style>
+

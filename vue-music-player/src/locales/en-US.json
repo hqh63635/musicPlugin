@@ -1,0 +1,126 @@
+﻿{
+    "button": {
+        "add": "Add to Playlist",
+        "next": "Next",
+        "pause": "Pause",
+        "play": "Play",
+        "prev": "Previous",
+        "star": "Favorite Playlist",
+        "unstar": "Unfavorite"
+    },
+    "download": {
+        "loading": "Loading...",
+        "playlistNotFound": "Playlist not found or deleted"
+    },
+    "header": {
+        "album": "Album",
+        "artist": "Artist",
+        "language": "Language",
+        "search": "Search",
+        "searchHistory": "Search History",
+        "searchPlaceholder": "Search music, artist, album",
+        "settings": "Settings",
+        "song": "Song",
+        "theme": "Theme"
+    },
+    "lyric": {
+        "noLyric": "No lyrics available"
+    },
+    "message": {
+        "pleaseEnterSearchKeyword": "Please enter search keywords"
+    },
+    "musicDetail": {
+        "exampleArtist": "Jay Chou",
+        "exampleSongTitle": "Sunny Day (Live)",
+        "exampleSongTitle2": "Seven Mile Fragrance",
+        "relatedRecommendations": "Related Recommendations",
+        "relatedSong": "Related Songs"
+    },
+    "remoteSheet": {
+        "loadFailed": "Failed to load playlist information",
+        "loading": "Loading...",
+        "loadingMore": "Loading more...",
+        "noMore": "No more songs",
+        "playlistNotFound": "Playlist not found",
+        "star": "Favorite Playlist",
+        "unstar": "Unfavorite"
+    },
+    "settings": {
+        "audioQuality": "Audio Quality",
+        "autoPlay": "Auto Play",
+        "darkTheme": "Dark Theme",
+        "developer": "Developer",
+        "enable": "Enable",
+        "general": "General",
+        "highQuality": "High Quality",
+        "veryHighQuality": "Very High Quality",
+        "ultraHighQuality": "Ultra High Quality",
+        "language": "Language",
+        "languageCN": "Simplified Chinese",
+        "lightTheme": "Light Theme",
+        "lowQuality": "Low Quality",
+        "playback": "Playback",
+        "standardQuality": "Standard Quality",
+        "theme": "Theme",
+        "title": "Settings",
+        "version": "Version"
+    },
+    "musicSheet": {
+        "myPlaylists": "My Playlists",
+        "import": "Import",
+        "create": "Create",
+        "importPlaylist": "Import Playlist"
+    },
+    "common": {
+        "import": "Import"
+    },
+    "search": {
+        "placeholder": "Search music, artist, album",
+        "searchButton": "Search",
+        "searchFailed": "Search failed",
+        "noResults": "No results found",
+        "tryOtherKeywords": "Try other keywords",
+        "defaultAvatarAlt": "Default avatar"
+    },
+    "musicBar": {
+        "play": "Play",
+        "pause": "Pause",
+        "next": "Next",
+        "previous": "Previous",
+        "progress": "Progress",
+        "volume": "Volume",
+        "playlist": "Playlist",
+        "singleLoop": "Single Loop",
+        "listLoop": "List Loop",
+        "shuffle": "Shuffle",
+        "serialNumber": "Serial Number",
+        "song": "Song",
+        "artist": "Artist",
+        "album": "Album",
+        "action": "Action",
+        "emptyPlaylist": "No Playlist",
+        "unknownSong": "Unknown Song",
+        "unknownArtist": "Unknown Artist"
+    },
+    "songList": {
+        "artist": "Artist",
+        "action": "Action",
+        "index": "Index",
+        "song": "Song"
+    },
+    "sidebar": {
+        "home": "Home",
+        "discover": "Discover",
+        "myMusic": "My Music",
+        "radio": "Radio",
+        "playlists": "Playlists",
+        "search": "Search",
+        "ranklist": "Rankings",
+        "favorite": "Favorites",
+        "recent": "Recently Played",
+        "download": "Downloads",
+        "playlist": "My Playlist",
+        "album": "Albums",
+        "artist": "Artists"
+    }
+}

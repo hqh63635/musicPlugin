@@ -1,19 +1,19 @@
-<template>
+﻿<template>
   <div class="remote-sheet">
-    <div v-if="state.loading" class="loading">加载中...</div>
-    <div v-else-if="!sheetItem" class="empty">歌单信息加载失败</div>
+    <div v-if="state.loading" class="loading">{{ t('remoteSheet.loading') }}</div>
+    <div v-else-if="!sheetItem" class="empty">{{ t('remoteSheet.loadFailed') }}</div>
     <div v-else>
       <div class="sheet-header">
         <div class="sheet-cover">
-          <img :src="sheetItem.cover || ''" alt="歌单封面" />
+          <img :src="sheetItem.cover || ''" :alt="t('remoteSheet.coverAlt')" />
         </div>
         <div class="sheet-info">
           <h1 class="sheet-title">{{ sheetItem.title }}</h1>
-          <p class="sheet-creator">创建者: {{ sheetItem.creator || '未知' }}</p>
-          <p class="sheet-desc">{{ sheetItem.description || '暂无描述' }}</p>
+          <p class="sheet-creator">{{ $t('remoteSheet.creator') }}: {{ sheetItem.creator || $t('remoteSheet.unknown') }}</p>
+          <p class="sheet-desc">{{ sheetItem.description || $t('remoteSheet.noDescription') }}</p>
           <div class="sheet-stats">
-            <span>{{ sheetItem.playCount || 0 }} 播放</span>
-            <span>{{ sheetItem.trackCount || 0 }} 首歌曲</span>
+            <span>{{ sheetItem.playCount || 0 }} {{ $t('remoteSheet.plays') }}</span>
+            <span>{{ sheetItem.trackCount || 0 }} {{ $t('remoteSheet.songs') }}</span>
           </div>
           <div class="sheet-actions">
             <button @click="toggleStar" class="star-button">
@@ -27,15 +27,15 @@
                   d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.4 15.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z"
                 />
               </svg>
-              {{ isStarred ? '取消收藏' : '收藏歌单' }}
+              {{ isStarred ? t('remoteSheet.unstar') : t('remoteSheet.star') }}
             </button>
           </div>
         </div>
       </div>
       <div class="song-list-container">
         <songList :musicList="musicList" />
-        <div v-if="state.loadingMore" class="loading-more">加载更多...</div>
-        <div v-if="state.isEnd" class="no-more">没有更多歌曲了</div>
+        <div v-if="state.loadingMore" class="loading-more">{{ $t('remoteSheet.loadingMore') }}</div>
+        <div v-if="state.isEnd" class="no-more">{{ $t('remoteSheet.noMore') }}</div>
       </div>
     </div>
   </div>
@@ -44,9 +44,12 @@
 <script setup>
 import { ref, reactive, computed, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import api from '../services/api.js';
 import songList from '../components/songList.vue';
 import { useMusicStore } from '../store/music.js';
+
+const { t } = useI18n();
 
 // 获取路由参数
 const route = useRoute();
@@ -109,7 +112,7 @@ const getSheetDetail = async () => {
     state.isEnd = result.isEnd || false;
     currentPage.value += 1;
   } catch (error) {
-    console.error('获取歌单详情失败:', error);
+    console.error(t('remoteSheet.fetchError'), error);
   } finally {
     // 重置加载状态
     state.loading = false;
@@ -273,3 +276,6 @@ onMounted(() => {
   font-size: 14px;
 }
 </style>
+
+
+

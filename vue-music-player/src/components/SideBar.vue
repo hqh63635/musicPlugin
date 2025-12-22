@@ -1,6 +1,7 @@
 ﻿<script setup>
 import { ref, markRaw } from 'vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import MusicSheet from './MusicSheet.vue';
 
 import HeartIcon from '@/assets/icons/heart.svg';
@@ -15,17 +16,18 @@ import IdentificationIcon from '@/assets/icons/identification.svg';
 import TrophyIcon from '@/assets/icons/trophy.svg';
 
 const router = useRouter();
+const { t } = useI18n();
 
 // 侧边栏导航项
 const navItems = ref([
-  { icon: markRaw(IdentificationIcon), text: '搜索', path: '/search' },
-  { icon: markRaw(TrophyIcon), text: '排行榜', path: '/ranklist' },
-  { icon: markRaw(HeartIcon), text: '我喜欢的音乐', path: '/favorite' },
-  { icon: markRaw(ClockIcon), text: '最近播放', path: '/recent' },
-  { icon: markRaw(ArrayDownloadTrayIcon), text: '下载管理', path: '/download' },
-  { icon: markRaw(ListBulletIcon), text: '我的歌单', path: '/playlist' },
-  { icon: markRaw(AlbumIcon), text: '专辑', path: '/album' },
-  { icon: markRaw(UserIcon), text: '歌手', path: '/artist' },
+  { icon: markRaw(IdentificationIcon), text: t('sidebar.search'), path: '/search' },
+  { icon: markRaw(TrophyIcon), text: t('sidebar.ranklist'), path: '/ranklist' },
+  { icon: markRaw(HeartIcon), text: t('sidebar.favorite'), path: '/favorite' },
+  { icon: markRaw(ClockIcon), text: t('sidebar.recent'), path: '/recent' },
+  { icon: markRaw(ArrayDownloadTrayIcon), text: t('sidebar.download'), path: '/download' },
+  { icon: markRaw(ListBulletIcon), text: t('sidebar.playlist'), path: '/playlist' },
+  { icon: markRaw(AlbumIcon), text: t('sidebar.album'), path: '/album' },
+  { icon: markRaw(UserIcon), text: t('sidebar.artist'), path: '/artist' },
 ]);
 
 // 切换导航项
@@ -185,3 +187,4 @@ const switchNavItem = index => {
   }
 }
 </style>
+
