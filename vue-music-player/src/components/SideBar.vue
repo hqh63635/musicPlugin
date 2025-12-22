@@ -20,14 +20,14 @@ const { t } = useI18n();
 
 // 侧边栏导航项
 const navItems = ref([
-  { icon: markRaw(IdentificationIcon), text: t('sidebar.search'), path: '/search' },
-  { icon: markRaw(TrophyIcon), text: t('sidebar.ranklist'), path: '/ranklist' },
-  { icon: markRaw(HeartIcon), text: t('sidebar.favorite'), path: '/favorite' },
-  { icon: markRaw(ClockIcon), text: t('sidebar.recent'), path: '/recent' },
-  { icon: markRaw(ArrayDownloadTrayIcon), text: t('sidebar.download'), path: '/download' },
-  { icon: markRaw(ListBulletIcon), text: t('sidebar.playlist'), path: '/playlist' },
-  { icon: markRaw(AlbumIcon), text: t('sidebar.album'), path: '/album' },
-  { icon: markRaw(UserIcon), text: t('sidebar.artist'), path: '/artist' },
+  { icon: markRaw(IdentificationIcon), text: 'sidebar.search', path: '/search' },
+  { icon: markRaw(TrophyIcon), text: 'sidebar.ranklist', path: '/ranklist' },
+  { icon: markRaw(HeartIcon), text: 'sidebar.favorite', path: '/favorite' },
+  { icon: markRaw(ClockIcon), text: 'sidebar.recent', path: '/recent' },
+  { icon: markRaw(ArrayDownloadTrayIcon), text: 'sidebar.download', path: '/download' },
+  { icon: markRaw(ListBulletIcon), text: 'sidebar.playlist', path: '/playlist' },
+  { icon: markRaw(AlbumIcon), text: 'sidebar.album', path: '/album' },
+  { icon: markRaw(UserIcon), text: 'sidebar.artist', path: '/artist' },
 ]);
 
 // 切换导航项
@@ -56,7 +56,7 @@ const switchNavItem = index => {
         <div class="nav-icon">
           <component :is="item.icon" :alt="item.text" />
         </div>
-        <div class="nav-text">{{ item.text }}</div>
+        <div class="nav-text">{{ $t(item.text) }}</div>
       </router-link>
     </div>
     <!-- 歌单列表 -->
@@ -187,4 +187,3 @@ const switchNavItem = index => {
   }
 }
 </style>
-

@@ -14,7 +14,7 @@
       :row-class-name="getRowClassName"
     >
       <!-- 序号 -->
-      <vxe-column :title="t('songList.index')" width="60">
+      <vxe-column :title="$t('songList.index')" width="60">
         <template #default="{ row, rowIndex }">
           <span :class="['song-index', { 'current-playing-index': isCurrentPlaying(row) }]">
             {{ rowIndex + 1 }}
@@ -26,7 +26,11 @@
       <vxe-column :title="t('songList.song')">
         <template #default="{ row }">
           <div class="song-info">
-            <img class="cover" :src="row.artwork?.replace(/[`\s]/g, '') || defaultCover" :alt="row.title" />
+            <img
+              class="cover"
+              :src="row.artwork?.replace(/[`\s]/g, '') || defaultCover"
+              :alt="row.title"
+            />
             <span class="title">{{ row.title }}</span>
             <PlayCircleOutlined class="play-btn" @click="playSong(row)" />
           </div>
@@ -348,4 +352,3 @@ const getRowClassName = ({ row }) => {
   font-weight: 600;
 }
 </style>
-

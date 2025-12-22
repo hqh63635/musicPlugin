@@ -89,10 +89,10 @@ onMounted(() => {
 });
 const currentLanguage = ref('zh-CN');
 // 处理语言切换
-const handleLanguageChange = newLanguage => {
-  currentLanguage.value = newLanguage;
-  locale.value = newLanguage;
-  localStorage.setItem('language', newLanguage);
+const handleLanguageChange = e => {
+  currentLanguage.value = e.target.value;
+  locale.value = e.target.value;
+  localStorage.setItem('language', e.target.value);
 };
 </script>
 
@@ -108,7 +108,7 @@ const handleLanguageChange = newLanguage => {
         <Input
           v-model:value="inputValue"
           class="header-search-input"
-          :placeholder="t('header.searchPlaceholder')"
+          :placeholder="$t('header.searchPlaceholder')"
           @change="showSearchHistory = true"
           @pressEnter="onSearchSubmit"
           @focus="showSearchHistory = false"
@@ -120,7 +120,7 @@ const handleLanguageChange = newLanguage => {
 
         <!-- 搜索历史 -->
         <div v-if="showSearchHistory && searchHistory.length" class="search-history">
-          <div class="history-header">{{ t('header.searchHistory') }}</div>
+          <div class="history-header">{{ $t('header.searchHistory') }}</div>
           <div
             v-for="(item, index) in searchHistory.value"
             :key="index"
@@ -155,7 +155,7 @@ const handleLanguageChange = newLanguage => {
   <!-- 设置弹窗 (使用Ant Design Vue的Modal) -->
   <a-modal
     v-model:open="showSettings"
-    :title="t('settings.title')"
+    :title="$t('settings.title')"
     :footer="null"
     width="700px"
     destroyOnClose
@@ -171,38 +171,38 @@ const handleLanguageChange = newLanguage => {
               button-style="solid"
               class="radio-button"
             >
-              <a-radio-button value="zh-CN">{{ t('settings.languageCN') }}</a-radio-button>
-              <a-radio-button value="en-US">{{ t('settings.languageEN') }}</a-radio-button>
+              <a-radio-button value="zh-CN">{{ $t('settings.languageCN') }}</a-radio-button>
+              <a-radio-button value="en-US">{{ $t('settings.languageEN') }}</a-radio-button>
             </a-radio-group>
           </div>
         </div>
         <div class="setting-item">
-          <div class="setting-label">{{ t('settings.theme') }}</div>
+          <div class="setting-label">{{ $t('settings.theme') }}</div>
           <div class="setting-value">
             <a-radio-group v-model:value="isDarkTheme" button-style="solid" class="radio-button">
-              <a-radio-button :value="false">{{ t('settings.lightTheme') }}</a-radio-button>
-              <a-radio-button :value="true">{{ t('settings.darkTheme') }}</a-radio-button>
+              <a-radio-button :value="false">{{ $t('settings.lightTheme') }}</a-radio-button>
+              <a-radio-button :value="true">{{ $t('settings.darkTheme') }}</a-radio-button>
             </a-radio-group>
           </div>
         </div>
       </a-tab-pane>
       <a-tab-pane :tab="t('settings.playback')" key="playback">
         <div class="setting-item">
-          <div class="setting-label">{{ t('settings.autoPlay') }}</div>
-          <div class="setting-value">{{ t('settings.enable') }}</div>
+          <div class="setting-label">{{ $t('settings.autoPlay') }}</div>
+          <div class="setting-value">{{ $t('settings.enable') }}</div>
         </div>
         <div class="setting-item">
-          <div class="setting-label">{{ t('settings.audioQuality') }}</div>
+          <div class="setting-label">{{ $t('settings.audioQuality') }}</div>
           <div class="setting-value">
             <a-radio-group
               v-model:value="musicStore.quality"
               button-style="solid"
               class="radio-button"
             >
-              <a-radio-button value="low">{{ t('settings.lowQuality') }}</a-radio-button>
-              <a-radio-button value="standard">{{ t('settings.standardQuality') }}</a-radio-button>
-              <a-radio-button value="high">{{ t('settings.highQuality') }}</a-radio-button>
-              <a-radio-button value="exhigh">{{ t('settings.veryHighQuality') }}</a-radio-button>
+              <a-radio-button value="low">{{ $t('settings.lowQuality') }}</a-radio-button>
+              <a-radio-button value="standard">{{ $t('settings.standardQuality') }}</a-radio-button>
+              <a-radio-button value="high">{{ $t('settings.highQuality') }}</a-radio-button>
+              <a-radio-button value="exhigh">{{ $t('settings.veryHighQuality') }}</a-radio-button>
               <a-radio-button value="super">{{ t('settings.ultraHighQuality') }}</a-radio-button>
             </a-radio-group>
           </div>
@@ -210,11 +210,11 @@ const handleLanguageChange = newLanguage => {
       </a-tab-pane>
       <a-tab-pane :tab="t('settings.about')" key="about">
         <div class="setting-item">
-          <div class="setting-label">{{ t('settings.version') }}</div>
+          <div class="setting-label">{{ $t('settings.version') }}</div>
           <div class="setting-value">1.0.0</div>
         </div>
         <div class="setting-item">
-          <div class="setting-label">{{ t('settings.developer') }}</div>
+          <div class="setting-label">{{ $t('settings.developer') }}</div>
           <div class="setting-value">xxx</div>
         </div>
       </a-tab-pane>
@@ -549,6 +549,7 @@ const handleLanguageChange = newLanguage => {
 :deep(.ant-radio-group) {
   display: flex;
   gap: 16px;
+  flex-flow: wrap;
 }
 
 /* 主题单选按钮样式调整 */

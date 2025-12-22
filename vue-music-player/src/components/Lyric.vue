@@ -32,7 +32,7 @@
           {{ line.lrc }}
         </div>
         <div v-if="musicStore.fullLyric.length === 0" class="no-lyric">
-          {{ t('lyric.noLyric') }}
+          {{ $t('lyric.noLyric') }}
         </div>
       </div>
     </div>
@@ -202,4 +202,4 @@ const applyMomentum = () => {
   text-align: center;
 }
 </style>
-
+

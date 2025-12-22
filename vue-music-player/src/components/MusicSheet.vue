@@ -2,10 +2,14 @@
   <!-- 歌单列表 -->
   <div class="playlist-section">
     <div class="section-header">
-      <span>{{ t('musicSheet.myPlaylists') }}</span>
+      <span>{{ $t('musicSheet.myPlaylists') }}</span>
       <span>
-        <arrowleftendonrectangle class="mr8" :alt="t('musicSheet.import')" @click="visible = true" />
-        <DocumentPlusIcon :alt="t('musicSheet.create')" @click="createVisible = true" />
+        <arrowleftendonrectangle
+          class="mr8"
+          :alt="$t('musicSheet.import')"
+          @click="visible = true"
+        />
+        <DocumentPlusIcon :alt="$t('musicSheet.create')" @click="createVisible = true" />
       </span>
     </div>
     <div class="playlist-list">
@@ -17,15 +21,21 @@
       >
         <div class="playlist-content" @click="goToMusicSheetDetail(item.id)">
           <div class="playlist-cover">
-            <CdIcon :alt="t('musicSheet.playlistCover')" />
+            <CdIcon :alt="$t('musicSheet.playlistCover')" />
           </div>
           <div class="playlist-info">
             <div class="playlist-name">{{ item.name }}</div>
-            <div class="playlist-count">{{ item.trackCount }}{{ t('musicSheet.trackCountUnit') }}</div>
+            <div class="playlist-count">
+              {{ item.trackCount }}{{ $t('musicSheet.trackCountUnit') }}
+            </div>
           </div>
         </div>
         <div class="playlist-actions">
-          <TrashIcon class="trash-icon" :alt="t('musicSheet.deletePlaylist')" @click.stop="showDeleteConfirm(item)" />
+          <TrashIcon
+            class="trash-icon"
+            :alt="$t('musicSheet.deletePlaylist')"
+            @click.stop="showDeleteConfirm(item)"
+          />
         </div>
       </div>
     </div>
@@ -44,13 +54,16 @@
           <div class="modal-text">{{ t('musicSheet.enterPlaylistUrlOrId') }}</div>
           <a-form :model="importForm" :rules="importRules" ref="importFormRef">
             <a-form-item name="url" :label="null">
-              <a-input v-model:value="importForm.url" :placeholder="t('musicSheet.enterPlaylistUrlOrIdPlaceholder')" />
+              <a-input
+                v-model:value="importForm.url"
+                :placeholder="t('musicSheet.enterPlaylistUrlOrIdPlaceholder')"
+              />
             </a-form-item>
           </a-form>
           <ul>
-            <li>{{ t('musicSheet.qqMusicAppImportTip') }}</li>
-            <li>{{ t('musicSheet.h5ImportTip') }}</li>
-            <li>{{ t('musicSheet.importTimeTip') }}</li>
+            <li>{{ $t('musicSheet.qqMusicAppImportTip') }}</li>
+            <li>{{ $t('musicSheet.h5ImportTip') }}</li>
+            <li>{{ $t('musicSheet.importTimeTip') }}</li>
           </ul>
         </div>
       </div>
@@ -70,7 +83,10 @@
           <div class="modal-text">{{ t('musicSheet.enterPlaylistName') }}</div>
           <a-form :model="formData" :rules="createRules" ref="formRef">
             <a-form-item name="name" :label="null">
-              <a-input v-model:value="formData.name" :placeholder="t('musicSheet.enterPlaylistNamePlaceholder')" />
+              <a-input
+                v-model:value="formData.name"
+                :placeholder="t('musicSheet.enterPlaylistNamePlaceholder')"
+              />
             </a-form-item>
           </a-form>
         </div>
@@ -90,7 +106,9 @@
       <div class="modal-content">
         <div class="modal-body">
           <div class="modal-text">{{ t('musicSheet.selectTargetPlaylist') }}</div>
-          <a-button type="primary" @click="handleCreateNewSheet">{{ t('musicSheet.createNewPlaylist') }}</a-button>
+          <a-button type="primary" @click="handleCreateNewSheet">{{
+            t('musicSheet.createNewPlaylist')
+          }}</a-button>
           <div class="playlist-select-list">
             <div
               v-for="item in musicStore.musicSheets"
@@ -100,7 +118,9 @@
               @click="selectedSheetId = item.id"
             >
               <div class="playlist-select-name">{{ item.name }}</div>
-              <div class="playlist-select-count">{{ item.trackCount }}{{ t('musicSheet.trackCountUnit') }}</div>
+              <div class="playlist-select-count">
+                {{ item.trackCount }}{{ t('musicSheet.trackCountUnit') }}
+              </div>
             </div>
           </div>
         </div>

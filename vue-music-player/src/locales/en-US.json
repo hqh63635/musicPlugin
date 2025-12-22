@@ -1,4 +1,11 @@
 ﻿{
+    "artistDetail": {
+        "playAll": "Play All",
+        "addToPlaylist": "Add to Playlist",
+        "biography": "Biography",
+        "genre": "Genre",
+        "region": "Region"
+    },
     "button": {
         "add": "Add to Playlist",
         "next": "Next",
@@ -46,6 +53,7 @@
         "unstar": "Unfavorite"
     },
     "settings": {
+        "about": "About",
         "audioQuality": "Audio Quality",
         "autoPlay": "Auto Play",
         "darkTheme": "Dark Theme",
@@ -53,34 +61,58 @@
         "enable": "Enable",
         "general": "General",
         "highQuality": "High Quality",
-        "veryHighQuality": "Very High Quality",
-        "ultraHighQuality": "Ultra High Quality",
         "language": "Language",
         "languageCN": "Simplified Chinese",
+        "languageEN": "English",
         "lightTheme": "Light Theme",
         "lowQuality": "Low Quality",
         "playback": "Playback",
         "standardQuality": "Standard Quality",
         "theme": "Theme",
         "title": "Settings",
-        "version": "Version"
+        "ultraHighQuality": "Ultra High Quality",
+        "version": "Version",
+        "veryHighQuality": "Very High Quality"
     },
     "musicSheet": {
         "myPlaylists": "My Playlists",
         "import": "Import",
+        "trackCountUnit": "Tracks",
         "create": "Create",
         "importPlaylist": "Import Playlist"
     },
+    "playlist": {
+        "clearPlaylist": "Clear Playlist"
+    },
+    "rankList": {
+        "selectToView": "Select to View",
+        "updated": "Updated",
+        "title": "Rankings"
+    },
     "common": {
-        "import": "Import"
+        "playAll": "Play All",
+        "addToPlaylist": "Add to Playlist",
+        "clearPlaylist": "Clear Playlist",
+        "import": "Import",
+        "play": "Play",
+        "hot": "Hot",
+        "playCount": "Play Count",
+        "plays": "Plays",
+        "songUnit": "Songs",
+        "tenThousand": "Ten Thousand",
+        "unknown": "Unknown",
+        "updated": "Updated"
     },
     "search": {
+        "album": "Album",
+        "artist": "Artist",
+        "defaultAvatarAlt": "Default avatar",
+        "music": "Music",
+        "noResults": "No results found",
         "placeholder": "Search music, artist, album",
         "searchButton": "Search",
         "searchFailed": "Search failed",
-        "noResults": "No results found",
-        "tryOtherKeywords": "Try other keywords",
-        "defaultAvatarAlt": "Default avatar"
+        "tryOtherKeywords": "Try other keywords"
     },
     "musicBar": {
         "play": "Play",
