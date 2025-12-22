@@ -127,7 +127,8 @@ const formatNumber = value => {
             <div class="ranklist-info">
               <h3 class="ranklist-name">{{ list.title }}</h3>
               <p class="ranklist-update">
-                {{ list.period }} {{ $t('rankList.updated') }} · {{ formatNumber(list.listenNum) }} {{ t('common.play') }}
+                {{ list.period }} {{ $t('rankList.updated') }} · {{ formatNumber(list.listenNum) }}
+                {{ t('common.play') }}
               </p>
             </div>
           </div>
@@ -147,16 +148,20 @@ const formatNumber = value => {
           </div>
           <div class="header-info">
             <h3 class="info-title">{{ selectedList.title }}</h3>
-            <div class="info-stats">
+            <!-- <div class="info-stats">
               <span class="stats-count">
-                <img src="@/assets/icons/list-bullet.svg" :alt="$t('common.songCount')" />
+                <img :src="plusIcon" :alt="$t('common.songCount')" />
                 {{ selectedList?.musicList?.length }}{{ $t('common.songUnit') }}
               </span>
               <span class="stats-play">
-                <img src="@/assets/icons/play.svg" :alt="$t('common.playCount')" />
-                {{ selectedList.playCount > 10000 ? (selectedList.playCount / 10000).toFixed(1) + $t('rankList.tenThousand') : selectedList.playCount }}{{ $t('common.plays') }}
+                <img :src="playIcon" :alt="$t('common.playCount')" />
+                {{
+                  selectedList.playCount > 10000
+                    ? (selectedList.playCount / 10000).toFixed(1) + $t('rankList.tenThousand')
+                    : selectedList.playCount
+                }}{{ $t('common.plays') }}
               </span>
-            </div>
+            </div> -->
             <p class="info-description" v-html="selectedList.description"></p>
           </div>
         </div>
@@ -235,7 +240,9 @@ const formatNumber = value => {
   background-color: var(--theme-bg-active);
   border-left: 3px solid var(--theme-accent-primary);
 }
-
+.ranklist-item.active .ranklist-name {
+  color: var(--theme-accent-primary);
+}
 .ranklist-cover {
   width: 50px;
   height: 50px;
@@ -524,5 +531,3 @@ const formatNumber = value => {
   display: flex;
 }
 </style>
-
-

@@ -359,22 +359,22 @@ const cellClickEvent = ({ row, column }) => {
           :virtual-y-config="{ enabled: true, gt: 20 }"
           show-overflow
         >
-          <vxe-column :title="t('musicBar.serialNumber')" type="seq" width="60" align="center" />
+          <vxe-column :title="$t('musicBar.serialNumber')" type="seq" width="60" align="center" />
           <vxe-column
-            :title="t('musicBar.song')"
+            :title="$t('musicBar.song')"
             field="title"
             ellipsis
-            :formatter="({ row }) => row.title || t('musicBar.unknownSong')"
+            :formatter="({ row }) => row.title || $t('musicBar.unknownSong')"
             show-overflow
           />
           <vxe-column
-            :title="t('musicBar.artist')"
+            :title="$t('musicBar.artist')"
             field="artist"
             ellipsis
             :formatter="({ row }) => row.artist || t('musicBar.unknownArtist')"
           />
-          <vxe-column :title="t('musicBar.album')" field="album" ellipsis show-overflow />
-          <vxe-column :title="t('musicBar.action')" width="120" align="center">
+          <vxe-column :title="$t('musicBar.album')" field="album" ellipsis show-overflow />
+          <vxe-column :title="$t('musicBar.action')" width="120" align="center">
             <template #default="{ row, $rowIndex }">
               <div style="display: flex; justify-content: center; gap: 12px; cursor: pointer">
                 <!-- 播放 / 暂停 -->
@@ -403,7 +403,7 @@ const cellClickEvent = ({ row, column }) => {
         </vxe-table>
 
         <div v-if="!musicStore.playlist || musicStore.playlist.length === 0" class="playlist-empty">
-          {{ t('musicBar.emptyPlaylist') }}
+          {{ $t('musicBar.emptyPlaylist') }}
         </div>
       </div>
     </div>
@@ -920,4 +920,3 @@ const cellClickEvent = ({ row, column }) => {
   justify-content: center;
 }
 </style>
-

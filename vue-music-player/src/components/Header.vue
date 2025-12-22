@@ -87,14 +87,13 @@ onMounted(() => {
     locale.value = savedLanguage;
   }
 });
-
+const currentLanguage = ref('zh-CN');
 // 处理语言切换
-const handleLanguageChange = (newLanguage) => {
+const handleLanguageChange = newLanguage => {
   currentLanguage.value = newLanguage;
   locale.value = newLanguage;
   localStorage.setItem('language', newLanguage);
 };
-
 </script>
 
 <template>
@@ -143,20 +142,35 @@ const handleLanguageChange = (newLanguage) => {
       <div class="header-button" :title="t('header.theme')" @click="toggleTheme">
         <TShirtLineIcon alt="主题" />
       </div>
-      <div class="header-button" :title="t('header.settings')" @click="showSettings = !showSettings">
+      <div
+        class="header-button"
+        :title="t('header.settings')"
+        @click="showSettings = !showSettings"
+      >
         <Cog8ToothIcon alt="设置" />
       </div>
     </div>
   </div>
 
   <!-- 设置弹窗 (使用Ant Design Vue的Modal) -->
-  <a-modal v-model:open="showSettings" :title="t('settings.title')" :footer="null" width="700px" destroyOnClose>
+  <a-modal
+    v-model:open="showSettings"
+    :title="t('settings.title')"
+    :footer="null"
+    width="700px"
+    destroyOnClose
+  >
     <a-tabs v-model:activeKey="activeTab" class="settings-tabs">
       <a-tab-pane :tab="t('settings.general')" key="general">
         <div class="setting-item">
           <div class="setting-label">{{ t('settings.language') }}</div>
           <div class="setting-value">
-            <a-radio-group v-model:value="currentLanguage" @change="handleLanguageChange" button-style="solid" class="radio-button">
+            <a-radio-group
+              v-model:value="currentLanguage"
+              @change="handleLanguageChange"
+              button-style="solid"
+              class="radio-button"
+            >
               <a-radio-button value="zh-CN">{{ t('settings.languageCN') }}</a-radio-button>
               <a-radio-button value="en-US">{{ t('settings.languageEN') }}</a-radio-button>
             </a-radio-group>

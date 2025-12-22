@@ -77,7 +77,7 @@ const removeSong = (song, index) => {
   <div class="playlist-page main-detail-container">
     <div class="playlist-detail main-detail-content">
       <!-- 加载状态 -->
-      <div v-if="loading" class="loading">{{ t('download.loading') }}</div>
+      <div v-if="loading" class="loading">{{ $t('download.loading') }}</div>
       <SongList
         :listSongs="songList || []"
         :isEnd="isEnd"

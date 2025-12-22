@@ -86,7 +86,9 @@ const playSong = (song, index) => {
 const addToPlaylist = item => {
   if (item) {
     musicStore.addToPlaylist(item, 0);
-    message.success(`${t('musicSheetDetail.addSuccess')}${playlist.value.length}${t('musicSheetDetail.songs')}`);
+    message.success(
+      `${t('musicSheetDetail.addSuccess')}${playlist.value.length}${t('musicSheetDetail.songs')}`
+    );
   } else {
     musicStore.addSongsToPlaylist(playlist.value || [], 0);
     message.success(`添加${playlist.value.length}首歌曲到播放列表`);
@@ -134,9 +136,11 @@ const clearPlaylist = () => {
   <div class="playlist-page main-detail-container">
     <div class="playlist-detail main-detail-content">
       <div class="playlist-actions">
-        <a-button class="mr12" type="primary" @click="playAll">{{ $t('musicSheetDetail.playAll') }}</a-button>
-        <a-button class="mr12" type="primary" @click="addToPlaylist()">{{ $t('musicSheetDetail.addToPlaylist') }}</a-button>
-        <a-button @click="clearPlaylist">{{ $t('musicSheetDetail.clearPlaylist') }}</a-button>
+        <a-button class="mr12" type="primary" @click="playAll">{{ $t('common.playAll') }}</a-button>
+        <a-button class="mr12" type="primary" @click="addToPlaylist()">{{
+          $t('common.addToPlaylist')
+        }}</a-button>
+        <a-button @click="clearPlaylist">{{ $t('common.clearPlaylist') }}</a-button>
       </div>
       <div class="playlist-content">
         <SongList
@@ -401,4 +405,3 @@ const clearPlaylist = () => {
   color: #888;
 }
 </style>
-

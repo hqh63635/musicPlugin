@@ -1,5 +1,7 @@
 {
     "artistDetail": {
+        "playAll": "播放全部",
+        "addToPlaylist": "添加到播放列表",
         "biography": "歌手介绍",
         "genre": "流派",
         "region": "地区"
@@ -14,12 +16,17 @@
         "unstar": "取消收藏"
     },
     "common": {
+        "playAll": "播放全部",
+        "addToPlaylist": "添加到播放列表",
+        "clearPlaylist": "清空播放列表",
         "import": "导入",
         "play": "播放",
+        "hot": "热门",
         "playCount": "播放次数",
         "plays": "次播放",
         "songUnit": "首",
         "tenThousand": "万",
+        "unknown": "未知",
         "updated": "更新"
     },
     "download": {
@@ -73,10 +80,16 @@
     "musicSheet": {
         "create": "创建",
         "import": "导入",
+        "trackCountUnit": "首",
         "importPlaylist": "导入歌单",
         "myPlaylists": "我的歌单"
     },
-    "ranklist": {
+    "playlist": {
+        "clearPlaylist": "清空播放列表"
+    },
+    "rankList": {
+        "selectToView": "选择查看",
+        "updated": "更新时间",
         "title": "排行榜"
     },
     "remoteSheet": {

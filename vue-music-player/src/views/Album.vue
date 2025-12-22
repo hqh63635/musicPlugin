@@ -21,7 +21,7 @@ const albums = ref([]);
 const categories = ref([
   {
     id: '热门',
-    name: t('album.hot'),
+    name: t('common.hot'),
   },
   { id: 'A', name: 'A' },
   { id: 'B', name: 'B' },
@@ -548,4 +548,3 @@ const goToAlbumDetail = album => {
   overflow: auto;
 }
 </style>
-

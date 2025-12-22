@@ -79,7 +79,7 @@ const removeSong = song => {
           <div class="control-button" @click="toggleFavorite(item)">
             <component
               :is="item?.isFavorite ? heartFilledIcon : heartOutlineIcon"
-              :alt="item?.isFavorite ? t('favoriteList.favorited') : t('favoriteList.favorite')"
+              :alt="item?.isFavorite ? $t('favoriteList.favorited') : $t('favoriteList.favorite')"
             />
           </div>
         </template>
@@ -110,4 +110,3 @@ const removeSong = song => {
   cursor: pointer;
 }
 </style>
-

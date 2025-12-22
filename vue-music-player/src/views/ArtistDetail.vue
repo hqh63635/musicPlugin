@@ -9,13 +9,26 @@
             class="artist-avatar"
           />
           <div class="artist-details">
-            <p><strong>{{ $t('artistDetail.biography') }}:</strong> {{ singer?.name || singer?.title || $t('common.unknown') }}</p>
-            <p><strong>{{ $t('artistDetail.region') }}:</strong> {{ singer?.area || singer?.artist || $t('common.unknown') }}</p>
-            <p><strong>{{ $t('artistDetail.genre') }}:</strong> {{ singer?.name || $t('common.unknown') }}</p>
+            <p>
+              <strong>{{ $t('artistDetail.biography') }}:</strong>
+              {{ singer?.name || singer?.title || $t('common.unknown') }}
+            </p>
+            <p>
+              <strong>{{ $t('artistDetail.region') }}:</strong>
+              {{ singer?.area || singer?.artist || $t('common.unknown') }}
+            </p>
+            <p>
+              <strong>{{ $t('artistDetail.genre') }}:</strong>
+              {{ singer?.name || $t('common.unknown') }}
+            </p>
           </div>
           <div class="play-active">
-            <a-button class="mr-12" type="primary" @click="playAllSongs">{{ t('artistDetail.playAll') }}</a-button>
-            <a-button type="primary" @click="addToPlaylist()">{{ t('artistDetail.addToPlaylist') }}</a-button>
+            <a-button class="mr-12" type="primary" @click="playAllSongs">{{
+              $t('artistDetail.playAll')
+            }}</a-button>
+            <a-button type="primary" @click="addToPlaylist()">{{
+              $t('artistDetail.addToPlaylist')
+            }}</a-button>
           </div>
         </div>
         <div class="songs-list">
@@ -92,7 +105,9 @@ const addToPlaylist = item => {
     message.success(`$(item.title)添加到播放列表`);
   } else {
     musicStore.addSongsToPlaylist(artistInfo.value || [], 0);
-    message.success(`${t('artistDetail.addSuccessBulk')}${artistInfo.value.length}${t('common.songs')}`);
+    message.success(
+      `${t('artistDetail.addSuccessBulk')}${artistInfo.value.length}${t('common.songs')}`
+    );
   }
 };
 
@@ -210,4 +225,3 @@ const handlePageChange = page => {
   margin-right: 12px;
 }
 </style>
-
