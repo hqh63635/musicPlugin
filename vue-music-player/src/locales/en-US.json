@@ -1,9 +1,10 @@
 ﻿{
     "artistDetail": {
-        "playAll": "Play All",
+        "addSuccessBulk": "Successfully added {count} songs to the playlist",
         "addToPlaylist": "Add to Playlist",
         "biography": "Biography",
         "genre": "Genre",
+        "playAll": "Play All",
         "region": "Region"
     },
     "button": {
@@ -14,6 +15,26 @@
         "prev": "Previous",
         "star": "Favorite Playlist",
         "unstar": "Unfavorite"
+    },
+    "common": {
+        "addToPlaylist": "Add to Playlist",
+        "cancel": "Cancel",
+        "clearPlaylist": "Clear Playlist",
+        "clearSuccess": "Playlist cleared successfully",
+        "confirm": "Confirm",
+        "confirmClear": "Are you sure you want to clear the playlist?",
+        "create": "Create",
+        "error": "Error",
+        "hot": "Hot",
+        "import": "Import",
+        "play": "Play",
+        "playAll": "Play All",
+        "playCount": "Play Count",
+        "plays": "Plays",
+        "songUnit": "Songs",
+        "tenThousand": "Ten Thousand",
+        "unknown": "Unknown",
+        "updated": "Updated"
     },
     "download": {
         "loading": "Loading...",
@@ -36,12 +57,67 @@
     "message": {
         "pleaseEnterSearchKeyword": "Please enter search keywords"
     },
+    "musicBar": {
+        "action": "Action",
+        "album": "Album",
+        "artist": "Artist",
+        "emptyPlaylist": "No Playlist",
+        "listLoop": "List Loop",
+        "next": "Next",
+        "pause": "Pause",
+        "play": "Play",
+        "playlist": "Playlist",
+        "previous": "Previous",
+        "progress": "Progress",
+        "serialNumber": "Serial Number",
+        "shuffle": "Shuffle",
+        "singleLoop": "Single Loop",
+        "song": "Song",
+        "unknownArtist": "Unknown Artist",
+        "unknownSong": "Unknown Song",
+        "volume": "Volume"
+    },
     "musicDetail": {
         "exampleArtist": "Jay Chou",
         "exampleSongTitle": "Sunny Day (Live)",
         "exampleSongTitle2": "Seven Mile Fragrance",
         "relatedRecommendations": "Related Recommendations",
         "relatedSong": "Related Songs"
+    },
+    "musicSheet": {
+        "addToSelectedPlaylist": "Add to Selected Playlist",
+        "confirmDeletePlaylist": "Are you sure you want to delete the playlist?",
+        "create": "Create",
+        "createPlaylist": "Create Playlist",
+        "deletePlaylistWarning": "Deleting the playlist will remove all songs from it",
+        "enterPlaylistName": "Enter Playlist Name",
+        "enterPlaylistNamePlaceholder": "Enter Playlist Name",
+        "enterPlaylistUrlOrId": "Enter Playlist URL or ID",
+        "enterPlaylistUrlOrIdPlaceholder": "Enter Playlist URL or ID",
+        "h5ImportTip": "Supports H5 Import",
+        "import": "Import",
+        "importPlaylist": "Import Playlist",
+        "importTimeTip": "Import time may vary",
+        "myPlaylists": "My Playlists",
+        "qqMusicAppImportTip": "Supports QQ Music App Import",
+        "selectPlaylist": "Please select a playlist",
+        "trackCountUnit": "Tracks"
+    },
+    "musicSheetDetail": {
+        "addSuccessSong": "Successfully added {count} songs to the playlist",
+        "clearError": "Failed to clear playlist",
+        "clearSuccess": "Playlist cleared successfully",
+        "confirmClear": "Confirm Clear Playlist",
+        "confirmClearContent": "Are you sure you want to clear the playlist?",
+        "confirmClearTitle": "Confirm Clear Playlist"
+    },
+    "playlist": {
+        "clearPlaylist": "Clear Playlist"
+    },
+    "rankList": {
+        "selectToView": "Select to View",
+        "title": "Rankings",
+        "updated": "Updated"
     },
     "remoteSheet": {
         "loadFailed": "Failed to load playlist information",
@@ -51,6 +127,17 @@
         "playlistNotFound": "Playlist not found",
         "star": "Favorite Playlist",
         "unstar": "Unfavorite"
+    },
+    "search": {
+        "album": "Album",
+        "artist": "Artist",
+        "defaultAvatarAlt": "Default avatar",
+        "music": "Music",
+        "noResults": "No results found",
+        "placeholder": "Search music, artist, album",
+        "searchButton": "Search",
+        "searchFailed": "Search failed",
+        "tryOtherKeywords": "Try other keywords"
     },
     "settings": {
         "about": "About",
@@ -74,85 +161,26 @@
         "version": "Version",
         "veryHighQuality": "Very High Quality"
     },
-    "musicSheet": {
-        "myPlaylists": "My Playlists",
-        "import": "Import",
-        "trackCountUnit": "Tracks",
-        "create": "Create",
-        "importPlaylist": "Import Playlist"
-    },
-    "playlist": {
-        "clearPlaylist": "Clear Playlist"
-    },
-    "rankList": {
-        "selectToView": "Select to View",
-        "updated": "Updated",
-        "title": "Rankings"
-    },
-    "common": {
-        "playAll": "Play All",
-        "addToPlaylist": "Add to Playlist",
-        "clearPlaylist": "Clear Playlist",
-        "import": "Import",
-        "play": "Play",
-        "hot": "Hot",
-        "playCount": "Play Count",
-        "plays": "Plays",
-        "songUnit": "Songs",
-        "tenThousand": "Ten Thousand",
-        "unknown": "Unknown",
-        "updated": "Updated"
-    },
-    "search": {
-        "album": "Album",
-        "artist": "Artist",
-        "defaultAvatarAlt": "Default avatar",
-        "music": "Music",
-        "noResults": "No results found",
-        "placeholder": "Search music, artist, album",
-        "searchButton": "Search",
-        "searchFailed": "Search failed",
-        "tryOtherKeywords": "Try other keywords"
-    },
-    "musicBar": {
-        "play": "Play",
-        "pause": "Pause",
-        "next": "Next",
-        "previous": "Previous",
-        "progress": "Progress",
-        "volume": "Volume",
-        "playlist": "Playlist",
-        "singleLoop": "Single Loop",
-        "listLoop": "List Loop",
-        "shuffle": "Shuffle",
-        "serialNumber": "Serial Number",
-        "song": "Song",
-        "artist": "Artist",
-        "album": "Album",
-        "action": "Action",
-        "emptyPlaylist": "No Playlist",
-        "unknownSong": "Unknown Song",
-        "unknownArtist": "Unknown Artist"
+    "sidebar": {
+        "album": "Albums",
+        "artist": "Artists",
+        "discover": "Discover",
+        "download": "Downloads",
+        "favorite": "Favorites",
+        "home": "Home",
+        "myMusic": "My Music",
+        "playlist": "My Playlist",
+        "playlists": "Playlists",
+        "radio": "Radio",
+        "ranklist": "Rankings",
+        "recent": "Recently Played",
+        "search": "Search"
     },
     "songList": {
-        "artist": "Artist",
         "action": "Action",
+        "addToPlaylistSuccess": "Successfully added song to the playlist",
+        "artist": "Artist",
         "index": "Index",
         "song": "Song"
-    },
-    "sidebar": {
-        "home": "Home",
-        "discover": "Discover",
-        "myMusic": "My Music",
-        "radio": "Radio",
-        "playlists": "Playlists",
-        "search": "Search",
-        "ranklist": "Rankings",
-        "favorite": "Favorites",
-        "recent": "Recently Played",
-        "download": "Downloads",
-        "playlist": "My Playlist",
-        "album": "Albums",
-        "artist": "Artists"
     }
 }

@@ -63,6 +63,7 @@ const indicator = h(LoadingOutlined, { style: { fontSize: '24px' }, spin: true }
 const musicStore = useMusicStore();
 const route = useRoute();
 const artistId = route.params.id;
+const { t } = useI18n();
 // 修复变量声明顺序并添加调试日志
 let singer = ref(null);
 const singerParam = ref('');
@@ -106,7 +107,9 @@ const addToPlaylist = item => {
   } else {
     musicStore.addSongsToPlaylist(artistInfo.value || [], 0);
     message.success(
-      `${t('artistDetail.addSuccessBulk')}${artistInfo.value.length}${t('common.songs')}`
+      t('artistDetail.addSuccessBulk', {
+        count: artistInfo.value.length,
+      })
     );
   }
 };

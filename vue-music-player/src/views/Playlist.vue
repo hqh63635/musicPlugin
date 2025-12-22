@@ -6,7 +6,8 @@ import { useMusicStore } from '../store/music.js';
 import SongList from '../components/SongList.vue';
 import { DeleteOutlined } from '@ant-design/icons-vue';
 import { Modal } from 'ant-design-vue';
-import { useI18n } from 'vue-i18n'
+import { useI18n } from 'vue-i18n';
+import { message } from 'ant-design-vue';
 
 const route = useRoute();
 const musicStore = useMusicStore();
@@ -71,16 +72,17 @@ const addToPlaylist = song => {
 const removeSong = (song, index) => {
   musicStore.removeSong(song, index);
 };
+const { t } = useI18n();
 const removeAll = () => {
-  const { t } = useI18n()
   Modal.confirm({
-    title: t('playlist.confirmClear'),
+    title: t('common.confirmClear'),
     okText: t('common.confirm'),
     okType: 'primary',
     cancelText: t('common.cancel'),
     centered: true,
     onOk: () => {
       musicStore.removeAll();
+      message.success(t('common.clearSuccess'));
     },
   });
 };
@@ -355,4 +357,3 @@ const removeAll = () => {
   color: #888;
 }
 </style>
-

@@ -13,6 +13,7 @@ import { useI18n } from 'vue-i18n';
 
 const route = useRoute();
 const musicStore = useMusicStore();
+const { t } = useI18n();
 
 // 初始化IndexedDB Hook
 const { getSheetById, clearSheetSongs } = useMusicSheetsDB();
@@ -91,7 +92,11 @@ const addToPlaylist = item => {
     );
   } else {
     musicStore.addSongsToPlaylist(playlist.value || [], 0);
-    message.success(`添加${playlist.value.length}首歌曲到播放列表`);
+    message.success(
+      t('musicSheetDetail.addSuccessSong', {
+        count: playlist.value.length,
+      })
+    );
   }
 };
 
@@ -123,8 +128,8 @@ const clearPlaylist = () => {
       } catch (error) {
         console.error('清空歌单失败:', error);
         Modal.error({
-          title: '操作失败',
-          content: '清空歌单时发生错误，请稍后重试',
+          title: t('common.error'),
+          content: t('musicSheetDetail.clearError'),
         });
       }
     },

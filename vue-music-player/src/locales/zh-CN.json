@@ -1,9 +1,10 @@
 {
     "artistDetail": {
-        "playAll": "播放全部",
+        "addSuccessBulk": "成功添加{count}首歌曲到播放列表",
         "addToPlaylist": "添加到播放列表",
         "biography": "歌手介绍",
         "genre": "流派",
+        "playAll": "播放全部",
         "region": "地区"
     },
     "button": {
@@ -16,12 +17,17 @@
         "unstar": "取消收藏"
     },
     "common": {
-        "playAll": "播放全部",
         "addToPlaylist": "添加到播放列表",
+        "cancel": "取消",
         "clearPlaylist": "清空播放列表",
+        "confirm": "确认",
+        "confirmClear": "确认清空播放列表吗？",
+        "create": "创建",
+        "error": "错误",
+        "hot": "热门",
         "import": "导入",
         "play": "播放",
-        "hot": "热门",
+        "playAll": "播放全部",
         "playCount": "播放次数",
         "plays": "次播放",
         "songUnit": "首",
@@ -78,19 +84,38 @@
         "relatedSong": "相关歌曲"
     },
     "musicSheet": {
-        "create": "创建",
+        "addToSelectedPlaylist": "添加到选中的播放列表",
+        "confirmDeletePlaylist": "确认删除播放列表吗？",
+        "createPlaylist": "创建歌单",
+        "deletePlaylistWarning": "删除播放列表后，其中的歌曲将无法恢复",
+        "enterPlaylistName": "请输入歌单名称",
+        "enterPlaylistNamePlaceholder": "请输入歌单名称",
+        "enterPlaylistUrlOrId": "请输入歌单URL或ID",
+        "enterPlaylistUrlOrIdPlaceholder": "请输入歌单URL或ID",
+        "h5ImportTip": "支持H5导入",
         "import": "导入",
-        "trackCountUnit": "首",
         "importPlaylist": "导入歌单",
-        "myPlaylists": "我的歌单"
+        "importTimeTip": "导入时间可能会有延迟",
+        "myPlaylists": "我的歌单",
+        "qqMusicAppImportTip": "支持QQ音乐App导入",
+        "selectPlaylist": "请选择播放列表",
+        "trackCountUnit": "首"
+    },
+    "musicSheetDetail": {
+        "addSuccessSong": "成功添加{count}首歌曲到播放列表",
+        "clearError": "清空播放列表失败",
+        "clearSuccess": "清空播放列表成功",
+        "confirmClear": "确认清空播放列表吗？",
+        "confirmClearContent": "确认清空播放列表吗？",
+        "confirmClearTitle": "是否确认"
     },
     "playlist": {
         "clearPlaylist": "清空播放列表"
     },
     "rankList": {
         "selectToView": "选择查看",
-        "updated": "更新时间",
-        "title": "排行榜"
+        "title": "排行榜",
+        "updated": "更新时间"
     },
     "remoteSheet": {
         "loadFailed": "歌单信息加载失败",
@@ -151,6 +176,7 @@
     },
     "songList": {
         "action": "操作",
+        "addToPlaylistSuccess": "成功添加歌曲到播放列表",
         "artist": "歌手",
         "index": "序号",
         "song": "歌曲"

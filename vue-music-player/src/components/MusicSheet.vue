@@ -70,12 +70,12 @@
     </a-modal>
     <a-modal
       v-model:visible="createVisible"
-      :title="t('musicSheet.createPlaylist')"
+      :title="$t('musicSheet.createPlaylist')"
       :maskClosable="false"
       @cancel="closeCreateSheetModal"
       @ok="handleCreateSheet"
-      :okText="t('common.create')"
-      :cancelText="t('common.cancel')"
+      :okText="$t('common.create')"
+      :cancelText="$t('common.cancel')"
       centered
     >
       <div class="modal-content">
