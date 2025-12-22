@@ -191,7 +191,7 @@ const removeSong = (song, index) => {
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
 }
 
@@ -334,4 +334,3 @@ const removeSong = (song, index) => {
   color: #888;
 }
 </style>
-
