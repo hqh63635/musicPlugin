@@ -15,7 +15,7 @@ import './styles/common.css';
 
 import App from './App.vue';
 import router from './router';
-import i18n from './locales'; // 导入i18n实例
+import i18n from './locales'; // ✅ 只引入 i18n 实例（不是语言文件）
 
 const app = createApp(App);
 const pinia = createPinia();
@@ -28,4 +28,4 @@ app.use(i18n); // 使用i18n
 app.use(AntDesign);
 app.use(VxeUIBase);
 app.use(VxeUITable);
-app.mount('#app');
+app.mount('#app');

@@ -59,5 +59,8 @@ export default defineConfig({
         },
       },
     },
+    build: {
+      assetsInclude: ['**/*.json'],
+    },
   },
 });
