@@ -7,6 +7,7 @@ import plusIcon from '@/assets/icons/plus.svg?url';
 import { PlayCircleOutlined, PlusCircleOutlined } from '@ant-design/icons-vue';
 import SongList from '../components/SongList.vue';
 import { useI18n } from 'vue-i18n';
+import { message } from 'ant-design-vue';
 
 const { t } = useI18n();
 const musicStore = useMusicStore();
@@ -71,16 +72,25 @@ const playSong = (song, index) => {
   musicStore.playSong(song);
 };
 
-// 播放全部歌曲
+// 播放全部
 const playAllSongs = () => {
-  if (listSongs.value.length > 0) {
-    musicStore.setPlaylist(listSongs.value, 0);
-  }
+  musicStore.playSong(listSongs.value[0]);
+  musicStore.addSongsToPlaylist(listSongs.value || [], 0);
+  message.success(
+    t('artistDetail.addSuccessBulk', {
+      count: listSongs.value.length, 
+    })
+  );
 };
 
 // 添加到播放列表
 const addToPlaylist = song => {
-  musicStore.addToPlaylist(song);
+  musicStore.addSongsToPlaylist(listSongs.value || [], 0);
+  message.success(
+    t('artistDetail.addSuccessBulk', {
+      count: listSongs.value.length,
+    })
+  );
 };
 
 // 获取排名样式
@@ -141,27 +151,23 @@ const formatNumber = value => {
         <div class="detail-header">
           <div class="header-cover">
             <img :src="selectedList.coverImg" :alt="selectedList.name" />
-            <div class="play-button" @click="playAllSongs">
+            <!-- <div class="play-button" @click="playAllSongs">
               <PlayCircleOutlined style="font-size: 20px; margin-right: 8px" />
               <span>{{ $t('rankList.playAll') }}</span>
-            </div>
+            </div> -->
           </div>
           <div class="header-info">
-            <h3 class="info-title">{{ selectedList.title }}</h3>
-            <!-- <div class="info-stats">
-              <span class="stats-count">
-                <img :src="plusIcon" :alt="$t('common.songCount')" />
-                {{ selectedList?.musicList?.length }}{{ $t('common.songUnit') }}
-              </span>
-              <span class="stats-play">
-                <img :src="playIcon" :alt="$t('common.playCount')" />
-                {{
-                  selectedList.playCount > 10000
-                    ? (selectedList.playCount / 10000).toFixed(1) + $t('rankList.tenThousand')
-                    : selectedList.playCount
-                }}{{ $t('common.plays') }}
-              </span>
-            </div> -->
+            <h3 class="info-title">
+              <div>{{ selectedList.title }}</div>
+              <div class="play-active">
+                <a-button class="mr8" type="primary" @click="playAllSongs">{{
+                  $t('artistDetail.playAll')
+                }}</a-button>
+                <a-button type="primary" @click="addToPlaylist()">{{
+                  $t('artistDetail.addToPlaylist')
+                }}</a-button>
+              </div>
+            </h3>
             <p class="info-description" v-html="selectedList.description"></p>
           </div>
         </div>
@@ -437,6 +443,8 @@ const formatNumber = value => {
 }
 
 .info-title {
+  display: flex;
+  justify-content: space-between;
   font-size: 20px;
   line-height: 20px;
   font-weight: bold;

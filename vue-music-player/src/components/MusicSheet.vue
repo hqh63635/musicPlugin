@@ -51,12 +51,12 @@
     >
       <div class="modal-content">
         <div class="modal-body">
-          <div class="modal-text">{{ t('musicSheet.enterPlaylistUrlOrId') }}</div>
+          <div class="modal-text">{{ $t('musicSheet.enterPlaylistUrlOrId') }}</div>
           <a-form :model="importForm" :rules="importRules" ref="importFormRef">
             <a-form-item name="url" :label="null">
               <a-input
                 v-model:value="importForm.url"
-                :placeholder="t('musicSheet.enterPlaylistUrlOrIdPlaceholder')"
+                :placeholder="$t('musicSheet.enterPlaylistUrlOrIdPlaceholder')"
               />
             </a-form-item>
           </a-form>
@@ -80,12 +80,12 @@
     >
       <div class="modal-content">
         <div class="modal-body">
-          <div class="modal-text">{{ t('musicSheet.enterPlaylistName') }}</div>
+          <div class="modal-text">{{ $t('musicSheet.enterPlaylistName') }}</div>
           <a-form :model="formData" :rules="createRules" ref="formRef">
             <a-form-item name="name" :label="null">
               <a-input
                 v-model:value="formData.name"
-                :placeholder="t('musicSheet.enterPlaylistNamePlaceholder')"
+                :placeholder="$t('musicSheet.enterPlaylistNamePlaceholder')"
               />
             </a-form-item>
           </a-form>
@@ -95,12 +95,12 @@
 
     <a-modal
       v-model:visible="selectSheetVisible"
-      :title="t('musicSheet.selectPlaylist')"
+      :title="$t('musicSheet.selectPlaylist')"
       :maskClosable="false"
       @cancel="closeSelectSheetModal"
       @ok="handleAddToSelectedSheet"
-      :okText="t('musicSheet.addToSelectedPlaylist')"
-      :cancelText="t('common.cancel')"
+      :okText="$t('musicSheet.addToSelectedPlaylist')"
+      :cancelText="$t('common.cancel')"
       centered
     >
       <div class="modal-content">
