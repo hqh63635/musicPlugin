@@ -40,9 +40,13 @@ export default defineConfig({
       },
       // 海棠音乐API代理
       '/haitang': {
-        target: 'http://musicapi.haitangw.net',
+        target: 'https://musicapi.haitangw.net',
         changeOrigin: true,
         rewrite: path => path.replace(/^\/haitang/, ''),
+        headers: {
+          Referer: 'https://musicapi.haitangw.net',
+          Host: 'musicapi.haitangw.net',
+        },
       },
       '/qqmusic': {
         target: 'https://u6.y.qq.com',
