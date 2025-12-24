@@ -88,7 +88,9 @@
         "addToSelectedPlaylist": "Add to Selected Playlist",
         "confirmDeletePlaylist": "Are you sure you want to delete the playlist?",
         "create": "Create",
+        "createNewPlaylist": "Create New Playlist",
         "createPlaylist": "Create Playlist",
+        "createPlaylistTip": "Create New Playlist",
         "deletePlaylistWarning": "Deleting the playlist will remove all songs from it",
         "enterPlaylistName": "Enter Playlist Name",
         "enterPlaylistNamePlaceholder": "Enter Playlist Name",
@@ -99,8 +101,10 @@
         "importPlaylist": "Import Playlist",
         "importTimeTip": "Import time may vary",
         "myPlaylists": "My Playlists",
+        "pleaseEnterPlaylistUrlOrId": "Please enter playlist URL or ID",
         "qqMusicAppImportTip": "Supports QQ Music App Import",
         "selectPlaylist": "Please select a playlist",
+        "selectTargetPlaylist": "Please select target playlist",
         "trackCountUnit": "Tracks"
     },
     "musicSheetDetail": {

@@ -87,6 +87,7 @@
         "addToSelectedPlaylist": "添加到选中的播放列表",
         "confirmDeletePlaylist": "确认删除播放列表吗？",
         "createPlaylist": "创建歌单",
+        "createPlaylistTip": "创建新歌单",
         "deletePlaylistWarning": "删除播放列表后，其中的歌曲将无法恢复",
         "enterPlaylistName": "请输入歌单名称",
         "enterPlaylistNamePlaceholder": "请输入歌单名称",
@@ -97,8 +98,10 @@
         "importPlaylist": "导入歌单",
         "importTimeTip": "导入时间可能会有延迟",
         "myPlaylists": "我的歌单",
+        "pleaseEnterPlaylistUrlOrId": "请输入歌单URL或ID",
         "qqMusicAppImportTip": "支持QQ音乐App导入",
         "selectPlaylist": "请选择播放列表",
+        "selectTargetPlaylist": "请选择目标播放列表",
         "trackCountUnit": "首"
     },
     "musicSheetDetail": {
