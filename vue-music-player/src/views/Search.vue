@@ -7,6 +7,7 @@ import { useMusicStore } from '@/store/music.js';
 import { PlusCircleOutlined, LoadingOutlined } from '@ant-design/icons-vue';
 import { Tabs, TabPane } from 'ant-design-vue';
 import { useI18n } from 'vue-i18n';
+import { message } from 'ant-design-vue';
 
 const { t } = useI18n();
 const musicStore = useMusicStore();
@@ -103,8 +104,25 @@ const handlePageChange = page => {
   performSearch();
 };
 
-const addToPlaylist = (item, index) => {
-  musicStore.addToPlaylist(item, 0);
+// 播放全部
+const playAllSongs = () => {
+  musicStore.playSong(searchResults.value[0]);
+  musicStore.addSongsToPlaylist(searchResults.value || [], 0);
+};
+
+// 添加到播放列表
+const addToPlaylist = item => {
+  if (item) {
+    musicStore.addToPlaylist(item, 0);
+    message.success(`$(item.title)添加到播放列表`);
+  } else {
+    musicStore.addSongsToPlaylist(searchResults.value || [], 0);
+    message.success(
+      t('artistDetail.addSuccessBulk', {
+        count: searchResults.value.length,
+      })
+    );
+  }
 };
 // 格式化歌曲时长
 const formatDuration = seconds => {
@@ -193,7 +211,9 @@ const handleSearch = () => {
             class="search-input"
             @keyup.enter="handleSearch"
           />
-          <button @click="handleSearch" class="search-button">{{ $t('search.searchButton') }}</button>
+          <button @click="handleSearch" class="search-button">
+            {{ $t('search.searchButton') }}
+          </button>
         </div>
       </div>
 
@@ -204,6 +224,14 @@ const handleSearch = () => {
           <a-tab-pane key="artist" :tab="$t('search.artist')"></a-tab-pane>
           <a-tab-pane key="album" :tab="$t('search.album')"></a-tab-pane>
         </a-tabs>
+        <div class="play-active" v-if="currentType === 'music'">
+          <a-button class="mr12" type="primary" @click="playAllSongs">{{
+            $t('artistDetail.playAll')
+          }}</a-button>
+          <a-button type="primary" @click="addToPlaylist()">{{
+            $t('artistDetail.addToPlaylist')
+          }}</a-button>
+        </div>
         <a-spin :spinning="loading" :indicator="indicator" class="loading-spin">
           <div v-if="searchResults.length" class="search-results">
             <SongList
@@ -321,7 +349,13 @@ const handleSearch = () => {
 }
 
 .search-results-section {
+  position: relative;
   height: 100%;
+}
+.play-active {
+  position: absolute;
+  top: 2px;
+  right: 10px;
 }
 .artist-detail-content {
   height: 100%;
@@ -475,4 +509,3 @@ const handleSearch = () => {
   width: 100%;
 }
 </style>
-
