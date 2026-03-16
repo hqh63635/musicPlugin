@@ -62,6 +62,16 @@ export default defineConfig({
           Host: 'i.y.qq.com',
         },
       },
+      // 洛雪音乐API代理
+      '/luoxue': {
+        target: 'https://lxmusicapi.onrender.com',
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/luoxue/, ''),
+        headers: {
+          Referer: 'https://lxmusicapi.onrender.com',
+          Host: 'lxmusicapi.onrender.com',
+        },
+      },
     },
     build: {
       assetsInclude: ['**/*.json'],

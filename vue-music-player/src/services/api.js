@@ -1,6 +1,7 @@
 // 音乐API服务
 // 导入插件包装器
 import plugin from '../utils/plugin-wrapper.js';
+import luoxue from './luoxue.js';
 
 /**
  * 搜索音乐相关内容
