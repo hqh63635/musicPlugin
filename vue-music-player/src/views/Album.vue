@@ -482,7 +482,7 @@ const goToAlbumDetail = album => {
   flex-wrap: wrap;
   gap: 8px;
   padding: 16px;
-  background-color: var(--theme-bg-secondary);
+  background-color: var(--theme-bg-transparency);
   border-radius: 8px;
   margin-bottom: 24px;
   transition: background-color 0.3s;
