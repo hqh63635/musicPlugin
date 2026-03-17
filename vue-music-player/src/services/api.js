@@ -29,7 +29,7 @@ export async function search(keyword, page = 1, type = 'music') {
  * @param {string} quality - 音质
  * @returns {Promise<Object>} 媒体源信息
  */
-export async function getMediaSource(song, quality = 'standard') {
+export async function getMediaSource(song, quality = 'standard', apiSource = 'plugin') {
   try {
     if (!song || typeof song !== 'object') {
       console.error('获取媒体源失败: 歌曲对象必须是有效的对象');
@@ -71,7 +71,33 @@ export async function getMediaSource(song, quality = 'standard') {
     };
     const normalizedQuality = quality.toLowerCase();
 
-    console.log('获取媒体源参数:', { song: normalizedSong, quality: normalizedQuality });
+    console.log('获取媒体源参数:', { song: normalizedSong, quality: normalizedQuality, apiSource });
+
+    // 根据API源选择调用方式
+    if (apiSource === 'luoxue') {
+      try {
+        console.log('使用luoxue API获取媒体源');
+        const result = await luoxue.getMediaSource(normalizedSong, normalizedQuality);
+        console.log('luoxue.getMediaSource返回结果:', result);
+
+        if (!result || !result.url) {
+          throw new Error('NOT RETRY');
+        }
+
+        return {
+          url: result.url,
+          headers: result.headers || {},
+          userAgent: result.headers?.['user-agent'] || '',
+        };
+      } catch (luoxueError) {
+        console.error('调用luoxue.getMediaSource时发生错误:', luoxueError);
+        console.log('luoxue API失败，尝试回退到plugin API');
+        // 回退到plugin API
+      }
+    }
+
+    // 使用plugin API（默认或回退方案）
+    console.log('使用plugin API获取媒体源');
 
     // 验证plugin实例和getMediaSource方法的有效性
     if (!plugin || typeof plugin !== 'object') {

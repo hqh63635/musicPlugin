@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup>
 import { ref, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { Input, Modal, Tabs, Radio } from 'ant-design-vue';
@@ -204,6 +204,19 @@ const handleLanguageChange = e => {
               <a-radio-button value="high">{{ $t('settings.highQuality') }}</a-radio-button>
               <a-radio-button value="exhigh">{{ $t('settings.veryHighQuality') }}</a-radio-button>
               <a-radio-button value="super">{{ t('settings.ultraHighQuality') }}</a-radio-button>
+            </a-radio-group>
+          </div>
+        </div>
+        <div class="setting-item">
+          <div class="setting-label">API源</div>
+          <div class="setting-value">
+            <a-radio-group
+              v-model:value="musicStore.apiSource"
+              button-style="solid"
+              class="radio-button"
+            >
+              <a-radio-button value="plugin">插件API</a-radio-button>
+              <a-radio-button value="luoxue">落雪API</a-radio-button>
             </a-radio-group>
           </div>
         </div>

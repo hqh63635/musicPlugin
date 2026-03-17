@@ -40,6 +40,8 @@ export const useMusicStore = defineStore(
     const fullLyric = ref([]);
     // 当前歌词行索引
     const currentLyricIndex = ref(-1);
+    // API源设置：'plugin' 或 'luoxue'
+    const apiSource = ref('plugin');
 
     // 歌词抽屉状态
     const showLyricDrawer = ref(true);
@@ -195,11 +197,12 @@ export const useMusicStore = defineStore(
       currentIndex.value = existingIndex;
 
       try {
-        // 获取当前音质设置
+        // 获取当前音质设置和API源
         const currentQuality = quality.value; // 使用store中的音质设置
+        const currentApiSource = apiSource.value; // 使用store中的API源设置
 
-        // 获取音乐资源 - 传入歌曲ID和音质参数
-        const result = await api.getMediaSource(song, currentQuality);
+        // 获取音乐资源 - 传入歌曲ID、音质参数和API源
+        const result = await api.getMediaSource(song, currentQuality, currentApiSource);
 
         if (result.url && audioElement.value) {
           audioElement.value.src = result.url;
@@ -290,7 +293,7 @@ export const useMusicStore = defineStore(
         if (newQuality !== oldQuality && currentSong.value && audioElement.value) {
           try {
             // 获取新音质的媒体源
-            const result = await api.getMediaSource(currentSong.value, newQuality);
+            const result = await api.getMediaSource(currentSong.value, newQuality, apiSource.value);
             if (result.url) {
               message.success(`音质切换为 ${newQuality}`);
               // 保存当前播放位置
@@ -306,6 +309,34 @@ export const useMusicStore = defineStore(
             }
           } catch (error) {
             console.error('切换音质失败:', error);
+          }
+        }
+      }
+    );
+
+    // 监听API源变化，当API源变更时，如果有歌曲正在播放，重新获取媒体源
+    watch(
+      () => apiSource.value,
+      async (newSource, oldSource) => {
+        if (newSource !== oldSource && currentSong.value && audioElement.value) {
+          try {
+            message.success(`API源切换为 ${newSource === 'luoxue' ? '落雪' : '插件'}`);
+            // 获取新API源的媒体源
+            const result = await api.getMediaSource(currentSong.value, quality.value, newSource);
+            if (result.url) {
+              // 保存当前播放位置
+              const currentPosition = audioElement.value.currentTime;
+              // 更新音频源
+              audioElement.value.src = result.url;
+              // 恢复播放位置
+              audioElement.value.currentTime = currentPosition;
+              // 如果之前是播放状态，继续播放
+              if (isPlaying.value) {
+                audioElement.value.play();
+              }
+            }
+          } catch (error) {
+            console.error('切换API源失败:', error);
           }
         }
       }
@@ -483,6 +514,11 @@ export const useMusicStore = defineStore(
       quality.value = newQuality;
     };
 
+    // 设置API源
+    const setApiSource = newSource => {
+      apiSource.value = newSource;
+    };
+
     // 清空播放列表
     const removeAll = () => {
       playlist.value = [];
@@ -510,6 +546,7 @@ export const useMusicStore = defineStore(
       musicSheets,
       currentSheet,
       quality,
+      apiSource,
       addSongsToPlaylist,
       // 计算属性
       formatTime,
@@ -543,6 +580,7 @@ export const useMusicStore = defineStore(
       setCurrentSheet,
       clearSheetSongs,
       setQuality,
+      setApiSource,
       removeAll,
     };
   },
@@ -563,6 +601,7 @@ export const useMusicStore = defineStore(
         'musicSheets',
         'currentSheet',
         'quality',
+        'apiSource',
       ],
     },
   }
