@@ -31,6 +31,9 @@ axios.interceptors.request.use(
     } else if (config.url.includes('i.y.qq.com')) {
       // 转换为 /qqapi 代理路径
       config.url = config.url.replace('http://i.y.qq.com', '/qzone');
+    } else if (config.url.includes('musicapi.haitangw.net')) {
+      // 转换为 /haitang 代理路径
+      config.url = config.url.replace('http://musicapi.haitangw.net', '/haitang');
     }
     return config;
   },

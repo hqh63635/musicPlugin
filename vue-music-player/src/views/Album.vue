@@ -3,7 +3,9 @@ import { ref, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import api from '../services/api.js';
 import { useMusicStore } from '../store/music.js';
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const route = useRoute();
 const router = useRouter();
 const musicStore = useMusicStore();
@@ -19,7 +21,7 @@ const albums = ref([]);
 const categories = ref([
   {
     id: '热门',
-    name: '热门',
+    name: t('common.hot'),
   },
   { id: 'A', name: 'A' },
   { id: 'B', name: 'B' },
@@ -159,7 +161,7 @@ const goToAlbumDetail = album => {
       <a-radio-group
         v-model:value="selectedCategory"
         button-style="solid"
-        class="category-nav"
+        class="category-nav radio-button"
         @change="changeCategory"
       >
         <a-radio-button v-for="category in categories" :key="category.id" :value="category.id">
@@ -179,6 +181,9 @@ const goToAlbumDetail = album => {
             <img :src="singer.artwork || '@/assets/default-avatar.jpg'" :alt="singer.title" />
           </div>
           <h3 class="singer-name">{{ singer.title }}</h3>
+        </div>
+        <div v-if="singerList.length === 0 && !isLoading.value" class="empty-tip">
+          {{ t('album.noSingerFound') }}
         </div>
       </div>
     </div>
@@ -477,7 +482,7 @@ const goToAlbumDetail = album => {
   flex-wrap: wrap;
   gap: 8px;
   padding: 16px;
-  background-color: var(--theme-bg-secondary);
+  background-color: var(--theme-bg-transparency);
   border-radius: 8px;
   margin-bottom: 24px;
   transition: background-color 0.3s;

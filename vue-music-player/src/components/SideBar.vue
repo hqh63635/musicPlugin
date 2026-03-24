@@ -1,6 +1,7 @@
 ﻿<script setup>
-import { ref } from 'vue';
+import { ref, markRaw } from 'vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import MusicSheet from './MusicSheet.vue';
 
 import HeartIcon from '@/assets/icons/heart.svg';
@@ -15,17 +16,18 @@ import IdentificationIcon from '@/assets/icons/identification.svg';
 import TrophyIcon from '@/assets/icons/trophy.svg';
 
 const router = useRouter();
+const { t } = useI18n();
 
 // 侧边栏导航项
 const navItems = ref([
-  { icon: IdentificationIcon, text: '搜索', path: '/search' },
-  { icon: TrophyIcon, text: '排行榜', path: '/ranklist' },
-  { icon: HeartIcon, text: '我喜欢的音乐', path: '/favorite' },
-  { icon: ClockIcon, text: '最近播放', path: '/recent' },
-  { icon: ArrayDownloadTrayIcon, text: '下载管理', path: '/download' },
-  { icon: ListBulletIcon, text: '我的歌单', path: '/playlist' },
-  { icon: AlbumIcon, text: '专辑', path: '/album' },
-  { icon: UserIcon, text: '歌手', path: '/artist' },
+  { icon: markRaw(IdentificationIcon), text: 'sidebar.search', path: '/search' },
+  { icon: markRaw(TrophyIcon), text: 'sidebar.ranklist', path: '/ranklist' },
+  { icon: markRaw(HeartIcon), text: 'sidebar.favorite', path: '/favorite' },
+  { icon: markRaw(ClockIcon), text: 'sidebar.recent', path: '/recent' },
+  { icon: markRaw(ArrayDownloadTrayIcon), text: 'sidebar.download', path: '/download' },
+  { icon: markRaw(ListBulletIcon), text: 'sidebar.playlist', path: '/playlist' },
+  { icon: markRaw(AlbumIcon), text: 'sidebar.album', path: '/album' },
+  { icon: markRaw(UserIcon), text: 'sidebar.artist', path: '/artist' },
 ]);
 
 // 切换导航项
@@ -54,7 +56,7 @@ const switchNavItem = index => {
         <div class="nav-icon">
           <component :is="item.icon" :alt="item.text" />
         </div>
-        <div class="nav-text">{{ item.text }}</div>
+        <div class="nav-text">{{ $t(item.text) }}</div>
       </router-link>
     </div>
     <!-- 歌单列表 -->
@@ -71,7 +73,10 @@ const switchNavItem = index => {
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  transition: width 0.3s, background-color 0.3s, border-right-color 0.3s;
+  transition:
+    width 0.3s,
+    background-color 0.3s,
+    border-right-color 0.3s;
 }
 .sidebar-container::-webkit-scrollbar {
   width: 0;
@@ -140,8 +145,6 @@ const switchNavItem = index => {
 .nav-item.active .nav-text {
   color: var(--theme-accent-primary);
 }
-
-
 
 /* 响应式设计 */
 @media (max-width: 1024px) {

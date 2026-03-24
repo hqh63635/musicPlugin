@@ -1,0 +1,190 @@
+﻿{
+    "artistDetail": {
+        "addSuccessBulk": "Successfully added {count} songs to the playlist",
+        "addToPlaylist": "Add to Playlist",
+        "biography": "Biography",
+        "genre": "Genre",
+        "playAll": "Play All",
+        "region": "Region"
+    },
+    "button": {
+        "add": "Add to Playlist",
+        "next": "Next",
+        "pause": "Pause",
+        "play": "Play",
+        "prev": "Previous",
+        "star": "Favorite Playlist",
+        "unstar": "Unfavorite"
+    },
+    "common": {
+        "addToPlaylist": "Add to Playlist",
+        "cancel": "Cancel",
+        "clearPlaylist": "Clear Playlist",
+        "clearSuccess": "Playlist cleared successfully",
+        "confirm": "Confirm",
+        "confirmClear": "Are you sure you want to clear the playlist?",
+        "create": "Create",
+        "error": "Error",
+        "hot": "Hot",
+        "import": "Import",
+        "play": "Play",
+        "playAll": "Play All",
+        "playCount": "Play Count",
+        "plays": "Plays",
+        "songUnit": "Songs",
+        "tenThousand": "Ten Thousand",
+        "unknown": "Unknown",
+        "updated": "Updated"
+    },
+    "download": {
+        "loading": "Loading...",
+        "playlistNotFound": "Playlist not found or deleted"
+    },
+    "header": {
+        "album": "Album",
+        "artist": "Artist",
+        "language": "Language",
+        "search": "Search",
+        "searchHistory": "Search History",
+        "searchPlaceholder": "Search music, artist, album",
+        "settings": "Settings",
+        "song": "Song",
+        "theme": "Theme"
+    },
+    "lyric": {
+        "noLyric": "No lyrics available"
+    },
+    "message": {
+        "pleaseEnterSearchKeyword": "Please enter search keywords"
+    },
+    "musicBar": {
+        "action": "Action",
+        "album": "Album",
+        "artist": "Artist",
+        "emptyPlaylist": "No Playlist",
+        "listLoop": "List Loop",
+        "next": "Next",
+        "pause": "Pause",
+        "play": "Play",
+        "playlist": "Playlist",
+        "previous": "Previous",
+        "progress": "Progress",
+        "serialNumber": "Serial Number",
+        "shuffle": "Shuffle",
+        "singleLoop": "Single Loop",
+        "song": "Song",
+        "unknownArtist": "Unknown Artist",
+        "unknownSong": "Unknown Song",
+        "volume": "Volume"
+    },
+    "musicDetail": {
+        "exampleArtist": "Jay Chou",
+        "exampleSongTitle": "Sunny Day (Live)",
+        "exampleSongTitle2": "Seven Mile Fragrance",
+        "relatedRecommendations": "Related Recommendations",
+        "relatedSong": "Related Songs"
+    },
+    "musicSheet": {
+        "addToSelectedPlaylist": "Add to Selected Playlist",
+        "confirmDeletePlaylist": "Are you sure you want to delete the playlist?",
+        "create": "Create",
+        "createNewPlaylist": "Create New Playlist",
+        "createPlaylist": "Create Playlist",
+        "createPlaylistTip": "Create New Playlist",
+        "deletePlaylistWarning": "Deleting the playlist will remove all songs from it",
+        "enterPlaylistName": "Enter Playlist Name",
+        "enterPlaylistNamePlaceholder": "Enter Playlist Name",
+        "enterPlaylistUrlOrId": "Enter Playlist URL or ID",
+        "enterPlaylistUrlOrIdPlaceholder": "Enter Playlist URL or ID",
+        "h5ImportTip": "Supports H5 Import",
+        "import": "Import",
+        "importPlaylist": "Import Playlist",
+        "importTimeTip": "Import time may vary",
+        "myPlaylists": "My Playlists",
+        "pleaseEnterPlaylistUrlOrId": "Please enter playlist URL or ID",
+        "qqMusicAppImportTip": "Supports QQ Music App Import",
+        "selectPlaylist": "Please select a playlist",
+        "selectTargetPlaylist": "Please select target playlist",
+        "trackCountUnit": "Tracks"
+    },
+    "musicSheetDetail": {
+        "addSuccessSong": "Successfully added {count} songs to the playlist",
+        "clearError": "Failed to clear playlist",
+        "clearSuccess": "Playlist cleared successfully",
+        "confirmClear": "Confirm Clear Playlist",
+        "confirmClearContent": "Are you sure you want to clear the playlist?",
+        "confirmClearTitle": "Confirm Clear Playlist"
+    },
+    "playlist": {
+        "clearPlaylist": "Clear Playlist"
+    },
+    "rankList": {
+        "selectToView": "Select to View",
+        "title": "Rankings",
+        "updated": "Updated"
+    },
+    "remoteSheet": {
+        "loadFailed": "Failed to load playlist information",
+        "loading": "Loading...",
+        "loadingMore": "Loading more...",
+        "noMore": "No more songs",
+        "playlistNotFound": "Playlist not found",
+        "star": "Favorite Playlist",
+        "unstar": "Unfavorite"
+    },
+    "search": {
+        "album": "Album",
+        "artist": "Artist",
+        "defaultAvatarAlt": "Default avatar",
+        "music": "Music",
+        "noResults": "No results found",
+        "placeholder": "Search music, artist, album",
+        "searchButton": "Search",
+        "searchFailed": "Search failed",
+        "tryOtherKeywords": "Try other keywords"
+    },
+    "settings": {
+        "about": "About",
+        "audioQuality": "Audio Quality",
+        "autoPlay": "Auto Play",
+        "darkTheme": "Dark Theme",
+        "developer": "Developer",
+        "enable": "Enable",
+        "general": "General",
+        "highQuality": "High Quality",
+        "language": "Language",
+        "languageCN": "Simplified Chinese",
+        "languageEN": "English",
+        "lightTheme": "Light Theme",
+        "lowQuality": "Low Quality",
+        "playback": "Playback",
+        "standardQuality": "Standard Quality",
+        "theme": "Theme",
+        "title": "Settings",
+        "ultraHighQuality": "Ultra High Quality",
+        "version": "Version",
+        "veryHighQuality": "Very High Quality"
+    },
+    "sidebar": {
+        "album": "Albums",
+        "artist": "Artists",
+        "discover": "Discover",
+        "download": "Downloads",
+        "favorite": "Favorites",
+        "home": "Home",
+        "myMusic": "My Music",
+        "playlist": "My Playlist",
+        "playlists": "Playlists",
+        "radio": "Radio",
+        "ranklist": "Rankings",
+        "recent": "Recently Played",
+        "search": "Search"
+    },
+    "songList": {
+        "action": "Action",
+        "addToPlaylistSuccess": "Successfully added song to the playlist",
+        "artist": "Artist",
+        "index": "Index",
+        "song": "Song"
+    }
+}

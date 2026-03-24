@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup>
 import { ref, onMounted, computed } from 'vue';
 import api from '../services/api.js';
 import { useMusicStore } from '../store/music.js';
@@ -6,7 +6,10 @@ import playIcon from '@/assets/icons/play.svg?url';
 import plusIcon from '@/assets/icons/plus.svg?url';
 import { PlayCircleOutlined, PlusCircleOutlined } from '@ant-design/icons-vue';
 import SongList from '../components/SongList.vue';
+import { useI18n } from 'vue-i18n';
+import { message } from 'ant-design-vue';
 
+const { t } = useI18n();
 const musicStore = useMusicStore();
 
 // 排行榜列表
@@ -69,16 +72,25 @@ const playSong = (song, index) => {
   musicStore.playSong(song);
 };
 
-// 播放全部歌曲
+// 播放全部
 const playAllSongs = () => {
-  if (listSongs.value.length > 0) {
-    musicStore.setPlaylist(listSongs.value, 0);
-  }
+  musicStore.playSong(listSongs.value[0]);
+  musicStore.addSongsToPlaylist(listSongs.value || [], 0);
+  message.success(
+    t('artistDetail.addSuccessBulk', {
+      count: listSongs.value.length, 
+    })
+  );
 };
 
 // 添加到播放列表
 const addToPlaylist = song => {
-  musicStore.addToPlaylist(song);
+  musicStore.addSongsToPlaylist(listSongs.value || [], 0);
+  message.success(
+    t('artistDetail.addSuccessBulk', {
+      count: listSongs.value.length,
+    })
+  );
 };
 
 // 获取排名样式
@@ -92,9 +104,9 @@ const getRankClass = index => {
 const formatNumber = value => {
   if (!value) return '0';
   if (value >= 100000000) {
-    return (value / 100000000).toFixed(1) + '亿';
+    return (value / 100000000).toFixed(1) + t('rankList.hundredMillion');
   } else if (value >= 10000) {
-    return (value / 10000).toFixed(1) + '万';
+    return (value / 10000).toFixed(1) + t('rankList.tenThousand');
   }
   return value.toString();
 };
@@ -125,7 +137,8 @@ const formatNumber = value => {
             <div class="ranklist-info">
               <h3 class="ranklist-name">{{ list.title }}</h3>
               <p class="ranklist-update">
-                {{ list.period }} 更新 · {{ formatNumber(list.listenNum) }} 播放
+                {{ list.period }} {{ $t('rankList.updated') }} · {{ formatNumber(list.listenNum) }}
+                {{ t('common.play') }}
               </p>
             </div>
           </div>
@@ -138,23 +151,23 @@ const formatNumber = value => {
         <div class="detail-header">
           <div class="header-cover">
             <img :src="selectedList.coverImg" :alt="selectedList.name" />
-            <div class="play-button" @click="playAllSongs">
-              <PlayOutlined style="font-size: 20px; margin-right: 8px" />
-              <span>播放全部</span>
-            </div>
+            <!-- <div class="play-button" @click="playAllSongs">
+              <PlayCircleOutlined style="font-size: 20px; margin-right: 8px" />
+              <span>{{ $t('rankList.playAll') }}</span>
+            </div> -->
           </div>
           <div class="header-info">
-            <h3 class="info-title">{{ selectedList.title }}</h3>
-            <!-- <div class="info-stats">
-              <span class="stats-count">
-                <img src="@/assets/icons/list-bullet.svg" alt="歌曲数" />
-                {{ selectedList?.musicList?.length }}首 
-              </span>
-              <span class="stats-play">
-                <img src="@/assets/icons/play.svg" alt="播放量" />
-                {{ selectedList.playCount > 10000 ? (selectedList.playCount / 10000).toFixed(1) + '万' : selectedList.playCount }}次播放
-              </span>
-            </div> -->
+            <h3 class="info-title">
+              <div>{{ selectedList.title }}</div>
+              <div class="play-active">
+                <a-button class="mr8" type="primary" @click="playAllSongs">{{
+                  $t('artistDetail.playAll')
+                }}</a-button>
+                <a-button type="primary" @click="addToPlaylist()">{{
+                  $t('artistDetail.addToPlaylist')
+                }}</a-button>
+              </div>
+            </h3>
             <p class="info-description" v-html="selectedList.description"></p>
           </div>
         </div>
@@ -171,8 +184,8 @@ const formatNumber = value => {
 
       <!-- 未选择排行榜提示 -->
       <div class="no-selection" v-else>
-        <img src="@/assets/icons/musical-note.svg" alt="选择排行榜" />
-        <p>请选择一个排行榜查看详情</p>
+        <img src="@/assets/icons/musical-note.svg" :alt="$t('rankList.selectRanking')" />
+        <p>{{ $t('rankList.selectToView') }}</p>
       </div>
     </div>
   </div>
@@ -233,7 +246,9 @@ const formatNumber = value => {
   background-color: var(--theme-bg-active);
   border-left: 3px solid var(--theme-accent-primary);
 }
-
+.ranklist-item.active .ranklist-name {
+  color: var(--theme-accent-primary);
+}
 .ranklist-cover {
   width: 50px;
   height: 50px;
@@ -428,6 +443,8 @@ const formatNumber = value => {
 }
 
 .info-title {
+  display: flex;
+  justify-content: space-between;
   font-size: 20px;
   line-height: 20px;
   font-weight: bold;

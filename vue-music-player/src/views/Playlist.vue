@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup>
 import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import api from '../services/api.js';
@@ -6,6 +6,8 @@ import { useMusicStore } from '../store/music.js';
 import SongList from '../components/SongList.vue';
 import { DeleteOutlined } from '@ant-design/icons-vue';
 import { Modal } from 'ant-design-vue';
+import { useI18n } from 'vue-i18n';
+import { message } from 'ant-design-vue';
 
 const route = useRoute();
 const musicStore = useMusicStore();
@@ -70,15 +72,17 @@ const addToPlaylist = song => {
 const removeSong = (song, index) => {
   musicStore.removeSong(song, index);
 };
+const { t } = useI18n();
 const removeAll = () => {
   Modal.confirm({
-    title: '确认清空播放列表吗？',
-    okText: '确认',
+    title: t('common.confirmClear'),
+    okText: t('common.confirm'),
     okType: 'primary',
-    cancelText: '取消',
+    cancelText: t('common.cancel'),
     centered: true,
     onOk: () => {
       musicStore.removeAll();
+      message.success(t('common.clearSuccess'));
     },
   });
 };
@@ -88,7 +92,7 @@ const removeAll = () => {
   <div class="playlist-page main-detail-container">
     <div class="playlist-detail main-detail-content">
       <div class="play-actions">
-        <a-button type="primary" @click="removeAll">清空播放列表</a-button>
+        <a-button type="primary" @click="removeAll">{{ $t('playlist.clearPlaylist') }}</a-button>
       </div>
       <div class="song-list-container">
         <SongList
@@ -210,7 +214,7 @@ const removeAll = () => {
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
 }
 

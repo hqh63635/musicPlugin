@@ -1,5 +1,6 @@
 ﻿<script setup>
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 // 音乐详情是否显示
 const isShown = ref(true);
@@ -27,6 +28,8 @@ const lyrics = ref([
   { time: '00:45', text: '我想起花瓣试着掉落' },
 ]);
 
+const { t } = useI18n();
+
 // 隐藏音乐详情
 const hideDetail = () => {
   isShown.value = false;
@@ -37,7 +40,7 @@ const hideDetail = () => {
   <div class="music-detail-container" :class="{ shown: isShown }">
     <!-- 关闭按钮 -->
     <div class="close-button" @click="hideDetail">
-      <img src="@/assets/icons/x-mark.svg" alt="关闭" />
+      <img src="@/assets/icons/x-mark.svg" :alt="t('common.close')" />
     </div>
 
     <!-- 专辑封面 -->
@@ -51,34 +54,34 @@ const hideDetail = () => {
       <div class="song-artist">{{ currentSong.artist }}</div>
       <div class="song-album">{{ currentSong.album }}</div>
       <div class="song-stats">
-        <span>{{ currentSong.playCount }} 播放</span>
+        <span>{{ currentSong.playCount }} {{ t('musicDetail.plays') }}</span>
         <span>{{ currentSong.releaseDate }}</span>
       </div>
 
       <!-- 操作按钮 -->
       <div class="action-buttons">
         <div class="action-button primary">
-          <img src="@/assets/icons/play.svg" alt="播放" />
-          播放
+          <img src="@/assets/icons/play.svg" :alt="t('musicDetail.play')" />
+          {{ t('musicDetail.play') }}
         </div>
         <div class="action-button secondary">
-          <img src="@/assets/icons/heart-outline.svg" alt="喜欢" />
+          <img src="@/assets/icons/heart-outline.svg" :alt="t('musicDetail.like')" />
         </div>
         <div class="action-button secondary">
-          <img src="@/assets/icons/list-bullet.svg" alt="添加到播放列表" />
+          <img src="@/assets/icons/list-bullet.svg" :alt="t('musicDetail.addToPlaylist')" />
         </div>
         <div class="action-button secondary">
-          <img src="@/assets/icons/array-download-tray.svg" alt="下载" />
+          <img src="@/assets/icons/array-download-tray.svg" :alt="t('musicDetail.download')" />
         </div>
         <div class="action-button secondary">
-          <img src="@/assets/icons/chat-bubble-left-ellipsis.svg" alt="分享" />
+          <img src="@/assets/icons/chat-bubble-left-ellipsis.svg" :alt="t('musicDetail.share')" />
         </div>
       </div>
     </div>
 
     <!-- 歌词 -->
     <div class="lyrics-section">
-      <div class="section-title">歌词</div>
+      <div class="section-title">{{ t('musicDetail.lyrics') }}</div>
       <div class="lyrics-container">
         <div
           v-for="(line, index) in lyrics"
@@ -94,24 +97,24 @@ const hideDetail = () => {
 
     <!-- 相关推荐 -->
     <div class="related-section">
-      <div class="section-title">相关推荐</div>
+      <div class="section-title">{{ t('musicDetail.relatedRecommendations') }}</div>
       <div class="related-list">
         <div class="related-item">
           <div class="related-cover">
-            <img :src="currentSong.cover" alt="相关歌曲" />
+            <img :src="currentSong.cover" alt="{{ t('musicDetail.relatedSong') }}" />
           </div>
           <div class="related-info">
-            <div class="related-name">晴天 (Live)</div>
-            <div class="related-artist">周杰伦</div>
+            <div class="related-name">{{ t('musicDetail.exampleSongTitle') }}</div>
+            <div class="related-artist">{{ t('musicDetail.exampleArtist') }}</div>
           </div>
         </div>
         <div class="related-item">
           <div class="related-cover">
-            <img :src="currentSong.cover" alt="相关歌曲" />
+            <img :src="currentSong.cover" alt="{{ t('musicDetail.relatedSong') }}" />
           </div>
           <div class="related-info">
-            <div class="related-name">七里香</div>
-            <div class="related-artist">周杰伦</div>
+            <div class="related-name">{{ t('musicDetail.exampleSongTitle2') }}</div>
+            <div class="related-artist">{{ t('musicDetail.exampleArtist') }}</div>
           </div>
         </div>
       </div>

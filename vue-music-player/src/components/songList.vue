@@ -5,24 +5,32 @@
       :data="listSongs"
       height="100%"
       border="none"
-      :row-config="{ isHover: true }"
+      :row-config="{ isHover: true, keyField: 'songmid', height: 64 }"
       :aggregate-config="{ padding: false }"
-      :scroll-y="{ enabled: true, gt: 10 }"
+      :virtual-y-config="{ enabled: true, gt: 10 }"
       @scroll="handleScroll"
       stripe
+      :cell-class-name="getCellClassName"
+      :row-class-name="getRowClassName"
     >
       <!-- 序号 -->
-      <vxe-column title="序号" width="60">
-        <template #default="{ rowIndex }">
-          {{ rowIndex + 1 }}
+      <vxe-column :title="$t('songList.index')" width="60">
+        <template #default="{ row, rowIndex }">
+          <span :class="['song-index', { 'current-playing-index': isCurrentPlaying(row) }]">
+            {{ rowIndex + 1 }}
+          </span>
         </template>
       </vxe-column>
 
       <!-- 歌曲 -->
-      <vxe-column title="歌曲">
+      <vxe-column :title="t('songList.song')">
         <template #default="{ row }">
           <div class="song-info">
-            <img class="cover" :src="row.artwork?.replace(/[`\s]/g, '') || defaultCover" alt="" />
+            <img
+              class="cover"
+              :src="row.artwork?.replace(/[`\s]/g, '') || defaultCover"
+              :alt="row.title"
+            />
             <span class="title">{{ row.title }}</span>
             <PlayCircleOutlined class="play-btn" @click="playSong(row)" />
           </div>
@@ -30,10 +38,10 @@
       </vxe-column>
 
       <!-- 歌手 -->
-      <vxe-column title="歌手" field="artist" />
+      <vxe-column :title="t('songList.artist')" field="artist" />
 
       <!-- 操作 -->
-      <vxe-column title="操作" width="80">
+      <vxe-column :title="t('songList.action')" width="80">
         <template #default="{ row, rowIndex }">
           <slot name="actions" :item="row" :index="rowIndex"></slot>
 
@@ -50,11 +58,14 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, watch, onMounted, nextTick } from 'vue';
 import { PlayCircleOutlined, PlusCircleOutlined, DeleteOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
 import { useMusicStore } from '@/store/music.js';
+import { set } from 'xe-utils';
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const musicStore = useMusicStore();
 const props = defineProps({
   listSongs: Array,
@@ -67,6 +78,52 @@ const emit = defineEmits(['pageChange']);
 
 const defaultCover = '@/assets/default-cover.jpg';
 const xTable = ref(null);
+
+// 监听歌曲列表变化，确保数据渲染完成后再执行定位
+watch(
+  () => props.listSongs,
+  async newSongs => {
+    if (newSongs.length > 0 && musicStore.currentSong && xTable.value) {
+      await nextTick();
+      scrollToCurrentSong();
+    }
+  },
+  { deep: true, immediate: true }
+);
+
+// 监听当前播放歌曲变化，自动滚动到对应位置
+watch(
+  () => musicStore.currentSong,
+  async newSong => {
+    if (newSong && props.listSongs.length > 0 && xTable.value) {
+      await nextTick();
+      scrollToCurrentSong();
+    }
+  },
+  { immediate: true }
+);
+
+// 组件挂载时自动定位到当前播放歌曲
+onMounted(async () => {
+  // 确保数据渲染完成
+  if (props.listSongs.length > 0 && musicStore.currentSong && xTable.value) {
+    await nextTick();
+    await xTable.value.refreshScroll();
+    scrollToCurrentSong();
+  }
+});
+
+// 滚动到当前播放歌曲的辅助函数
+const scrollToCurrentSong = () => {
+  // 查找当前播放歌曲在列表中的索引
+  const index = props.listSongs.findIndex(
+    song => song.id === musicStore.currentSong.id || song.songmid === musicStore.currentSong.songmid
+  );
+  if (index !== -1 && xTable.value) {
+    // 自动滚动到当前播放歌曲的位置
+    xTable.value.scrollToRow(props.listSongs[index], { align: 'bottom' });
+  }
+};
 
 // 播放歌曲
 const playSong = song => {
@@ -92,13 +149,35 @@ const onLoadMore = () => {
 // 添加歌曲
 const addToPlaylist = song => {
   musicStore.addToPlaylist(song);
-  message.success('添加到播放列表成功');
+  message.success(t('songList.addToPlaylistSuccess'));
 };
 
 // 删除歌曲
 const removeSong = (song, index) => {
   musicStore.removeSong(song, index);
-  message.success('移除成功');
+  message.success(t('songList.removeSuccess'));
+};
+
+// 判断是否为当前播放歌曲
+const isCurrentPlaying = row => {
+  if (!musicStore.currentSong) return false;
+  return row.id === musicStore.currentSong.id || row.songmid === musicStore.currentSong.songmid;
+};
+
+// 单元格类名
+const getCellClassName = ({ row }) => {
+  if (isCurrentPlaying(row)) {
+    return 'current-playing-cell';
+  }
+  return '';
+};
+
+// 行类名
+const getRowClassName = ({ row }) => {
+  if (isCurrentPlaying(row)) {
+    return 'playing-row';
+  }
+  return '';
 };
 </script>
 
@@ -248,5 +327,28 @@ const removeSong = (song, index) => {
   font-weight: 600;
   color: var(--theme-text-secondary);
   background: var(--theme-bg-secondary);
+}
+
+/* 当前播放行高亮样式 */
+:deep(.current-playing-row) {
+  background-color: var(--theme-bg-hover) !important;
+}
+
+/* 当前播放行的单元格样式 */
+:deep(.current-playing-cell) {
+  color: var(--theme-accent-primary) !important;
+}
+
+/* 当前播放序号样式 */
+:deep(.current-playing-index) {
+  color: var(--theme-accent-primary) !important;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+/* 当前播放行的歌曲信息 */
+:deep(.current-playing-row .title) {
+  color: var(--theme-accent-primary) !important;
+  font-weight: 600;
 }
 </style>

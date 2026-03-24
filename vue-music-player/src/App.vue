@@ -74,9 +74,7 @@ onBeforeUnmount(() => {
         <SideBar />
       </a-layout-sider>
       <a-layout-content :style="contentStyle">
-        <keep-alive>
-          <router-view class="main-content" />
-        </keep-alive>
+        <router-view class="main-content" />
       </a-layout-content>
       <a-layout-sider
         class="lyric-container-box"

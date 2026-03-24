@@ -1,9 +1,11 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import api from '../services/api.js';
 import { useMusicStore } from '../store/music.js';
 
+const { t } = useI18n();
 const route = useRoute();
 const router = useRouter();
 const musicStore = useMusicStore();
@@ -18,8 +20,8 @@ const albums = ref([]);
 // 新增：歌手分类相关数据
 const categories = ref([
   {
-    id: '热门',
-    name: '热门',
+    id: 'hot',
+    name: t('common.hot'),
   },
   { id: 'A', name: 'A' },
   { id: 'B', name: 'B' },
@@ -151,11 +153,11 @@ const goToArtistDetail = singer => {
 <template>
   <div class="artist-page main-detail-container">
     <div class="artist-page-container main-detail-content">
-      <!-- A-Z分类导航 -->
+      <!-- {{ t('artist.azCategoryNav') }} -->
       <a-radio-group
         v-model:value="selectedCategory"
         button-style="solid"
-        class="category-nav"
+        class="category-nav radio-button"
         @change="changeCategory"
       >
         <a-radio-button v-for="category in categories" :key="category.id" :value="category.id">
@@ -163,7 +165,7 @@ const goToArtistDetail = singer => {
         </a-radio-button>
       </a-radio-group>
 
-      <!-- 歌手列表 -->
+      <!-- {{ t('artist.singerList') }} -->
       <div class="singer-grid">
         <div
           v-for="singer in singerList"
@@ -172,7 +174,10 @@ const goToArtistDetail = singer => {
           @click="goToArtistDetail(singer)"
         >
           <div class="singer-avatar">
-            <img :src="singer.avatar || '@/assets/default-avatar.jpg'" :alt="singer.singer_name" />
+            <img
+              :src="singer.avatar || '@/assets/default-avatar.jpg'"
+              :alt="singer.singer_name || t('artist.defaultAvatarAlt')"
+            />
           </div>
           <h3 class="singer-name">{{ singer.name }}</h3>
         </div>
@@ -473,7 +478,7 @@ const goToArtistDetail = singer => {
   flex-wrap: wrap;
   gap: 8px;
   padding: 16px;
-  background-color: var(--theme-bg-secondary);
+  background-color: var(--theme-bg-transparency);
   border-radius: 8px;
   margin-bottom: 24px;
   transition: background-color 0.3s;

@@ -1,5 +1,5 @@
 ﻿<script setup>
-import { ref, onMounted, onBeforeUnmount, h, computed } from 'vue';
+import { ref, onMounted, onBeforeUnmount, h, computed, nextTick } from 'vue';
 import { useMusicStore } from '@/store/music.js';
 import albumCover from '@/assets/imgs/album-cover.jpg';
 import Lyric from './Lyric.vue';
@@ -136,10 +136,17 @@ const togglePlayMode = () => {
   musicStore.setPlayMode((musicStore.playMode + 1) % 3);
 };
 
+const xTable = ref(null);
 const showPlaylistDrawer = ref(false);
 // 切换播放列表抽屉
-const togglePlaylistDrawer = () => {
+const togglePlaylistDrawer = async () => {
   showPlaylistDrawer.value = !showPlaylistDrawer.value;
+  if (showPlaylistDrawer.value) {
+    await nextTick();
+    await xTable.value?.refreshScroll();
+    // 自动滚动到当前播放歌曲的位置
+    xTable.value.scrollToRow(musicStore.currentSong);
+  }
 };
 
 // 切换歌词抽屉
@@ -156,8 +163,9 @@ const handlePlaySong = item => {
 const addToPlaylist = item => {
   musicStore.addToPlaylist(item);
 };
-const rowClassName = record => {
-  return record.id === musicStore.currentSong.id ? 'playing-row' : '';
+const rowClassName = ({ row }) => {
+  // 确保比较时类型一致且处理可能的空值
+  return String(row.id) === String(musicStore.currentSong?.id) ? 'playing-row' : '';
 };
 const removeSong = (record, index) => {
   musicStore.removeSong(record, index);
@@ -246,10 +254,10 @@ const cellClickEvent = ({ row, column }) => {
           @click="togglePlayMode"
           :title="
             musicStore.playMode === 0
-              ? '单曲循环'
+              ? $t('musicBar.singleLoop')
               : musicStore.playMode === 1
-                ? '列表循环'
-                : '随机播放'
+                ? $t('musicBar.listLoop')
+                : $t('musicBar.shuffle')
           "
         >
           <component
@@ -332,7 +340,7 @@ const cellClickEvent = ({ row, column }) => {
   <!-- 播放列表抽屉 -->
   <a-drawer
     v-model:open="showPlaylistDrawer"
-    title="播放列表"
+    :title="$t('musicBar.playlist')"
     placement="right"
     size="large"
     rootClassName="playlist-drawer"
@@ -340,31 +348,33 @@ const cellClickEvent = ({ row, column }) => {
     <div class="playlist-container">
       <div class="playlist-list">
         <vxe-table
+          ref="xTable"
           :height="'100%'"
-          :scroll-y="'calc(100vh - 120px)'"
           :data="musicStore.playlist"
           border="none"
-          :row-config="{ isHover: true, keyField: 'id' }"
+          :row-config="{ isHover: true, keyField: 'id', height: 48 }"
           :row-class-name="rowClassName"
           @cell-dblclick="cellClickEvent"
           stripe
-          :virtual-y-config="{ enabled: true, gt: 0 }"
+          :virtual-y-config="{ enabled: true, gt: 20 }"
+          show-overflow
         >
-          <vxe-column title="序号" type="seq" width="60" align="center" />
+          <vxe-column :title="$t('musicBar.serialNumber')" type="seq" width="60" align="center" />
           <vxe-column
-            title="歌曲"
+            :title="$t('musicBar.song')"
             field="title"
             ellipsis
-            :formatter="({ row }) => row.title || '未知歌曲'"
+            :formatter="({ row }) => row.title || $t('musicBar.unknownSong')"
+            show-overflow
           />
           <vxe-column
-            title="歌手"
+            :title="$t('musicBar.artist')"
             field="artist"
             ellipsis
-            :formatter="({ row }) => row.artist || '未知歌手'"
+            :formatter="({ row }) => row.artist || t('musicBar.unknownArtist')"
           />
-          <vxe-column title="专辑" field="album" ellipsis />
-          <vxe-column title="操作" width="120" align="center">
+          <vxe-column :title="$t('musicBar.album')" field="album" ellipsis show-overflow />
+          <vxe-column :title="$t('musicBar.action')" width="120" align="center">
             <template #default="{ row, $rowIndex }">
               <div style="display: flex; justify-content: center; gap: 12px; cursor: pointer">
                 <!-- 播放 / 暂停 -->
@@ -393,7 +403,7 @@ const cellClickEvent = ({ row, column }) => {
         </vxe-table>
 
         <div v-if="!musicStore.playlist || musicStore.playlist.length === 0" class="playlist-empty">
-          播放列表为空
+          {{ $t('musicBar.emptyPlaylist') }}
         </div>
       </div>
     </div>
@@ -413,11 +423,8 @@ const cellClickEvent = ({ row, column }) => {
   overflow: hidden;
 }
 
-:deep(.playing-row) {
-  background-color: var(--theme-bg-hover) !important;
-}
-
 .music-bar-container {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -475,10 +482,13 @@ const cellClickEvent = ({ row, column }) => {
 
 /* 播放控制器 */
 .player-controller {
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 8;
   max-width: 600px;
 }
 
