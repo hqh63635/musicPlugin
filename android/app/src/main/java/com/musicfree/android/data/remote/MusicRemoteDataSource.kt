@@ -268,6 +268,17 @@ class MusicRemoteDataSource(
         return PlaylistDetail(sheet = mergedSheet, songs = songs)
     }
 
+    suspend fun importMusicSheet(urlOrId: String): PlaylistDetail {
+        val id = extractPlaylistId(urlOrId)
+            ?: error("请输入有效的歌单 URL 或 ID")
+        return fetchMusicSheetDetail(
+            PlaylistSheet(
+                id = id,
+                title = "导入歌单",
+            ),
+        )
+    }
+
     suspend fun fetchLyric(songmid: String): LyricPayload {
         val body = requestText(
             url = "https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg?songmid=$songmid&pcachetime=${System.currentTimeMillis()}&g_tk=5381&loginUin=0&hostUin=0&inCharset=utf8&outCharset=utf-8&notice=0&platform=yqq&needNewCode=0",
@@ -449,6 +460,29 @@ class MusicRemoteDataSource(
         return url
             ?.takeIf { it.isNotBlank() }
             ?.replace(" ", "%20")
+    }
+
+    private fun extractPlaylistId(urlOrId: String): String? {
+        val normalized = urlOrId.trim()
+        if (normalized.isBlank()) {
+            return null
+        }
+        Regex("""https?://i\.y\.qq\.com/n2/m/share/details/taoge\.html\?.*id=(\d+)""")
+            .find(normalized)
+            ?.groupValues
+            ?.getOrNull(1)
+            ?.let { return it }
+        Regex("""https?://y\.qq\.com/n/ryqq/playlist/(\d+)""")
+            .find(normalized)
+            ?.groupValues
+            ?.getOrNull(1)
+            ?.let { return it }
+        Regex("""^(\d+)$""")
+            .find(normalized)
+            ?.groupValues
+            ?.getOrNull(1)
+            ?.let { return it }
+        return null
     }
 
     private fun JsonArray?.orEmptyArray(): List<JsonElement> = this?.toList().orEmpty()

@@ -3,6 +3,7 @@ package com.musicfree.android.data.repository
 import com.musicfree.android.data.local.UserLibraryStore
 import com.musicfree.android.data.model.AudioQuality
 import com.musicfree.android.data.model.AudioSource
+import com.musicfree.android.data.model.CustomPlaylist
 import com.musicfree.android.data.model.HomeFeed
 import com.musicfree.android.data.model.LyricPayload
 import com.musicfree.android.data.model.PlaybackSource
@@ -22,6 +23,7 @@ class MusicRepository(
 ) {
     val favorites: Flow<List<Song>> = libraryStore.favorites
     val searchHistory: Flow<List<String>> = libraryStore.searchHistory
+    val customPlaylists: Flow<List<CustomPlaylist>> = libraryStore.customPlaylists
     val settings = libraryStore.settings
 
     suspend fun loadHomeFeed(selectedTagId: String? = null): HomeFeed {
@@ -95,6 +97,48 @@ class MusicRepository(
         return libraryStore.favoriteIds()
     }
 
+    suspend fun importMusicSheet(urlOrId: String): PlaylistDetail {
+        val detail = remote.importMusicSheet(urlOrId)
+        return detail.copy(songs = detail.songs.withFavorites())
+    }
+
+    suspend fun createCustomPlaylist(
+        name: String,
+        songs: List<Song> = emptyList(),
+        artwork: String? = songs.firstOrNull()?.artwork,
+        description: String? = null,
+    ): CustomPlaylist {
+        return libraryStore.createCustomPlaylist(
+            name = name,
+            songs = songs,
+            artwork = artwork,
+            description = description,
+        )
+    }
+
+    suspend fun addSongsToCustomPlaylist(
+        playlistId: String,
+        songs: List<Song>,
+    ) {
+        libraryStore.addSongsToCustomPlaylist(playlistId, songs)
+    }
+
+    suspend fun deleteCustomPlaylist(playlistId: String) {
+        libraryStore.deleteCustomPlaylist(playlistId)
+    }
+
+    suspend fun fetchCustomPlaylistDetail(playlistId: String): PlaylistDetail? {
+        val playlist = libraryStore.getCustomPlaylistById(playlistId) ?: return null
+        return PlaylistDetail(
+            sheet = playlist.toPlaylistSheet(),
+            songs = playlist.songs.withFavorites(),
+        )
+    }
+
+    suspend fun clearCustomPlaylistSongs(playlistId: String) {
+        libraryStore.clearCustomPlaylistSongs(playlistId)
+    }
+
     private suspend fun List<Song>.withFavorites(): List<Song> {
         val ids = favoriteIds()
         return map { song ->
@@ -111,5 +155,17 @@ class MusicRepository(
         } else {
             tags.find { it.id == selectedTagId } ?: tags.firstOrNull()
         }
+    }
+
+    private fun CustomPlaylist.toPlaylistSheet(): PlaylistSheet {
+        return PlaylistSheet(
+            id = id,
+            title = name,
+            artwork = artwork ?: songs.firstOrNull()?.artwork,
+            description = description,
+            artist = "我的歌单",
+            createTime = createTime.toString(),
+            worksNum = trackCount,
+        )
     }
 }

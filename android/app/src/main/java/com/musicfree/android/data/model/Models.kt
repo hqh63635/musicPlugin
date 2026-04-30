@@ -42,6 +42,19 @@ data class Song(
 }
 
 @Serializable
+data class CustomPlaylist(
+    val id: String,
+    val name: String,
+    val createTime: Long,
+    val songs: List<Song> = emptyList(),
+    val artwork: String? = null,
+    val description: String? = null,
+) {
+    val trackCount: Int
+        get() = songs.size
+}
+
+@Serializable
 data class Artist(
     val id: String,
     val singerMid: String,

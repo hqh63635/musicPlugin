@@ -6,8 +6,10 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.musicfree.android.data.model.AudioQuality
 import com.musicfree.android.data.model.AudioSource
+import com.musicfree.android.data.model.CustomPlaylist
 import com.musicfree.android.data.model.Song
 import com.musicfree.android.data.model.UserSettings
+import java.util.UUID
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -30,6 +32,10 @@ class UserLibraryStore(
 
     val searchHistory: Flow<List<String>> = context.dataStore.data.map { prefs ->
         decodeStrings(prefs[SEARCH_HISTORY_KEY])
+    }
+
+    val customPlaylists: Flow<List<CustomPlaylist>> = context.dataStore.data.map { prefs ->
+        decodeCustomPlaylists(prefs[CUSTOM_PLAYLISTS_KEY])
     }
 
     val settings: Flow<UserSettings> = context.dataStore.data.map { prefs ->
@@ -96,6 +102,73 @@ class UserLibraryStore(
         }
     }
 
+    suspend fun createCustomPlaylist(
+        name: String,
+        songs: List<Song> = emptyList(),
+        artwork: String? = songs.firstOrNull()?.artwork,
+        description: String? = null,
+    ): CustomPlaylist {
+        val playlist = CustomPlaylist(
+            id = UUID.randomUUID().toString(),
+            name = name.trim(),
+            createTime = System.currentTimeMillis(),
+            songs = songs.distinctBy { it.identity },
+            artwork = artwork,
+            description = description,
+        )
+        context.dataStore.edit { prefs ->
+            val updated = decodeCustomPlaylists(prefs[CUSTOM_PLAYLISTS_KEY]).toMutableList()
+            updated.add(0, playlist)
+            prefs[CUSTOM_PLAYLISTS_KEY] = encodeCustomPlaylists(updated)
+        }
+        return playlist
+    }
+
+    suspend fun addSongsToCustomPlaylist(
+        playlistId: String,
+        songs: List<Song>,
+    ) {
+        context.dataStore.edit { prefs ->
+            val updated = decodeCustomPlaylists(prefs[CUSTOM_PLAYLISTS_KEY]).map { playlist ->
+                if (playlist.id == playlistId) {
+                    val merged = (playlist.songs + songs).distinctBy { it.identity }
+                    playlist.copy(
+                        songs = merged,
+                        artwork = playlist.artwork ?: merged.firstOrNull()?.artwork,
+                    )
+                } else {
+                    playlist
+                }
+            }
+            prefs[CUSTOM_PLAYLISTS_KEY] = encodeCustomPlaylists(updated)
+        }
+    }
+
+    suspend fun deleteCustomPlaylist(playlistId: String) {
+        context.dataStore.edit { prefs ->
+            val updated = decodeCustomPlaylists(prefs[CUSTOM_PLAYLISTS_KEY])
+                .filterNot { it.id == playlistId }
+            prefs[CUSTOM_PLAYLISTS_KEY] = encodeCustomPlaylists(updated)
+        }
+    }
+
+    suspend fun getCustomPlaylistById(playlistId: String): CustomPlaylist? {
+        return customPlaylists.first().firstOrNull { it.id == playlistId }
+    }
+
+    suspend fun clearCustomPlaylistSongs(playlistId: String) {
+        context.dataStore.edit { prefs ->
+            val updated = decodeCustomPlaylists(prefs[CUSTOM_PLAYLISTS_KEY]).map { playlist ->
+                if (playlist.id == playlistId) {
+                    playlist.copy(songs = emptyList())
+                } else {
+                    playlist
+                }
+            }
+            prefs[CUSTOM_PLAYLISTS_KEY] = encodeCustomPlaylists(updated)
+        }
+    }
+
     private fun decodeSongs(payload: String?): List<Song> {
         if (payload.isNullOrBlank()) {
             return emptyList()
@@ -121,11 +194,26 @@ class UserLibraryStore(
     private fun encodeStrings(items: List<String>): String {
         return json.encodeToString(ListSerializer(String.serializer()), items)
     }
+
+    private fun decodeCustomPlaylists(payload: String?): List<CustomPlaylist> {
+        if (payload.isNullOrBlank()) {
+            return emptyList()
+        }
+        return runCatching {
+            json.decodeFromString(ListSerializer(CustomPlaylist.serializer()), payload)
+        }.getOrDefault(emptyList())
+    }
+
+    private fun encodeCustomPlaylists(items: List<CustomPlaylist>): String {
+        return json.encodeToString(ListSerializer(CustomPlaylist.serializer()), items)
+    }
+
     companion object {
         private const val MAX_HISTORY = 8
 
         private val FAVORITES_KEY = stringPreferencesKey("favorites")
         private val SEARCH_HISTORY_KEY = stringPreferencesKey("search_history")
+        private val CUSTOM_PLAYLISTS_KEY = stringPreferencesKey("custom_playlists")
         private val QUALITY_KEY = stringPreferencesKey("quality")
         private val SOURCE_KEY = stringPreferencesKey("source")
     }

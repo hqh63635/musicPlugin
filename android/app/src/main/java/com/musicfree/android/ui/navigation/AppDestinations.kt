@@ -5,6 +5,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.QueueMusic
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.LibraryMusic
 import androidx.compose.material.icons.outlined.PersonOutline
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.musicfree.android.data.model.PlaylistSheet
@@ -17,6 +18,7 @@ sealed class BottomDestination(
     data object Home : BottomDestination("home", "首页", Icons.Outlined.Home)
     data object Queue : BottomDestination("queue", "播放列表", Icons.AutoMirrored.Outlined.QueueMusic)
     data object Favorites : BottomDestination("favorites", "收藏", Icons.Outlined.FavoriteBorder)
+    data object MySheets : BottomDestination("my_sheets", "我的歌单", Icons.Outlined.LibraryMusic)
     data object Profile : BottomDestination("profile", "我的", Icons.Outlined.PersonOutline)
 }
 
@@ -47,5 +49,6 @@ val bottomDestinations = listOf(
     BottomDestination.Home,
     BottomDestination.Queue,
     BottomDestination.Favorites,
+    BottomDestination.MySheets,
     BottomDestination.Profile,
 )

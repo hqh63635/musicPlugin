@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 enum class DetailKind {
     CHART,
     SHEET,
+    LOCAL,
 }
 
 data class PlaylistDetailUiState(
@@ -42,6 +43,8 @@ class PlaylistDetailViewModel(
                 when (kind) {
                     DetailKind.CHART -> repository.fetchTopListDetail(sheet)
                     DetailKind.SHEET -> repository.fetchMusicSheetDetail(sheet)
+                    DetailKind.LOCAL -> repository.fetchCustomPlaylistDetail(sheet.id)
+                        ?: error("歌单不存在")
                 }
             }.onSuccess { detail ->
                 _uiState.value = PlaylistDetailUiState(

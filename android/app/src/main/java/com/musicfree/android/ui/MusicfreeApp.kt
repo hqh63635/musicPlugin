@@ -26,6 +26,7 @@ import com.musicfree.android.ui.navigation.BottomDestination
 import com.musicfree.android.ui.navigation.bottomDestinations
 import com.musicfree.android.ui.screens.FavoritesScreen
 import com.musicfree.android.ui.screens.HomeScreen
+import com.musicfree.android.ui.screens.MyPlaylistsScreen
 import com.musicfree.android.ui.screens.PlayerScreen
 import com.musicfree.android.ui.screens.PlaylistDetailScreen
 import com.musicfree.android.ui.screens.PlaylistsScreen
@@ -35,6 +36,7 @@ import com.musicfree.android.ui.theme.MusicfreeTheme
 import com.musicfree.android.ui.viewmodel.DetailKind
 import com.musicfree.android.ui.viewmodel.HomeViewModel
 import com.musicfree.android.ui.viewmodel.LibraryViewModel
+import com.musicfree.android.ui.viewmodel.MyPlaylistsViewModel
 import com.musicfree.android.ui.viewmodel.PlaylistDetailViewModel
 import com.musicfree.android.ui.viewmodel.SearchViewModel
 import com.musicfree.android.ui.viewmodel.simpleViewModelFactory
@@ -143,6 +145,24 @@ fun MusicfreeApp() {
                         onToggleFavorite = libraryViewModel::toggleFavorite,
                     )
                 }
+                composable(BottomDestination.MySheets.route) {
+                    val myPlaylistsViewModel: MyPlaylistsViewModel = viewModel(
+                        factory = simpleViewModelFactory {
+                            MyPlaylistsViewModel(container.repository)
+                        },
+                    )
+                    val myPlaylistsState by myPlaylistsViewModel.uiState.collectAsStateWithLifecycle()
+                    MyPlaylistsScreen(
+                        state = myPlaylistsState,
+                        onImportPlaylist = myPlaylistsViewModel::importMusicSheet,
+                        onCreatePlaylist = myPlaylistsViewModel::createPlaylist,
+                        onAddImportedToPlaylist = myPlaylistsViewModel::addImportedToPlaylist,
+                        onDeletePlaylist = myPlaylistsViewModel::deletePlaylist,
+                        onOpenPlaylist = { sheet ->
+                            navController.navigate(AppDestinations.buildDetailRoute("local", sheet))
+                        },
+                    )
+                }
                 composable(BottomDestination.Profile.route) {
                     ProfileScreen(
                         state = libraryState,
@@ -193,7 +213,11 @@ fun MusicfreeApp() {
                         factory = simpleViewModelFactory {
                             PlaylistDetailViewModel(
                                 repository = container.repository,
-                                kind = if (kindArg == "chart") DetailKind.CHART else DetailKind.SHEET,
+                                kind = when (kindArg) {
+                                    "chart" -> DetailKind.CHART
+                                    "local" -> DetailKind.LOCAL
+                                    else -> DetailKind.SHEET
+                                },
                                 sheet = sheet,
                             )
                         },
@@ -219,6 +243,10 @@ fun MusicfreeApp() {
                         onTogglePlay = playerController::togglePlay,
                         onNext = playerController::playNext,
                         onPrevious = playerController::playPrevious,
+                        onPlayQueueSong = { index ->
+                            playerController.setQueue(playerState.queue, index)
+                        },
+                        onRemoveQueueSong = playerController::removeFromQueue,
                     )
                 }
             }
