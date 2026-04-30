@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.automirrored.outlined.QueueMusic
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.MoreHoriz
@@ -83,12 +84,13 @@ fun PlaylistDetailScreen(
 
         else -> {
             val detail = state.detail
+            val favoriteCount = detail.songs.count { it.isFavorite }
             Box(
                 modifier = modifier
                     .fillMaxSize()
                     .background(
                         Brush.verticalGradient(
-                            colors = listOf(Color(0xFFDDF7FF), Color(0xFFF6FCFF), Color.White),
+                            colors = listOf(Color(0xFFDDF6FF), Color(0xFFF7FCFF), Color.White),
                         ),
                     ),
             ) {
@@ -97,7 +99,26 @@ fun PlaylistDetailScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
                     item {
-                        PlaylistDetailTopBar(onBack = onBack)
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            IconButton(onClick = onBack) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                                    contentDescription = "返回",
+                                    tint = Navy700,
+                                )
+                            }
+                            Spacer(modifier = Modifier.weight(1f))
+                            IconButton(onClick = {}) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Share,
+                                    contentDescription = "分享",
+                                    tint = Navy700,
+                                )
+                            }
+                        }
                     }
 
                     item {
@@ -111,8 +132,8 @@ fun PlaylistDetailScreen(
                                         model = detail.sheet.artwork,
                                         contentDescription = detail.sheet.title,
                                         modifier = Modifier
-                                            .size(92.dp)
-                                            .clip(RoundedCornerShape(20.dp)),
+                                            .size(94.dp)
+                                            .clip(RoundedCornerShape(22.dp)),
                                         contentScale = ContentScale.Crop,
                                     )
                                     Spacer(modifier = Modifier.padding(6.dp))
@@ -142,12 +163,21 @@ fun PlaylistDetailScreen(
                                             overflow = TextOverflow.Ellipsis,
                                         )
                                         Row(
-                                            horizontalArrangement = Arrangement.spacedBy(12.dp),
-                                            verticalAlignment = Alignment.CenterVertically,
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.spacedBy(14.dp),
                                         ) {
-                                            StatChip(text = formatPlayCount(detail.sheet.playCount))
-                                            StatChip(text = "${detail.sheet.worksNum ?: detail.songs.size} 首")
-                                            StatChip(text = "公开")
+                                            HeaderStat(
+                                                icon = Icons.Outlined.FavoriteBorder,
+                                                text = favoriteCount.toString(),
+                                            )
+                                            HeaderStat(
+                                                icon = Icons.AutoMirrored.Outlined.QueueMusic,
+                                                text = "${detail.sheet.worksNum ?: detail.songs.size}",
+                                            )
+                                            HeaderStat(
+                                                icon = Icons.Outlined.PlayArrow,
+                                                text = formatPlayCount(detail.sheet.playCount),
+                                            )
                                         }
                                     }
                                 }
@@ -209,44 +239,24 @@ fun PlaylistDetailScreen(
 }
 
 @Composable
-private fun PlaylistDetailTopBar(
-    onBack: () -> Unit,
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        IconButton(onClick = onBack) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                contentDescription = "返回",
-                tint = Navy700,
-            )
-        }
-        Spacer(modifier = Modifier.weight(1f))
-        IconButton(onClick = {}) {
-            Icon(
-                imageVector = Icons.Outlined.Share,
-                contentDescription = "分享",
-                tint = Navy700,
-            )
-        }
-    }
-}
-
-@Composable
-private fun StatChip(
+private fun HeaderStat(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
     text: String,
 ) {
-    Surface(
-        shape = RoundedCornerShape(999.dp),
-        color = Mint100,
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            modifier = Modifier.size(15.dp),
+            tint = Gray500,
+        )
         Text(
             text = text,
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
             style = MaterialTheme.typography.labelLarge,
-            color = Navy700,
+            color = Gray500,
         )
     }
 }
@@ -263,7 +273,7 @@ private fun PlaylistSongRow(
             .fillMaxWidth()
             .clickable(onClick = onPlay),
         shape = RoundedCornerShape(22.dp),
-        color = Color.White.copy(alpha = 0.9f),
+        color = Color.White.copy(alpha = 0.92f),
         shadowElevation = 4.dp,
         tonalElevation = 2.dp,
     ) {
@@ -289,13 +299,21 @@ private fun PlaylistSongRow(
                     overflow = TextOverflow.Ellipsis,
                 )
                 Spacer(modifier = Modifier.padding(2.dp))
-                Text(
-                    text = listOfNotNull(song.artist, song.album).joinToString(" · "),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Gray500,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                ) {
+                    song.badges.take(3).forEach { badge ->
+                        SongBadge(text = badge)
+                    }
+                    Text(
+                        text = song.artist,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Gray500,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
             }
             Surface(
                 modifier = Modifier.size(34.dp),
@@ -322,5 +340,29 @@ private fun PlaylistSongRow(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun SongBadge(
+    text: String,
+) {
+    val (background, foreground) = when (text) {
+        "VIP" -> Color(0xFFFFF0E6) to Color(0xFFFF7A45)
+        "SQ" -> Color(0xFFE8FBF7) to Color(0xFF17B890)
+        "HQ" -> Color(0xFFEAF4FF) to Color(0xFF4C8DFF)
+        "MV" -> Color(0xFFFFEEF4) to Color(0xFFFF5C8A)
+        else -> Mint100 to Navy700
+    }
+    Surface(
+        shape = RoundedCornerShape(6.dp),
+        color = background,
+    ) {
+        Text(
+            text = text,
+            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+            style = MaterialTheme.typography.labelSmall,
+            color = foreground,
+        )
     }
 }

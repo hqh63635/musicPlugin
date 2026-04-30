@@ -35,6 +35,7 @@ data class Song(
     val albumId: String? = null,
     val albumMid: String? = null,
     val duration: Int? = null,
+    val badges: List<String> = emptyList(),
     val isFavorite: Boolean = false,
 ) {
     val identity: String

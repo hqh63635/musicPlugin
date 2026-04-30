@@ -384,9 +384,26 @@ class MusicRemoteDataSource(
     private fun mapSong(element: JsonElement): Song {
         val raw = element.jsonObject
         val album = raw.obj("album")
+        val file = raw.obj("file")
+        val pay = raw.obj("pay")
         val singers = raw.array("singer").orEmptyArray().joinToString(", ") { singer ->
             singer.jsonObject.string("name").orEmpty()
         }
+        val isVip = (pay?.int("pay_play") ?: 0) == 1 ||
+            (pay?.int("paydownload") ?: 0) == 1 ||
+            (pay?.int("pay_down") ?: 0) == 1
+        val hasSq = (file?.long("size_flac") ?: raw.long("sizeflac") ?: 0L) > 0L
+        val hasHq = (file?.long("size_320mp3") ?: raw.long("size320") ?: 0L) > 0L
+        val hasMv = raw.obj("mv")?.string("vid")?.isNotBlank() == true || raw.string("vid")?.isNotBlank() == true
+        val badges = buildList {
+            if (isVip) add("VIP")
+            if (hasSq) {
+                add("SQ")
+            } else if (hasHq) {
+                add("HQ")
+            }
+            if (hasMv) add("MV")
+        }.take(3)
         return Song(
             id = raw.long("id")?.toString()
                 ?: raw.long("songid")?.toString()
@@ -412,6 +429,7 @@ class MusicRemoteDataSource(
             albumMid = album?.string("mid")
                 ?: raw.string("albummid"),
             duration = raw.int("interval"),
+            badges = badges,
         )
     }
 
