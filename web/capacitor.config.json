@@ -1,0 +1,10 @@
+{
+  "appId": "com.musicfree.player",
+  "appName": "MusicFree",
+  "webDir": "dist",
+  "plugins": {
+    "CapacitorHttp": {
+      "enabled": true
+    }
+  }
+}
