@@ -15,6 +15,7 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "0.1.0"
+        manifestPlaceholders["appLabel"] = "MusicFree"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -23,6 +24,11 @@ android {
     }
 
     buildTypes {
+        debug {
+            applicationIdSuffix = ".icondebug"
+            versionNameSuffix = "-icondebug"
+            manifestPlaceholders["appLabel"] = "MusicFree"
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(

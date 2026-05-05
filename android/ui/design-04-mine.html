@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MusicFree - 我的歌单 + 个人中心 + 导入弹窗 + 飙升榜</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  font-family:'Noto Sans SC',-apple-system,BlinkMacSystemFont,sans-serif;
+  background:#F5F5F7;color:#1A1A1A;min-height:100vh;
+}
+.page-header{
+  background:linear-gradient(180deg,#FFFFFF 0%,#F8F8FA 100%);
+  padding:40px;text-align:center;border-bottom:1px solid #EBEBEB;
+}
+.page-header h1{font-size:28px;font-weight:900;color:#31C27C;margin-bottom:8px;}
+.page-header p{color:#999;font-size:13px;}
+.theme-badge{
+  display:inline-block;background:#31C27C;color:#fff;font-size:11px;
+  font-weight:700;padding:3px 12px;border-radius:4px;margin-bottom:12px;
+}
+.showcase{display:flex;gap:48px;justify-content:center;padding:48px 20px;flex-wrap:wrap;}
+.mockup-wrapper{text-align:center;}
+.mockup-label{font-size:14px;font-weight:700;margin-bottom:16px;color:#333;}
+.phone{
+  width:375px;height:812px;background:#FFFFFF;border-radius:44px;
+  border:2px solid #E0E0E0;overflow:hidden;position:relative;
+  box-shadow:0 20px 60px rgba(0,0,0,0.1);
+}
+.phone::before{
+  content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:140px;height:28px;background:#000;border-radius:0 0 20px 20px;z-index:100;
+}
+.scroll-content{overflow-y:auto;height:100%;scrollbar-width:none;}
+.scroll-content::-webkit-scrollbar{display:none;}
+
+/* Status Bar */
+.status-bar{display:flex;justify-content:space-between;align-items:center;padding:10px 28px 4px;font-size:12px;font-weight:600;color:#1A1A1A;}
+
+/* ===== 我的歌单 ===== */
+.playlist-grid{padding:8px 20px 110px;display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.playlist-card{
+  border:1px solid #F0F0F0;border-radius:14px;overflow:hidden;cursor:pointer;
+  transition:transform 0.2s,box-shadow 0.2s;background:#fff;
+}
+.playlist-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.08);}
+.pl-card-cover{width:100%;aspect-ratio:1;position:relative;overflow:hidden;}
+.pl-card-cover .pl-count{
+  position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,0.6);
+  color:#fff;font-size:10px;padding:2px 8px;border-radius:8px;
+}
+.pl-info{padding:10px 12px 12px;}
+.pl-name{font-size:13px;font-weight:600;color:#1A1A1A;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pl-desc{font-size:11px;color:#999;margin-top:3px;}
+
+/* ===== 个人中心 ===== */
+.profile-header{
+  padding:24px;text-align:center;
+  background:linear-gradient(180deg,#E8F5EE 0%,#FFFFFF 80%);
+}
+.profile-avatar{
+  width:72px;height:72px;border-radius:50%;
+  background:linear-gradient(135deg,#31C27C,#2DB87E);
+  display:flex;align-items:center;justify-content:center;
+  font-size:28px;color:#fff;margin:0 auto 10px;
+  box-shadow:0 4px 20px rgba(49,194,124,0.3);
+}
+.profile-name{font-size:20px;font-weight:900;color:#1A1A1A;}
+.profile-id{font-size:13px;color:#999;margin:4px 0 14px;}
+.profile-stats{display:flex;justify-content:center;gap:36px;margin-bottom:16px;}
+.stat-item{text-align:center;}
+.stat-num{font-size:20px;font-weight:900;color:#1A1A1A;}
+.stat-label{font-size:12px;color:#999;margin-top:2px;}
+
+.settings-section{padding:8px 24px 110px;}
+.settings-group{margin-bottom:4px;}
+.settings-group-title{font-size:13px;font-weight:700;color:#999;padding:16px 0 8px;}
+.setting-item{
+  display:flex;align-items:center;gap:14px;padding:14px 0;
+  border-bottom:1px solid #F5F5F7;cursor:pointer;transition:background 0.2s;
+}
+.setting-item:hover{background:#FAFAFA;}
+.setting-icon{
+  width:36px;height:36px;border-radius:10px;background:#F5F5F7;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.setting-text{flex:1;font-size:15px;color:#1A1A1A;font-weight:500;}
+.setting-value{font-size:13px;color:#999;}
+.setting-arrow{color:#CCC;font-size:14px;}
+
+/* ===== 导入弹窗 (Modal) ===== */
+.modal-overlay{
+  position:absolute;top:0;left:0;right:0;bottom:0;
+  background:rgba(0,0,0,0.5);z-index:80;display:flex;
+  align-items:center;justify-content:center;
+}
+.modal-box{
+  background:#fff;border-radius:20px;width:320px;padding:28px 24px 20px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.2);
+}
+.modal-title{font-size:18px;font-weight:700;color:#1A1A1A;margin-bottom:20px;text-align:center;}
+.modal-field{margin-bottom:16px;}
+.modal-field label{display:block;font-size:13px;font-weight:600;color:#555;margin-bottom:6px;}
+.modal-field input{
+  width:100%;padding:12px 14px;border:1.5px solid #E0E0E0;border-radius:12px;
+  font-size:14px;font-family:inherit;outline:none;transition:border-color 0.2s;
+  color:#1A1A1A;background:#FAFAFA;
+}
+.modal-field input:focus{border-color:#31C27C;background:#fff;}
+.modal-field input::placeholder{color:#BBB;}
+.modal-field .hint{font-size:11px;color:#BBB;margin-top:4px;}
+.modal-actions{display:flex;gap:10px;margin-top:20px;}
+.modal-btn{
+  flex:1;padding:12px;border-radius:12px;font-size:14px;font-weight:600;
+  cursor:pointer;text-align:center;transition:all 0.2s;
+}
+.modal-btn.cancel{background:#F5F5F7;color:#666;}
+.modal-btn.cancel:hover{background:#EBEBEB;}
+.modal-btn.primary{background:#31C27C;color:#fff;box-shadow:0 4px 16px rgba(49,194,124,0.3);}
+.modal-btn.primary:hover{background:#2DB87E;}
+.modal-btn.primary:disabled{background:#B5E5CC;cursor:not-allowed;box-shadow:none;}
+
+/* ===== 飙升榜详情 ===== */
+.chart-page{padding-bottom:110px;}
+.chart-hero{
+  padding:24px;display:flex;gap:20px;
+  background:linear-gradient(180deg,#E8F5EE 0%,#FFFFFF 100%);
+}
+.chart-cover{
+  width:130px;height:130px;border-radius:14px;flex-shrink:0;overflow:hidden;
+  box-shadow:0 8px 24px rgba(0,0,0,0.15);
+}
+.chart-info{padding-top:8px;}
+.chart-name{font-size:20px;font-weight:900;color:#1A1A1A;margin-bottom:4px;}
+.chart-desc{font-size:12px;color:#999;line-height:1.5;margin-bottom:16px;}
+.chart-actions{display:flex;gap:10px;}
+.chart-song-list{padding:0 24px;}
+.chart-song-item{
+  display:flex;align-items:center;gap:12px;padding:12px 0;
+  border-bottom:1px solid #F5F5F7;cursor:pointer;transition:background 0.2s;
+}
+.chart-song-item:hover{background:#FAFAFA;}
+.chart-rank{
+  width:28px;text-align:center;flex-shrink:0;
+}
+.chart-rank-num{font-size:15px;font-weight:900;text-align:center;}
+.chart-rank-num.top1{color:#F44336;}
+.chart-rank-num.top2{color:#FF6B6B;}
+.chart-rank-num.top3{color:#FF8E53;}
+.chart-rank-change{font-size:9px;text-align:center;}
+.chart-rank-change.up{color:#4CAF50;}
+.chart-rank-change.down{color:#F44336;}
+.chart-rank-change.new{color:#31C27C;}
+.chart-song-cover{
+  width:44px;height:44px;border-radius:8px;flex-shrink:0;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);
+}
+.chart-song-info{flex:1;min-width:0;}
+.chart-song-name{font-size:14px;font-weight:600;color:#1A1A1A;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.chart-song-artist{font-size:12px;color:#999;margin-top:2px;}
+.chart-song-play{
+  width:32px;height:32px;border-radius:50%;border:1.5px solid #D5D5D5;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;
+  transition:border-color 0.2s,background 0.2s;
+}
+.chart-song-play:hover{border-color:#31C27C;background:rgba(49,194,124,0.08);}
+
+/* Mini Player */
+.mini-player{
+  position:absolute;bottom:0;left:0;right:0;height:64px;
+  background:rgba(255,255,255,0.96);backdrop-filter:blur(30px);
+  -webkit-backdrop-filter:blur(30px);border-top:1px solid #EBEBEB;
+  display:flex;align-items:center;padding:0 16px;gap:12px;z-index:50;
+}
+.mini-progress{position:absolute;top:-1px;left:0;right:0;height:2px;background:#EBEBEB;}
+.mini-progress-fill{width:35%;height:100%;background:#31C27C;border-radius:1px;}
+.mini-album-art{width:44px;height:44px;border-radius:8px;flex-shrink:0;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.12);}
+.mini-info{flex:1;min-width:0;}
+.mini-song{font-size:13px;font-weight:600;color:#1A1A1A;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.mini-artist{font-size:11px;color:#999;margin-top:1px;}
+.mini-play-btn{
+  width:36px;height:36px;border-radius:50%;background:#31C27C;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  box-shadow:0 4px 16px rgba(49,194,124,0.3);transition:transform 0.15s;
+}
+.mini-play-btn:hover{transform:scale(1.08);}
+
+/* Gradients */
+.g1{background:linear-gradient(135deg,#31C27C,#2DB87E);}
+.g2{background:linear-gradient(135deg,#FF6B6B,#FF8E8E);}
+.g3{background:linear-gradient(135deg,#4ECDC4,#44B09E);}
+.g4{background:linear-gradient(135deg,#FFE066,#FFCF48);}
+.g5{background:linear-gradient(135deg,#A18CD1,#FBC2EB);}
+.g6{background:linear-gradient(135deg,#667EEA,#764BA2);}
+.g7{background:linear-gradient(135deg,#F093FB,#F5576C);}
+.g8{background:linear-gradient(135deg,#4FACFE,#00F2FE);}
+.g-detail{background:linear-gradient(135deg,#31C27C,#28A06C,#1E8B5A);}
+
+/* Notes */
+.design-notes{max-width:960px;margin:0 auto;padding:56px 40px;}
+.design-notes h2{font-size:24px;font-weight:900;margin-bottom:32px;color:#1A1A1A;}
+.note-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.note-card{background:#fff;border:1px solid #EBEBEB;border-radius:16px;padding:24px;}
+.note-card h3{font-size:15px;font-weight:700;color:#31C27C;margin-bottom:10px;}
+.note-card p{font-size:13px;color:#666;line-height:1.7;}
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="theme-badge">浅色主题 · Light Mode</div>
+  <h1>MusicFree App</h1>
+  <p>我的歌单 · 个人中心 · 导入弹窗 · 飙升榜 · 第4批</p>
+</div>
+
+<div class="showcase">
+
+  <!-- ===== Mockup 8: 我的歌单 ===== -->
+  <div class="mockup-wrapper">
+    <div class="mockup-label">📂 我的歌单</div>
+    <div class="phone">
+      <div class="scroll-content">
+        <div class="status-bar"><span>9:41</span><span>📶 🔋 100%</span></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 20px;">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <svg width="22" height="22" fill="none" stroke="#1A1A1A" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            <span style="font-size:17px;font-weight:700;">我的歌单</span>
+          </div>
+          <div style="display:flex;gap:12px;">
+            <div style="cursor:pointer;color:#31C27C;font-size:13px;font-weight:600;display:flex;align-items:center;gap:4px;">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              导入
+            </div>
+            <div style="cursor:pointer;color:#31C27C;font-size:13px;font-weight:600;display:flex;align-items:center;gap:4px;">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              新建
+            </div>
+          </div>
+        </div>
+        <div class="playlist-grid">
+          <div class="playlist-card">
+            <div class="pl-card-cover g1"><div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:32px;">🎵</div><div class="pl-count">32首</div></div>
+            <div class="pl-info"><div class="pl-name">我喜欢的音乐</div><div class="pl-desc">基于你的听歌记录</div></div>
+          </div>
+          <div class="playlist-card">
+            <div class="pl-card-cover g2"><div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:32px;">🔥</div><div class="pl-count">18首</div></div>
+            <div class="pl-info"><div class="pl-name">跑步必备</div><div class="pl-desc">燃脂训练歌单</div></div>
+          </div>
+          <div class="playlist-card">
+            <div class="pl-card-cover g3"><div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:32px;">🌙</div><div class="pl-count">24首</div></div>
+            <div class="pl-info"><div class="pl-name">助眠轻音乐</div><div class="pl-desc">安静入眠</div></div>
+          </div>
+          <div class="playlist-card">
+            <div class="pl-card-cover g4"><div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:32px;">🎹</div></div>
+            <div class="pl-info"><div class="pl-name">古典精选</div><div class="pl-desc">贝多芬/莫扎特</div></div>
+          </div>
+          <div class="playlist-card">
+            <div class="pl-card-cover g5"><div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:32px;">🎤</div></div>
+            <div class="pl-info"><div class="pl-name">华语金曲</div><div class="pl-desc">经典值得回味</div></div>
+          </div>
+          <div class="playlist-card">
+            <div class="pl-card-cover g8"><div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:32px;">🎸</div></div>
+            <div class="pl-info"><div class="pl-name">摇滚狂热</div><div class="pl-desc">不疯魔不成活</div></div>
+          </div>
+        </div>
+      </div>
+      <!-- Mini Player -->
+      <div class="mini-player">
+        <div class="mini-progress"><div class="mini-progress-fill"></div></div>
+        <div class="mini-album-art g1"><div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:16px;">🎵</div></div>
+        <div class="mini-info"><div class="mini-song">七里香</div><div class="mini-artist">周杰伦</div></div>
+        <div class="mini-play-btn"><svg width="16" height="16" fill="#fff" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Mockup 9: 个人中心/设置 ===== -->
+  <div class="mockup-wrapper">
+    <div class="mockup-label">⚙️ 个人中心/设置</div>
+    <div class="phone">
+      <div class="scroll-content">
+        <div class="status-bar"><span>9:41</span><span>📶 🔋 100%</span></div>
+        <div class="profile-header">
+          <div class="profile-avatar">M</div>
+          <div class="profile-name">音乐达人</div>
+          <div class="profile-id">ID: mf_2026_8866</div>
+          <div class="profile-stats">
+            <div class="stat-item"><div class="stat-num">128</div><div class="stat-label">关注</div></div>
+            <div class="stat-item"><div class="stat-num">56</div><div class="stat-label">粉丝</div></div>
+            <div class="stat-item"><div class="stat-num">892</div><div class="stat-label">获赞</div></div>
+          </div>
+        </div>
+        <div class="settings-section">
+          <div class="settings-group">
+            <div class="settings-group-title">播放设置</div>
+            <div class="setting-item">
+              <div class="setting-icon"><svg width="18" height="18" fill="#31C27C" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+              <div class="setting-text">播放音质</div>
+              <div class="setting-value">SQ 无损</div>
+              <div class="setting-arrow">›</div>
+            </div>
+            <div class="setting-item">
+              <div class="setting-icon"><svg width="18" height="18" fill="#4ECDC4" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>
+              <div class="setting-text">音效设置</div>
+              <div class="setting-value">均衡器</div>
+              <div class="setting-arrow">›</div>
+            </div>
+            <div class="setting-item">
+              <div class="setting-icon"><svg width="18" height="18" fill="#FFE066" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+              <div class="setting-text">定时停止播放</div>
+              <div class="setting-value">关闭</div>
+              <div class="setting-arrow">›</div>
+            </div>
+          </div>
+          <div class="settings-group">
+            <div class="settings-group-title">数据与存储</div>
+            <div class="setting-item">
+              <div class="setting-icon"><svg width="18" height="18" fill="#667EEA" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></div>
+              <div class="setting-text">缓存管理</div>
+              <div class="setting-value">256 MB</div>
+              <div class="setting-arrow">›</div>
+            </div>
+            <div class="setting-item">
+              <div class="setting-icon"><svg width="18" height="18" fill="#F093FB" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
+              <div class="setting-text">导入歌单</div>
+              <div class="setting-arrow">›</div>
+            </div>
+          </div>
+          <div class="settings-group">
+            <div class="settings-group-title">关于</div>
+            <div class="setting-item">
+              <div class="setting-icon"><svg width="18" height="18" fill="#999" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></div>
+              <div class="setting-text">接口来源</div>
+              <div class="setting-value">已配置 3 个</div>
+              <div class="setting-arrow">›</div>
+            </div>
+            <div class="setting-item" style="border:none;">
+              <div class="setting-icon"><svg width="18" height="18" fill="#BBB" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+              <div class="setting-text">版本信息</div>
+              <div class="setting-value">v2.1.0</div>
+              <div class="setting-arrow">›</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Mockup 10: 导入歌单弹窗 ===== -->
+  <div class="mockup-wrapper">
+    <div class="mockup-label">📥 导入歌单弹窗</div>
+    <div class="phone">
+      <!-- Dimmed background -- my playlist page -->
+      <div style="height:100%;opacity:0.3;filter:blur(3px);padding:10px 20px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-size:17px;font-weight:700;">我的歌单</span>
+          <div style="display:flex;gap:12px;">
+            <span style="color:#31C27C;font-size:13px;font-weight:600;">导入</span>
+            <span style="color:#31C27C;font-size:13px;font-weight:600;">+新建</span>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px;">
+          <div style="background:#f0f0f0;border-radius:14px;height:150px;"></div>
+          <div style="background:#f0f0f0;border-radius:14px;height:150px;"></div>
+          <div style="background:#f0f0f0;border-radius:14px;height:150px;"></div>
+          <div style="background:#f0f0f0;border-radius:14px;height:150px;"></div>
+        </div>
+      </div>
+      <!-- Modal Overlay -->
+      <div class="modal-overlay">
+        <div class="modal-box">
+          <div class="modal-title">导入歌单</div>
+          <div class="modal-field">
+            <label>歌单链接/分享ID</label>
+            <input type="text" placeholder="粘贴分享链接或ID">
+            <div class="hint">支持 QQ音乐/网易云/Spotify 等平台</div>
+          </div>
+          <div class="modal-field">
+            <label>歌单名称（可选）</label>
+            <input type="text" placeholder="输入自定义名称">
+          </div>
+          <div class="modal-actions">
+            <div class="modal-btn cancel">取消</div>
+            <div class="modal-btn primary">导入</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Mockup 11: 飙升榜详情 ===== -->
+  <div class="mockup-wrapper">
+    <div class="mockup-label">🔥 飙升榜详情</div>
+    <div class="phone">
+      <div class="scroll-content chart-page">
+        <div class="status-bar"><span>9:41</span><span>📶 🔋 100%</span></div>
+        <div style="display:flex;align-items:center;gap:16px;padding:8px 24px;">
+          <svg width="22" height="22" fill="none" stroke="#1A1A1A" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          <span style="font-size:14px;color:#999;">飙升榜</span>
+        </div>
+        <div class="chart-hero">
+          <div class="chart-cover g-detail">
+            <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:48px;">🔥</div>
+          </div>
+          <div class="chart-info">
+            <div class="chart-name">飙升榜</div>
+            <div class="chart-desc">本周热度飙升最快的歌曲<br>每天更新 · 50首</div>
+            <div class="chart-actions">
+              <div style="display:flex;align-items:center;gap:6px;padding:8px 20px;background:#31C27C;color:#fff;border-radius:18px;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 4px 16px rgba(49,194,124,0.3);">
+                <svg width="14" height="14" fill="#fff" viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+                播放全部
+              </div>
+              <div style="padding:8px 16px;border:1px solid #D5D5D5;border-radius:18px;font-size:13px;color:#666;cursor:pointer;background:#fff;">
+                收藏
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="chart-song-list">
+          <div class="chart-song-item">
+            <div class="chart-rank">
+              <div class="chart-rank-num top1">1</div>
+              <div class="chart-rank-change up">↑3</div>
+            </div>
+            <div class="chart-song-cover g1"><div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:16px;">🎵</div></div>
+            <div class="chart-song-info"><div class="chart-song-name">Mojito</div><div class="chart-song-artist">周杰伦</div></div>
+            <div class="chart-song-play"><svg width="12" height="12" fill="#999" viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+          </div>
+          <div class="chart-song-item">
+            <div class="chart-rank">
+              <div class="chart-rank-num top2">2</div>
+              <div class="chart-rank-change new">NEW</div>
+            </div>
+            <div class="chart-song-cover g2"><div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:16px;">🔥</div></div>
+            <div class="chart-song-info"><div class="chart-song-name">失控</div><div class="chart-song-artist">井迪</div></div>
+            <div class="chart-song-play"><svg width="12" height="12" fill="#999" viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+          </div>
+          <div class="chart-song-item">
+            <div class="chart-rank">
+              <div class="chart-rank-num top3">3</div>
+              <div class="chart-rank-change up">↑7</div>
+            </div>
+            <div class="chart-song-cover g3"><div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:16px;">🌊</div></div>
+            <div class="chart-song-info"><div class="chart-song-name">向云端</div><div class="chart-song-artist">黄绮珊</div></div>
+            <div class="chart-song-play"><svg width="12" height="12" fill="#999" viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+          </div>
+          <div class="chart-song-item">
+            <div class="chart-rank">
+              <div class="chart-rank-num">4</div>
+              <div class="chart-rank-change up">↑2</div>
+            </div>
+            <div class="chart-song-cover g4"><div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:16px;">🎹</div></div>
+            <div class="chart-song-info"><div class="chart-song-name">Idol</div><div class="chart-song-artist">YOASOBI</div></div>
+            <div class="chart-song-play"><svg width="12" height="12" fill="#999" viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+          </div>
+          <div class="chart-song-item">
+            <div class="chart-rank">
+              <div class="chart-rank-num">5</div>
+              <div class="chart-rank-change down">↓1</div>
+            </div>
+            <div class="chart-song-cover g5"><div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:16px;">🎤</div></div>
+            <div class="chart-song-info"><div class="chart-song-name">指纹</div><div class="chart-song-artist">张靓颖</div></div>
+            <div class="chart-song-play"><svg width="12" height="12" fill="#999" viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+          </div>
+          <div class="chart-song-item">
+            <div class="chart-rank">
+              <div class="chart-rank-num">6</div>
+              <div class="chart-rank-change up">↑5</div>
+            </div>
+            <div class="chart-song-cover g6"><div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:16px;">🎸</div></div>
+            <div class="chart-song-info"><div class="chart-song-name">普通朋友</div><div class="chart-song-artist">陶喆</div></div>
+            <div class="chart-song-play"><svg width="12" height="12" fill="#999" viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+          </div>
+          <div class="chart-song-item">
+            <div class="chart-rank">
+              <div class="chart-rank-num">7</div>
+              <div class="chart-rank-change new">NEW</div>
+            </div>
+            <div class="chart-song-cover g7"><div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:16px;">🎻</div></div>
+            <div class="chart-song-info"><div class="chart-song-name">我记得</div><div class="chart-song-artist">赵雷</div></div>
+            <div class="chart-song-play"><svg width="12" height="12" fill="#999" viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+          </div>
+          <div class="chart-song-item" style="border:none;justify-content:center;padding:20px 0;color:#999;font-size:12px;">
+            — 显示全部 50 首 —
+          </div>
+        </div>
+      </div>
+      <!-- Mini Player -->
+      <div class="mini-player">
+        <div class="mini-progress"><div class="mini-progress-fill"></div></div>
+        <div class="mini-album-art g1"><div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:16px;">🎵</div></div>
+        <div class="mini-info"><div class="mini-song">Mojito</div><div class="mini-artist">周杰伦</div></div>
+        <div class="mini-play-btn"><svg width="16" height="16" fill="#fff" viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21"/></svg></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="design-notes">
+  <h2>📐 设计说明 · 第4批</h2>
+  <div class="note-grid">
+    <div class="note-card">
+      <h3>📂 我的歌单</h3>
+      <p>对应截图 11.02.21。顶部返回+标题"我的歌单"，右上角"导入"(下载图标)"+新建"双按钮。两列网格布局展示歌单卡片，每张含渐变封面+歌曲数角标+歌名+描述。底部迷你播放条。</p>
+    </div>
+    <div class="note-card">
+      <h3>⚙️ 个人中心/设置</h3>
+      <p>对应截图 11.02.34。头像+昵称+ID+统计数据(关注/粉丝/获赞)。设置分3组：播放设置(音质SQ/音效均衡器/定时关闭)、数据与存储(缓存256MB/导入歌单)、关于(接口来源已配置3个/版本v2.1.0)。每组有分组标题。</p>
+    </div>
+    <div class="note-card">
+      <h3>📥 导入歌单弹窗</h3>
+      <p>对应截图 11.03.06。模态弹窗覆盖半透明遮罩+模糊背景。标题"导入歌单"，输入框：歌单链接/分享ID（placeholder+支持平台提示）、歌单名称（可选）。底部"取消"+"导入"按钮。</p>
+    </div>
+    <div class="note-card">
+      <h3>🔥 飙升榜详情</h3>
+      <p>对应截图 11.03.25。榜单头部：渐变封面+标题"飙升榜"+描述"本周热度飙升最快+每天更新·50首"+"播放全部""收藏"按钮。歌曲列表：排名(前三红色/粉色/橙色高亮+排名变化↑↓NEW)、封面、歌名、歌手、播放按钮。显示"显示全部50首"。当前播放 Mojito。</p>
+    </div>
+    <div class="note-card">
+      <h3>🎨 统一设计语言</h3>
+      <p>所有页面统一QQ音乐浅色主题：品牌绿#31C27C、白色背景、圆角设计（6-20px）、浅灰分割线、14-15px正文、毛玻璃迷你播放条。边框#E0E0E0/#EBEBEB，分割线#F5F5F7。</p>
+    </div>
+    <div class="note-card">
+      <h3>📱 4批设计总览</h3>
+      <p>11个页面逐屏对应当前App截图：①首页→②搜索页→③搜索结果→④全屏播放器→⑤歌词页→⑥播放队列→⑦收藏空状态→⑧我的歌单→⑨个人中心→⑩导入弹窗→⑪飙升榜。每个页面独立HTML文件，文件较小避免闪退。</p>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

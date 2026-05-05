@@ -1,7 +1,9 @@
 package com.musicfree.android.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -14,17 +16,22 @@ import com.musicfree.android.ui.components.EmptyContent
 import com.musicfree.android.ui.components.GlassPanel
 import com.musicfree.android.ui.components.SectionHeader
 import com.musicfree.android.ui.components.SongRow
+import com.musicfree.android.ui.theme.Gray100
 import com.musicfree.android.ui.viewmodel.LibraryUiState
 
 @Composable
 fun FavoritesScreen(
     state: LibraryUiState,
     modifier: Modifier = Modifier,
+    currentPlayingSongId: String?,
+    playerLoading: Boolean,
     onPlaySong: (Song) -> Unit,
     onToggleFavorite: (Song) -> Unit,
 ) {
     LazyColumn(
-        modifier = modifier,
+        modifier = modifier
+            .fillMaxSize()
+            .background(Gray100),
         contentPadding = PaddingValues(horizontal = 20.dp, vertical = 18.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
@@ -55,6 +62,8 @@ fun FavoritesScreen(
                     song = song.copy(isFavorite = true),
                     onPlay = { onPlaySong(song) },
                     onFavorite = { onToggleFavorite(song) },
+                    isActive = currentPlayingSongId == song.identity,
+                    isLoading = playerLoading && currentPlayingSongId == song.identity,
                 )
             }
         }

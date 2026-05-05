@@ -4,7 +4,7 @@
     "type": "PACKAGED_MANIFESTS",
     "kind": "Directory"
   },
-  "applicationId": "com.musicfree.android",
+  "applicationId": "com.musicfree.android.icondebug",
   "variantName": "debug",
   "elements": [
     {
@@ -12,7 +12,7 @@
       "filters": [],
       "attributes": [],
       "versionCode": 1,
-      "versionName": "0.1.0",
+      "versionName": "0.1.0-icondebug",
       "outputFile": "AndroidManifest.xml"
     }
   ],

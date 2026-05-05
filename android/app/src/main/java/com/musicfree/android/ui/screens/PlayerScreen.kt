@@ -11,6 +11,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,6 +24,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -41,7 +43,6 @@ import androidx.compose.material.icons.outlined.Pause
 import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material.icons.outlined.SkipNext
 import androidx.compose.material.icons.outlined.SkipPrevious
-import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
@@ -77,13 +78,10 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.musicfree.android.core.formatDuration
 import com.musicfree.android.player.PlayerUiState
-import com.musicfree.android.ui.components.GlassPanel
 import com.musicfree.android.ui.theme.Aqua500
 import com.musicfree.android.ui.theme.Coral400
 import com.musicfree.android.ui.theme.Gray500
 import com.musicfree.android.ui.theme.Mint50
-import com.musicfree.android.ui.theme.Mint100
-import com.musicfree.android.ui.theme.Mint300
 import com.musicfree.android.ui.theme.Navy700
 import com.musicfree.android.ui.theme.Navy900
 import kotlin.math.max
@@ -118,14 +116,29 @@ fun PlayerScreen(
         }
     }
 
+    val pageSwipeModifier = Modifier.pointerInput(page) {
+        var totalDrag = 0f
+        detectHorizontalDragGestures(
+            onHorizontalDrag = { change, dragAmount ->
+                totalDrag += dragAmount
+                if (page == PlayerPage.Cover && totalDrag < -72f) {
+                    page = PlayerPage.Lyric
+                    totalDrag = 0f
+                } else if (page == PlayerPage.Lyric && totalDrag > 72f) {
+                    page = PlayerPage.Cover
+                    totalDrag = 0f
+                }
+                change.consume()
+            },
+            onDragEnd = { totalDrag = 0f },
+            onDragCancel = { totalDrag = 0f },
+        )
+    }
+
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(Color(0xFF8FC7FF), Color(0xFFCDE7FF), Color(0xFFF8FAFF)),
-                ),
-            ),
+            .then(pageSwipeModifier),
     ) {
         if (song == null) {
             Column(
@@ -142,85 +155,109 @@ fun PlayerScreen(
             return
         }
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 18.dp, vertical = 14.dp),
-        ) {
-            PlayerTopBar(
-                currentPage = page,
-                isFavorite = song.isFavorite,
+        if (page == PlayerPage.Lyric) {
+            LyricPlayerLayout(
+                state = state,
+                listState = lyricListState,
                 onBack = onBack,
-                onSelectPage = { page = it },
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            when (page) {
-                PlayerPage.Cover -> CoverPlayerPage(
-                    state = state,
-                    modifier = Modifier.weight(1f),
-                )
-                PlayerPage.Lyric -> LyricPlayerPage(
-                    state = state,
-                    listState = lyricListState,
-                    modifier = Modifier.weight(1f),
-                )
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            SongInfoBlock(
-                title = song.title,
-                artist = song.artist,
-                isFavorite = song.isFavorite,
-                quality = state.quality.title,
-                source = state.source.title,
-                queueCount = state.queue.size,
-            )
-
-            Spacer(modifier = Modifier.height(14.dp))
-
-            AiryProgressBar(
-                progress = state.progress,
-                modifier = Modifier.fillMaxWidth(),
                 onSeek = onSeek,
-            )
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
-                Text(
-                    text = formatDuration(state.positionMs),
-                    style = MaterialTheme.typography.labelLarge,
-                    color = Navy700.copy(alpha = 0.9f),
-                )
-                Text(
-                    text = formatDuration(state.durationMs),
-                    style = MaterialTheme.typography.labelLarge,
-                    color = Navy700.copy(alpha = 0.9f),
-                )
-            }
-
-            Spacer(modifier = Modifier.height(18.dp))
-
-            PlayerActionStrip(
-                currentPage = page,
-                onShowLyrics = { page = PlayerPage.Lyric },
-                onShowCover = { page = PlayerPage.Cover },
-                onOpenQueue = { showQueueSheet = true },
-            )
-
-            Spacer(modifier = Modifier.height(14.dp))
-
-            MainPlayerControls(
-                isPlaying = state.isPlaying,
-                onPrevious = onPrevious,
                 onTogglePlay = onTogglePlay,
                 onNext = onNext,
+                onPrevious = onPrevious,
                 onOpenQueue = { showQueueSheet = true },
+                onShowCover = { page = PlayerPage.Cover },
             )
+        } else {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(Color(0xFFE8F0FF), Color(0xFFF5F8FF), Color(0xFFF0F4FF)),
+                        ),
+                    ),
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            Brush.verticalGradient(
+                                colors = listOf(Color(0xFFE8F0FF), Color(0xFFF5F8FF), Color(0xFFF0F4FF)),
+                            ),
+                        )
+                        .navigationBarsPadding()
+                        .padding(horizontal = 20.dp, vertical = 14.dp),
+                ) {
+                    PlayerTopBar(
+                        currentPage = page,
+                        isFavorite = song.isFavorite,
+                        onBack = onBack,
+                        onSelectPage = { page = it },
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    CoverPlayerPage(
+                        state = state,
+                        modifier = Modifier.weight(1f),
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    SongInfoBlock(
+                        artwork = song.artwork,
+                        title = song.title,
+                        artist = song.artist,
+                        isFavorite = song.isFavorite,
+                        quality = state.quality.title,
+                        source = state.source.title,
+                        queueCount = state.queue.size,
+                    )
+
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    AiryProgressBar(
+                        progress = state.progress,
+                        modifier = Modifier.fillMaxWidth(),
+                        onSeek = onSeek,
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                    ) {
+                        Text(
+                            text = formatDuration(state.positionMs),
+                            style = MaterialTheme.typography.labelLarge,
+                            color = Navy700.copy(alpha = 0.9f),
+                        )
+                        Text(
+                            text = formatDuration(state.durationMs),
+                            style = MaterialTheme.typography.labelLarge,
+                            color = Navy700.copy(alpha = 0.9f),
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(18.dp))
+
+                    PlayerActionStrip(
+                        currentPage = page,
+                        onShowLyrics = { page = PlayerPage.Lyric },
+                        onShowCover = { page = PlayerPage.Cover },
+                        onOpenQueue = { showQueueSheet = true },
+                    )
+
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    MainPlayerControls(
+                        isPlaying = state.isPlaying,
+                        onPrevious = onPrevious,
+                        onTogglePlay = onTogglePlay,
+                        onNext = onNext,
+                        onOpenQueue = { showQueueSheet = true },
+                    )
+                }
+            }
         }
 
         if (showQueueSheet) {
@@ -250,17 +287,25 @@ private fun PlayerTopBar(
     isFavorite: Boolean,
     onBack: () -> Unit,
     onSelectPage: (PlayerPage) -> Unit,
+    iconTint: Color = Navy700,
+    buttonColor: Color = Color.White.copy(alpha = 0.72f),
+    showShare: Boolean = true,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        IconButton(onClick = onBack) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                contentDescription = "返回",
-                tint = Navy700,
-            )
+        Surface(
+            shape = CircleShape,
+            color = buttonColor,
+        ) {
+            IconButton(onClick = onBack) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                    contentDescription = "返回",
+                    tint = iconTint,
+                )
+            }
         }
         Spacer(modifier = Modifier.weight(1f))
         PageIndicator(
@@ -269,19 +314,25 @@ private fun PlayerTopBar(
         )
         Spacer(modifier = Modifier.weight(1f))
         Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-            IconButton(onClick = {}) {
-                Icon(
-                    imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-                    contentDescription = "收藏状态",
-                    tint = if (isFavorite) Coral400 else Navy700.copy(alpha = 0.85f),
-                )
+            Surface(shape = CircleShape, color = buttonColor) {
+                IconButton(onClick = {}) {
+                    Icon(
+                        imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                        contentDescription = "收藏状态",
+                        tint = if (isFavorite) Coral400 else iconTint.copy(alpha = 0.9f),
+                    )
+                }
             }
-            IconButton(onClick = {}) {
-                Icon(
-                    imageVector = Icons.Outlined.Share,
-                    contentDescription = "分享",
-                    tint = Navy700.copy(alpha = 0.85f),
-                )
+            if (showShare) {
+                Surface(shape = CircleShape, color = buttonColor) {
+                    IconButton(onClick = {}) {
+                        Icon(
+                            imageVector = Icons.Outlined.GraphicEq,
+                            contentDescription = "更多",
+                            tint = iconTint.copy(alpha = 0.9f),
+                        )
+                    }
+                }
             }
         }
     }
@@ -334,48 +385,33 @@ private fun CoverPlayerPage(
         modifier = modifier.fillMaxWidth(),
         contentAlignment = Alignment.Center,
     ) {
-        GlassPanel(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .heightIn(min = 400.dp, max = 470.dp),
+                .heightIn(min = 400.dp, max = 470.dp)
+                .padding(horizontal = 8.dp),
         ) {
             Box(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(18.dp),
+                    .align(Alignment.Center)
+                    .size(332.dp),
+                contentAlignment = Alignment.Center,
             ) {
-                Canvas(modifier = Modifier.fillMaxSize()) {
-                    drawRoundRect(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(Color.White.copy(alpha = 0.52f), Color.White.copy(alpha = 0.16f)),
-                        ),
-                        cornerRadius = CornerRadius(36.dp.toPx(), 36.dp.toPx()),
-                        style = Stroke(width = 3.dp.toPx()),
-                    )
-                }
-
-                Box(
+                VinylDisc(
+                    artwork = song.artwork,
                     modifier = Modifier
-                        .align(Alignment.Center)
-                        .size(280.dp),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    VinylDisc(
-                        artwork = song.artwork,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .rotate(if (state.isPlaying) vinylRotation else 0f),
-                    )
-                }
-
-                ToneArm(
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .padding(end = 20.dp, top = 10.dp)
-                        .height(300.dp),
-                    rotation = armRotation,
+                        .fillMaxSize()
+                        .rotate(if (state.isPlaying) vinylRotation else 0f),
                 )
             }
+
+            ToneArm(
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .padding(end = 6.dp, top = 8.dp)
+                    .height(320.dp),
+                rotation = armRotation,
+            )
         }
     }
 }
@@ -394,7 +430,7 @@ private fun VinylDisc(
             val radius = size.minDimension / 2.15f
             drawCircle(
                 brush = Brush.radialGradient(
-                    colors = listOf(Color(0xFFE7F4FF), Color(0xFF8AB7F8), Color(0xFF5B94E9)),
+                    colors = listOf(Color(0xFFA8D4FF), Color(0xFF7FC1FF), Color(0xFF5AABFF)),
                     center = center,
                     radius = radius * 1.1f,
                 ),
@@ -502,58 +538,40 @@ private fun LyricPlayerPage(
     modifier: Modifier = Modifier,
 ) {
     val song = state.currentSong ?: return
-    GlassPanel(
-        modifier = modifier.fillMaxWidth(),
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(horizontal = 24.dp, vertical = 20.dp),
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 18.dp, vertical = 20.dp),
-        ) {
-            Text(
-                text = song.title,
-                style = MaterialTheme.typography.headlineMedium,
-                color = Navy900,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "${song.artist} · 歌词模式",
-                style = MaterialTheme.typography.bodyMedium,
-                color = Navy700.copy(alpha = 0.75f),
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            if (state.lyrics.isEmpty()) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center,
-                ) {
+        if (state.lyrics.isEmpty()) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = "暂无歌词",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = Color.White.copy(alpha = 0.78f),
+                )
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                state = listState,
+                verticalArrangement = Arrangement.spacedBy(18.dp),
+            ) {
+                itemsIndexed(state.lyrics, key = { index, line -> "${line.timeMs}-$index" }) { index, line ->
+                    val highlighted = index == state.currentLyricIndex
                     Text(
-                        text = "暂无歌词",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = Gray500,
+                        text = line.text,
+                        style = if (highlighted) {
+                            MaterialTheme.typography.headlineMedium
+                        } else {
+                            MaterialTheme.typography.bodyLarge
+                        },
+                        color = if (highlighted) Color.White else Color.White.copy(alpha = 0.45f),
+                        fontWeight = if (highlighted) FontWeight.Bold else FontWeight.Medium,
                     )
-                }
-            } else {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    state = listState,
-                    verticalArrangement = Arrangement.spacedBy(18.dp),
-                ) {
-                    itemsIndexed(state.lyrics, key = { index, line -> "${line.timeMs}-$index" }) { index, line ->
-                        val highlighted = index == state.currentLyricIndex
-                        Text(
-                            text = line.text,
-                            style = if (highlighted) {
-                                MaterialTheme.typography.headlineMedium
-                            } else {
-                                MaterialTheme.typography.bodyLarge
-                            },
-                            color = if (highlighted) Navy900 else Navy700.copy(alpha = 0.38f),
-                            fontWeight = if (highlighted) FontWeight.Bold else FontWeight.Medium,
-                        )
-                    }
                 }
             }
         }
@@ -562,6 +580,7 @@ private fun LyricPlayerPage(
 
 @Composable
 private fun SongInfoBlock(
+    artwork: String?,
     title: String,
     artist: String,
     isFavorite: Boolean,
@@ -575,8 +594,16 @@ private fun SongInfoBlock(
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
+            AsyncImage(
+                model = artwork,
+                contentDescription = title,
+                modifier = Modifier
+                    .size(58.dp)
+                    .clip(RoundedCornerShape(12.dp)),
+                contentScale = ContentScale.Crop,
+            )
+            Spacer(modifier = Modifier.width(14.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = title,
@@ -615,13 +642,122 @@ private fun SongInfoBlock(
 }
 
 @Composable
+private fun LyricPlayerLayout(
+    state: PlayerUiState,
+    listState: androidx.compose.foundation.lazy.LazyListState,
+    onBack: () -> Unit,
+    onSeek: (Float) -> Unit,
+    onTogglePlay: () -> Unit,
+    onNext: () -> Unit,
+    onPrevious: () -> Unit,
+    onOpenQueue: () -> Unit,
+    onShowCover: () -> Unit,
+) {
+    val song = state.currentSong ?: return
+    Box(
+        modifier = Modifier.fillMaxSize(),
+    ) {
+        AsyncImage(
+            model = song.artwork,
+            contentDescription = "歌词背景",
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop,
+            alpha = 0.42f,
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0xAA10151F),
+                            Color(0xCC18212F),
+                            Color(0xEE0E131C),
+                        ),
+                    ),
+                ),
+        )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .navigationBarsPadding()
+                .padding(horizontal = 20.dp, vertical = 14.dp),
+        ) {
+            PlayerTopBar(
+                currentPage = PlayerPage.Lyric,
+                isFavorite = song.isFavorite,
+                onBack = onBack,
+                onSelectPage = {
+                    if (it == PlayerPage.Cover) onShowCover()
+                },
+                iconTint = Color.White,
+                buttonColor = Color.White.copy(alpha = 0.12f),
+                showShare = false,
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = song.title,
+                style = MaterialTheme.typography.titleLarge,
+                color = Color.White,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Text(
+                text = song.artist,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.White.copy(alpha = 0.72f),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            LyricPlayerPage(
+                state = state,
+                listState = listState,
+                modifier = Modifier.weight(1f),
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            AiryProgressBar(
+                progress = state.progress,
+                modifier = Modifier.fillMaxWidth(),
+                onSeek = onSeek,
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Text(
+                    text = formatDuration(state.positionMs),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = Color.White.copy(alpha = 0.85f),
+                )
+                Text(
+                    text = formatDuration(state.durationMs),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = Color.White.copy(alpha = 0.85f),
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            MainPlayerControls(
+                isPlaying = state.isPlaying,
+                onPrevious = onPrevious,
+                onTogglePlay = onTogglePlay,
+                onNext = onNext,
+                onOpenQueue = onOpenQueue,
+                iconTint = Color.White,
+                secondaryTint = Color.White.copy(alpha = 0.88f),
+            )
+        }
+    }
+}
+
+@Composable
 private fun PlayerChip(
     text: String,
 ) {
     Surface(
         shape = RoundedCornerShape(999.dp),
         color = Color.White.copy(alpha = 0.72f),
-        shadowElevation = 2.dp,
+        shadowElevation = 0.dp,
     ) {
         Text(
             text = text,
@@ -665,14 +801,14 @@ private fun AiryProgressBar(
             val trackY = size.height / 2f
             val stroke = 4.dp.toPx()
             drawLine(
-                color = Color.Black.copy(alpha = 0.12f),
+                color = Color(0xFFD9E0EE),
                 start = Offset(0f, trackY),
                 end = Offset(size.width, trackY),
                 strokeWidth = stroke,
                 cap = StrokeCap.Round,
             )
             drawLine(
-                color = Navy900.copy(alpha = 0.88f),
+                color = Aqua500,
                 start = Offset(0f, trackY),
                 end = Offset(size.width * progress.coerceIn(0f, 1f), trackY),
                 strokeWidth = stroke,
@@ -685,7 +821,7 @@ private fun AiryProgressBar(
                 center = Offset(thumbX, trackY),
             )
             drawCircle(
-                color = Navy900,
+                color = Aqua500,
                 radius = 5.dp.toPx(),
                 center = Offset(thumbX, trackY),
             )
@@ -738,8 +874,8 @@ private fun SmallActionPill(
     Surface(
         modifier = Modifier.clickable(onClick = onClick),
         shape = RoundedCornerShape(999.dp),
-        color = if (active) Color.White.copy(alpha = 0.88f) else Color.White.copy(alpha = 0.55f),
-        shadowElevation = if (active) 4.dp else 0.dp,
+        color = if (active) Color.White.copy(alpha = 0.9f) else Color.White.copy(alpha = 0.55f),
+        shadowElevation = 0.dp,
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
@@ -768,6 +904,8 @@ private fun MainPlayerControls(
     onTogglePlay: () -> Unit,
     onNext: () -> Unit,
     onOpenQueue: () -> Unit,
+    iconTint: Color = Navy900,
+    secondaryTint: Color = Navy700,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -778,7 +916,7 @@ private fun MainPlayerControls(
             Icon(
                 imageVector = Icons.AutoMirrored.Outlined.QueueMusic,
                 contentDescription = "播放列表",
-                tint = Navy700,
+                tint = secondaryTint,
                 modifier = Modifier.size(28.dp),
             )
         }
@@ -786,25 +924,25 @@ private fun MainPlayerControls(
             Icon(
                 imageVector = Icons.Outlined.SkipPrevious,
                 contentDescription = "上一首",
-                tint = Navy900,
+                tint = iconTint,
                 modifier = Modifier.size(34.dp),
             )
         }
         FilledIconButton(
             onClick = onTogglePlay,
-            modifier = Modifier.size(86.dp),
+            modifier = Modifier.size(72.dp),
         ) {
             Icon(
                 imageVector = if (isPlaying) Icons.Outlined.Pause else Icons.Outlined.PlayArrow,
                 contentDescription = if (isPlaying) "暂停" else "播放",
-                modifier = Modifier.size(42.dp),
+                modifier = Modifier.size(28.dp),
             )
         }
         IconButton(onClick = onNext) {
             Icon(
                 imageVector = Icons.Outlined.SkipNext,
                 contentDescription = "下一首",
-                tint = Navy900,
+                tint = iconTint,
                 modifier = Modifier.size(34.dp),
             )
         }
@@ -840,7 +978,7 @@ private fun QueueSheet(
         Surface(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(18.dp),
-            color = Color(0xFFF2F7FB),
+            color = Color(0xFFF5F8FF),
         ) {
             Text(
                 text = "当前接口：${state.source.title} · 音质：${state.quality.title}",

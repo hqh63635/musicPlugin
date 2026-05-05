@@ -8,6 +8,8 @@ import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.LibraryMusic
 import androidx.compose.material.icons.outlined.PersonOutline
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.musicfree.android.data.model.Album
+import com.musicfree.android.data.model.Artist
 import com.musicfree.android.data.model.PlaylistSheet
 
 sealed class BottomDestination(
@@ -24,8 +26,29 @@ sealed class BottomDestination(
 
 object AppDestinations {
     const val search = "search"
+    const val artist = "artist?name={name}&artwork={artwork}&id={id}"
+    const val album = "album?title={title}&artwork={artwork}&artist={artist}&id={id}"
     const val player = "player"
     const val detail = "detail/{kind}/{id}?title={title}&artwork={artwork}&description={description}&artist={artist}&period={period}"
+
+    fun buildArtistRoute(artist: Artist): String {
+        return buildString {
+            append("artist")
+            append("?name=${Uri.encode(artist.name)}")
+            append("&artwork=${Uri.encode(artist.artwork.orEmpty())}")
+            append("&id=${Uri.encode(artist.singerMid.ifBlank { artist.id })}")
+        }
+    }
+
+    fun buildAlbumRoute(album: Album): String {
+        return buildString {
+            append("album")
+            append("?title=${Uri.encode(album.title)}")
+            append("&artwork=${Uri.encode(album.artwork.orEmpty())}")
+            append("&artist=${Uri.encode(album.artist.orEmpty())}")
+            append("&id=${Uri.encode(album.albumMid.ifBlank { album.id })}")
+        }
+    }
 
     fun buildDetailRoute(
         kind: String,

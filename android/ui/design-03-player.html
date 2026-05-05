@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MusicFree - 歌词页 + 播放队列 + 收藏空状态</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  font-family:'Noto Sans SC',-apple-system,BlinkMacSystemFont,sans-serif;
+  background:#F5F5F7;color:#1A1A1A;min-height:100vh;
+}
+.page-header{
+  background:linear-gradient(180deg,#FFFFFF 0%,#F8F8FA 100%);
+  padding:40px;text-align:center;border-bottom:1px solid #EBEBEB;
+}
+.page-header h1{font-size:28px;font-weight:900;color:#31C27C;margin-bottom:8px;}
+.page-header p{color:#999;font-size:13px;}
+.theme-badge{
+  display:inline-block;background:#31C27C;color:#fff;font-size:11px;
+  font-weight:700;padding:3px 12px;border-radius:4px;margin-bottom:12px;
+}
+.showcase{display:flex;gap:48px;justify-content:center;padding:48px 20px;flex-wrap:wrap;}
+.mockup-wrapper{text-align:center;}
+.mockup-label{font-size:14px;font-weight:700;margin-bottom:16px;color:#333;}
+.phone{
+  width:375px;height:812px;background:#FFFFFF;border-radius:44px;
+  border:2px solid #E0E0E0;overflow:hidden;position:relative;
+  box-shadow:0 20px 60px rgba(0,0,0,0.1);
+}
+.phone::before{
+  content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:140px;height:28px;background:#000;border-radius:0 0 20px 20px;z-index:100;
+}
+.scroll-content{overflow-y:auto;height:100%;scrollbar-width:none;}
+.scroll-content::-webkit-scrollbar{display:none;}
+
+/* Status Bar */
+.status-bar{display:flex;justify-content:space-between;align-items:center;padding:10px 28px 4px;font-size:12px;font-weight:600;color:#1A1A1A;}
+
+/* ===== Lyrics Page (Dark) ===== */
+.lyrics-bg{
+  position:absolute;top:0;left:0;right:0;bottom:0;
+  background:linear-gradient(180deg,#1A1A2E 0%,#16213E 100%);z-index:0;
+}
+.lyrics-content{position:relative;z-index:1;height:100%;display:flex;flex-direction:column;}
+.lyrics-top-bar{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 20px;color:rgba(255,255,255,0.8);font-size:12px;font-weight:500;
+}
+.lyrics-back{cursor:pointer;}
+.lyrics-quality{
+  padding:3px 10px;border:1px solid rgba(49,194,124,0.4);border-radius:10px;
+  color:#31C27C;font-size:10px;font-weight:600;cursor:pointer;
+}
+.lyrics-body{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:0 32px;position:relative;overflow:hidden;
+}
+.lyrics-scroll{overflow-y:auto;height:100%;padding:60px 0;scrollbar-width:none;display:flex;flex-direction:column;align-items:center;gap:12px;}
+.lyrics-scroll::-webkit-scrollbar{display:none;}
+.lyric-line{
+  font-size:14px;color:rgba(255,255,255,0.35);text-align:center;
+  line-height:1.6;padding:6px 0;transition:all 0.3s;
+}
+.lyric-line.active{
+  font-size:18px;font-weight:700;color:#31C27C;
+  text-shadow:0 0 20px rgba(49,194,124,0.3);
+}
+.lyric-line.current{
+  font-size:16px;font-weight:500;color:rgba(255,255,255,0.9);
+}
+.lyrics-progress{
+  padding:0 24px 12px;display:flex;align-items:center;gap:12px;
+}
+.lyrics-progress-bar{
+  flex:1;height:3px;background:rgba(255,255,255,0.15);border-radius:2px;position:relative;cursor:pointer;
+}
+.lyrics-progress-fill{height:100%;width:68%;background:linear-gradient(90deg,#31C27C,#45D68A);border-radius:2px;}
+.lyrics-progress-thumb{
+  width:10px;height:10px;border-radius:50%;background:#fff;position:absolute;right:0;top:50%;transform:translateY(-50%);box-shadow:0 2px 6px rgba(0,0,0,0.3);
+}
+.lyrics-progress span{font-size:11px;color:rgba(255,255,255,0.5);}
+.lyrics-controls{
+  display:flex;justify-content:center;align-items:center;gap:28px;
+  padding:8px 24px 40px;
+}
+.lc-btn{color:rgba(255,255,255,0.6);cursor:pointer;transition:color 0.2s,transform 0.15s;}
+.lc-btn:hover{color:#fff;transform:scale(1.1);}
+.lc-btn.play-main{
+  width:48px;height:48px;border-radius:50%;background:#31C27C;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 20px rgba(49,194,124,0.4);transition:transform 0.15s;
+}
+.lc-btn.play-main:hover{transform:scale(1.08);}
+
+/* ===== Queue Panel (Bottom Sheet) ===== */
+.queue-overlay{
+  position:absolute;top:0;left:0;right:0;bottom:0;
+  background:rgba(0,0,0,0.5);z-index:90;
+}
+.queue-panel{
+  position:absolute;bottom:0;left:0;right:0;height:60%;
+  background:#FFFFFF;border-radius:20px 20px 0 0;z-index:91;
+  display:flex;flex-direction:column;
+}
+.queue-handle{
+  width:36px;height:4px;border-radius:2px;background:#D5D5D5;
+  margin:10px auto 0;
+}
+.queue-header{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:16px 24px 12px;border-bottom:1px solid #F5F5F7;
+}
+.queue-header h3{font-size:17px;font-weight:700;color:#1A1A1A;}
+.queue-header-actions{display:flex;gap:16px;}
+.queue-icon{cursor:pointer;color:#999;transition:color 0.2s;}
+.queue-icon:hover{color:#31C27C;}
+.queue-count{font-size:12px;color:#999;padding:8px 24px 4px;}
+.queue-list{flex:1;overflow-y:auto;padding:0 0 20px;scrollbar-width:none;}
+.queue-list::-webkit-scrollbar{display:none;}
+.queue-item{
+  display:flex;align-items:center;gap:12px;padding:10px 24px;
+  cursor:pointer;transition:background 0.2s;
+}
+.queue-item:hover{background:#FAFAFA;}
+.queue-item.playing{background:rgba(49,194,124,0.05);}
+.queue-item .playing-indicator{
+  width:20px;font-size:10px;color:#31C27C;flex-shrink:0;text-align:center;
+}
+.queue-cover{
+  width:40px;height:40px;border-radius:6px;flex-shrink:0;overflow:hidden;
+  box-shadow:0 2px 6px rgba(0,0,0,0.08);
+}
+.queue-info{flex:1;min-width:0;}
+.queue-song-name{
+  font-size:14px;font-weight:500;color:#1A1A1A;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.queue-item.playing .queue-song-name{color:#31C27C;font-weight:600;}
+.queue-artist{font-size:11px;color:#999;margin-top:1px;}
+.queue-drag{cursor:grab;color:#CCC;}
+.queue-remove{cursor:pointer;color:#CCC;transition:color 0.2s;}
+.queue-remove:hover{color:#FF6B6B;}
+
+/* ===== Empty State ===== */
+.empty-page{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:0 40px;}
+.empty-illustration{
+  width:120px;height:120px;border-radius:60px;
+  background:linear-gradient(135deg,#F5F5F7,#EBEBEB);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:24px;font-size:48px;
+}
+.empty-title{font-size:18px;font-weight:700;color:#1A1A1A;margin-bottom:8px;}
+.empty-desc{font-size:14px;color:#999;text-align:center;line-height:1.6;margin-bottom:28px;}
+.empty-btn{
+  padding:12px 36px;background:#31C27C;color:#fff;border-radius:22px;
+  font-size:15px;font-weight:600;cursor:pointer;
+  box-shadow:0 4px 20px rgba(49,194,124,0.3);transition:transform 0.15s;
+}
+.empty-btn:hover{transform:scale(1.05);}
+
+/* Bottom Nav */
+.bottom-nav{
+  position:absolute;bottom:0;left:0;right:0;height:64px;
+  background:rgba(255,255,255,0.96);backdrop-filter:blur(30px);
+  border-top:1px solid #EBEBEB;display:flex;justify-content:space-around;
+  align-items:center;z-index:50;
+}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;color:#BBB;transition:color 0.2s;}
+.nav-item.active{color:#31C27C;}
+.nav-item span{font-size:9px;font-weight:500;}
+
+/* Gradients */
+.g1{background:linear-gradient(135deg,#31C27C,#2DB87E);}
+.g2{background:linear-gradient(135deg,#FF6B6B,#FF8E8E);}
+.g5{background:linear-gradient(135deg,#A18CD1,#FBC2EB);}
+.g6{background:linear-gradient(135deg,#667EEA,#764BA2);}
+.g7{background:linear-gradient(135deg,#F093FB,#F5576C);}
+.g8{background:linear-gradient(135deg,#4FACFE,#00F2FE);}
+
+/* Notes */
+.design-notes{max-width:960px;margin:0 auto;padding:56px 40px;}
+.design-notes h2{font-size:24px;font-weight:900;margin-bottom:32px;color:#1A1A1A;}
+.note-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.note-card{background:#fff;border:1px solid #EBEBEB;border-radius:16px;padding:24px;}
+.note-card h3{font-size:15px;font-weight:700;color:#31C27C;margin-bottom:10px;}
+.note-card p{font-size:13px;color:#666;line-height:1.7;}
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="theme-badge">浅色主题 · Light Mode</div>
+  <h1>MusicFree App</h1>
+  <p>歌词页 · 播放队列 · 收藏空状态 · 第3批</p>
+</div>
+
+<div class="showcase">
+
+  <!-- ===== Mockup 5: 歌词页 ===== -->
+  <div class="mockup-wrapper">
+    <div class="mockup-label">📝 歌词页</div>
+    <div class="phone" style="overflow:hidden;">
+      <div class="lyrics-bg"></div>
+      <div class="lyrics-content">
+        <div class="lyrics-top-bar">
+          <div class="lyrics-back"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></div>
+          <span>七里香</span>
+          <div class="lyrics-quality">SQ 无损</div>
+        </div>
+        <div class="lyrics-body">
+          <div class="lyrics-scroll">
+            <div class="lyric-line">雨下整夜 我的爱溢出就像雨水</div>
+            <div class="lyric-line">院子落叶 跟我的思念厚厚一叠</div>
+            <div class="lyric-line">几句是非 也无法将我的热情冷却</div>
+            <div class="lyric-line">你出现在我诗的每一页</div>
+            <div class="lyric-line">&nbsp;</div>
+            <div class="lyric-line">那饱满的稻穗 幸福了这个季节</div>
+            <div class="lyric-line current">而你的脸颊像田里熟透的番茄</div>
+            <div class="lyric-line active">你突然对我说 七里香的名字很美</div>
+            <div class="lyric-line">我此刻却只想亲吻你倔强的嘴</div>
+            <div class="lyric-line">&nbsp;</div>
+            <div class="lyric-line">雨下整夜 我的爱溢出就像雨水</div>
+            <div class="lyric-line">窗台蝴蝶 像诗里纷飞的美丽章节</div>
+            <div class="lyric-line">我接着写 把永远爱你写进诗的结尾</div>
+            <div class="lyric-line">你是我唯一想要的了解</div>
+            <div class="lyric-line">&nbsp;</div>
+            <div class="lyric-line">雨下整夜 我的爱溢出就像雨水</div>
+            <div class="lyric-line">院子落叶 跟我的思念厚厚一叠</div>
+          </div>
+        </div>
+        <div class="lyrics-progress">
+          <span>2:50</span>
+          <div class="lyrics-progress-bar">
+            <div class="lyrics-progress-fill">
+              <div class="lyrics-progress-thumb"></div>
+            </div>
+          </div>
+          <span>4:41</span>
+        </div>
+        <div class="lyrics-controls">
+          <div class="lc-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5"/></svg></div>
+          <div class="lc-btn"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><polygon points="11 19 2 12 11 5 11 19"/><polygon points="22 19 13 12 22 5 22 19"/></svg></div>
+          <div class="lc-btn play-main"><svg width="20" height="20" fill="#fff" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg></div>
+          <div class="lc-btn"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><polygon points="3 4 13 12 3 20 3 4"/><polygon points="13 4 23 12 13 20 13 4"/></svg></div>
+          <div class="lc-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Mockup 6: 播放队列弹窗 ===== -->
+  <div class="mockup-wrapper">
+    <div class="mockup-label">📋 播放队列弹窗</div>
+    <div class="phone">
+      <!-- Main content (dimmed) -->
+      <div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0.5;filter:blur(2px);">
+        <div class="status-bar" style="position:absolute;top:0;left:0;right:0;"><span>9:41</span><span>📶 🔋 100%</span></div>
+        <div style="font-size:16px;color:#999;">播放队列</div>
+      </div>
+      <!-- Overlay -->
+      <div class="queue-overlay"></div>
+      <!-- Queue Panel -->
+      <div class="queue-panel">
+        <div class="queue-handle"></div>
+        <div class="queue-header">
+          <h3>播放队列</h3>
+          <div class="queue-header-actions">
+            <div class="queue-icon"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg></div>
+            <div class="queue-icon"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg></div>
+          </div>
+        </div>
+        <div class="queue-count">共 8 首歌曲</div>
+        <div class="queue-list">
+          <div class="queue-item playing">
+            <div class="playing-indicator">▶</div>
+            <div class="queue-cover g1"><div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:16px;">🎵</div></div>
+            <div class="queue-info">
+              <div class="queue-song-name">七里香</div>
+              <div class="queue-artist">周杰伦</div>
+            </div>
+            <div class="queue-drag"><svg width="14" height="14" fill="#CCC" viewBox="0 0 24 24"><circle cx="9" cy="5" r="2"/><circle cx="15" cy="5" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="15" cy="12" r="2"/><circle cx="9" cy="19" r="2"/><circle cx="15" cy="19" r="2"/></svg></div>
+            <div class="queue-remove"><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+          </div>
+          <div class="queue-item">
+            <div class="playing-indicator" style="color:#BBB;">2</div>
+            <div class="queue-cover g6"><div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:16px;">🎸</div></div>
+            <div class="queue-info"><div class="queue-song-name">晴天</div><div class="queue-artist">周杰伦</div></div>
+            <div class="queue-drag"><svg width="14" height="14" fill="#CCC" viewBox="0 0 24 24"><circle cx="9" cy="5" r="2"/><circle cx="15" cy="5" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="15" cy="12" r="2"/><circle cx="9" cy="19" r="2"/><circle cx="15" cy="19" r="2"/></svg></div>
+            <div class="queue-remove"><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+          </div>
+          <div class="queue-item">
+            <div class="playing-indicator" style="color:#BBB;">3</div>
+            <div class="queue-cover g7"><div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:16px;">🎹</div></div>
+            <div class="queue-info"><div class="queue-song-name">稻香</div><div class="queue-artist">周杰伦</div></div>
+            <div class="queue-drag"><svg width="14" height="14" fill="#CCC" viewBox="0 0 24 24"><circle cx="9" cy="5" r="2"/><circle cx="15" cy="5" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="15" cy="12" r="2"/><circle cx="9" cy="19" r="2"/><circle cx="15" cy="19" r="2"/></svg></div>
+            <div class="queue-remove"><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+          </div>
+          <div class="queue-item">
+            <div class="playing-indicator" style="color:#BBB;">4</div>
+            <div class="queue-cover g8"><div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:16px;">🎺</div></div>
+            <div class="queue-info"><div class="queue-song-name">以父之名</div><div class="queue-artist">周杰伦</div></div>
+            <div class="queue-drag"><svg width="14" height="14" fill="#CCC" viewBox="0 0 24 24"><circle cx="9" cy="5" r="2"/><circle cx="15" cy="5" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="15" cy="12" r="2"/><circle cx="9" cy="19" r="2"/><circle cx="15" cy="19" r="2"/></svg></div>
+            <div class="queue-remove"><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+          </div>
+          <div class="queue-item">
+            <div class="playing-indicator" style="color:#BBB;">5</div>
+            <div class="queue-cover g2"><div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:16px;">🔥</div></div>
+            <div class="queue-info"><div class="queue-song-name">双截棍</div><div class="queue-artist">周杰伦</div></div>
+            <div class="queue-drag"><svg width="14" height="14" fill="#CCC" viewBox="0 0 24 24"><circle cx="9" cy="5" r="2"/><circle cx="15" cy="5" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="15" cy="12" r="2"/><circle cx="9" cy="19" r="2"/><circle cx="15" cy="19" r="2"/></svg></div>
+            <div class="queue-remove"><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+          </div>
+          <div class="queue-item" style="border:none;justify-content:center;padding:20px 0;color:#999;font-size:12px;">
+            — 已经到底了 —
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Mockup 7: 收藏空状态 ===== -->
+  <div class="mockup-wrapper">
+    <div class="mockup-label">💔 收藏（空状态）</div>
+    <div class="phone">
+      <div class="scroll-content">
+        <div class="status-bar"><span>9:41</span><span>📶 🔋 100%</span></div>
+        <!-- Back -->
+        <div style="display:flex;align-items:center;gap:12px;padding:8px 20px;">
+          <svg width="22" height="22" fill="none" stroke="#1A1A1A" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          <span style="font-size:16px;font-weight:700;">我的收藏</span>
+        </div>
+        <div class="empty-page">
+          <div class="empty-illustration">💔</div>
+          <div class="empty-title">还没有收藏</div>
+          <div class="empty-desc">
+            去发现你喜欢的音乐吧<br>
+            点击歌曲旁的爱心即可收藏
+          </div>
+          <div class="empty-btn">去发现歌曲</div>
+        </div>
+      </div>
+      <!-- Bottom Nav -->
+      <div class="bottom-nav">
+        <div class="nav-item"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg><span>首页</span></div>
+        <div class="nav-item"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><span>搜索</span></div>
+        <div class="nav-item active"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span>收藏</span></div>
+        <div class="nav-item"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><span>歌单</span></div>
+        <div class="nav-item"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>我的</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="design-notes">
+  <h2>📐 设计说明 · 第3批</h2>
+  <div class="note-grid">
+    <div class="note-card">
+      <h3>📝 歌词页</h3>
+      <p>对应截图 11.01.42。深色渐变背景，与全屏播放器统一。歌词滚动列表：未激活歌词35%透明度，当前行90%透明度白色，高亮行（正在唱）18px绿色加粗+发光效果。顶部显示歌名和SQ音质标签。底部进度条+播放控制。</p>
+    </div>
+    <div class="note-card">
+      <h3>📋 播放队列弹窗</h3>
+      <p>对应截图 11.01.54。底部弹出式面板（Bottom Sheet），覆盖半透明遮罩。上方拖拽手柄，头部显示"播放队列"+查看/清空按钮，歌曲统计"共8首"，每条显示序号/封面/歌名/歌手/拖拽把手/删除按钮，当前播放歌曲绿色高亮。</p>
+    </div>
+    <div class="note-card">
+      <h3>💔 收藏空状态</h3>
+      <p>对应截图 11.02.14。顶部返回按钮+标题"我的收藏"。中央大圆插图（浅灰渐变底+心碎图标）、标题"还没有收藏"、说明文字"去发现你喜欢的音乐吧，点击歌曲旁的爱心即可收藏"、绿色按钮"去发现歌曲"。底部导航"收藏"Tab激活态。</p>
+    </div>
+    <div class="note-card">
+      <h3>💡 设计细节</h3>
+      <p>三页面涵盖三种不同布局模式：歌词页为全屏沉浸式、播放队列为底部弹窗式、收藏空状态为居中引导式。保持品牌色#31C27C统一贯穿。播放队列提供拖拽排序和删除两种交互。</p>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

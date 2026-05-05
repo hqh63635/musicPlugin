@@ -16,15 +16,19 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.outlined.GraphicEq
+import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material.icons.outlined.Pause
 import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.SkipNext
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -39,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
@@ -52,6 +57,7 @@ import com.musicfree.android.data.model.Song
 import com.musicfree.android.player.PlayerUiState
 import com.musicfree.android.ui.theme.Aqua500
 import com.musicfree.android.ui.theme.Coral400
+import com.musicfree.android.ui.theme.Gray100
 import com.musicfree.android.ui.theme.Gray500
 import com.musicfree.android.ui.theme.Mint50
 import com.musicfree.android.ui.theme.Mint100
@@ -66,11 +72,11 @@ fun GlassPanel(
 ) {
     Surface(
         modifier = modifier,
-        color = Color.White.copy(alpha = 0.92f),
-        shape = RoundedCornerShape(28.dp),
-        tonalElevation = 4.dp,
-        shadowElevation = 10.dp,
-        border = BorderStroke(1.dp, Mint300.copy(alpha = 0.55f)),
+        color = Color.White,
+        shape = RoundedCornerShape(24.dp),
+        tonalElevation = 0.dp,
+        shadowElevation = 4.dp,
+        border = BorderStroke(1.dp, Gray100),
         content = { content() },
     )
 }
@@ -105,33 +111,20 @@ fun SearchEntryBar(
         modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(24.dp),
-        color = Color.White.copy(alpha = 0.85f),
-        shadowElevation = 8.dp,
-        tonalElevation = 4.dp,
-        border = BorderStroke(1.dp, Mint300.copy(alpha = 0.55f)),
+        shape = RoundedCornerShape(20.dp),
+        color = Gray100,
+        shadowElevation = 0.dp,
+        tonalElevation = 0.dp,
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 12.dp),
+            modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Box(
-                modifier = Modifier
-                    .size(38.dp)
-                    .clip(CircleShape)
-                    .background(
-                        Brush.linearGradient(
-                            colors = listOf(Aqua500.copy(alpha = 0.22f), Mint300.copy(alpha = 0.66f)),
-                        ),
-                    ),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.Search,
-                    contentDescription = null,
-                    tint = Aqua500,
-                )
-            }
+            Icon(
+                imageVector = Icons.Outlined.Search,
+                contentDescription = null,
+                tint = Gray500,
+            )
             Spacer(modifier = Modifier.width(12.dp))
             Text(
                 text = placeholder,
@@ -139,17 +132,6 @@ fun SearchEntryBar(
                 style = MaterialTheme.typography.bodyLarge,
                 color = Gray500,
             )
-            Surface(
-                shape = RoundedCornerShape(999.dp),
-                color = Aqua500,
-            ) {
-                Text(
-                    text = "搜索",
-                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
-                    style = MaterialTheme.typography.labelLarge,
-                    color = Mint50,
-                )
-            }
         }
     }
 }
@@ -164,25 +146,24 @@ fun ActionTile(
 ) {
     Surface(
         modifier = modifier
-            .clip(RoundedCornerShape(24.dp))
+            .clip(RoundedCornerShape(18.dp))
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(24.dp),
-        color = Color.White.copy(alpha = 0.88f),
-        shadowElevation = 6.dp,
-        tonalElevation = 3.dp,
-        border = BorderStroke(1.dp, Mint300.copy(alpha = 0.45f)),
+        shape = RoundedCornerShape(18.dp),
+        color = Color.White,
+        shadowElevation = 0.dp,
+        tonalElevation = 0.dp,
     ) {
         Column(
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 14.dp),
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 10.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Box(
                 modifier = Modifier
-                    .size(50.dp)
-                    .clip(CircleShape)
+                    .size(48.dp)
+                    .clip(RoundedCornerShape(14.dp))
                     .background(
-                        Brush.radialGradient(
-                            colors = listOf(accent.copy(alpha = 0.2f), accent.copy(alpha = 0.05f)),
+                        Brush.linearGradient(
+                            colors = listOf(accent.copy(alpha = 0.16f), accent.copy(alpha = 0.08f)),
                         ),
                     ),
                 contentAlignment = Alignment.Center,
@@ -193,7 +174,7 @@ fun ActionTile(
                     tint = accent,
                 )
             }
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = title,
                 style = MaterialTheme.typography.labelLarge,
@@ -210,6 +191,8 @@ fun SongRow(
     modifier: Modifier = Modifier,
     onPlay: () -> Unit,
     onFavorite: (() -> Unit)? = null,
+    isActive: Boolean = false,
+    isLoading: Boolean = false,
     trailing: (@Composable () -> Unit)? = null,
 ) {
     GlassPanel(modifier = modifier.fillMaxWidth()) {
@@ -258,10 +241,27 @@ fun SongRow(
                 onClick = onPlay,
                 modifier = Modifier.size(42.dp),
             ) {
-                Icon(
-                    imageVector = Icons.Outlined.PlayArrow,
-                    contentDescription = "播放",
-                )
+                when {
+                    isLoading -> {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(18.dp),
+                            strokeWidth = 2.dp,
+                            color = Mint50,
+                        )
+                    }
+                    isActive -> {
+                        Icon(
+                            imageVector = Icons.Outlined.GraphicEq,
+                            contentDescription = "当前播放",
+                        )
+                    }
+                    else -> {
+                        Icon(
+                            imageVector = Icons.Outlined.PlayArrow,
+                            contentDescription = "播放",
+                        )
+                    }
+                }
             }
             if (onFavorite != null) {
                 IconButton(onClick = onFavorite) {
@@ -284,24 +284,25 @@ fun PlaylistCard(
     onClick: () -> Unit,
 ) {
     Card(
-        modifier = modifier
+        modifier = Modifier
             .width(208.dp)
+            .then(modifier)
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(32.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.94f)),
-        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
     ) {
-        Column(modifier = Modifier.padding(12.dp)) {
-            AsyncImage(
-                model = sheet.artwork,
-                contentDescription = sheet.title,
+        Column(modifier = Modifier.padding(10.dp)) {
+            PlaylistArtwork(
+                artwork = sheet.artwork,
+                title = sheet.title,
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(1f)
-                    .clip(RoundedCornerShape(24.dp)),
-                contentScale = ContentScale.Crop,
+                    .clip(RoundedCornerShape(14.dp)),
+                shape = RoundedCornerShape(14.dp),
             )
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(10.dp))
             Text(
                 text = sheet.title,
                 style = MaterialTheme.typography.titleMedium,
@@ -309,10 +310,10 @@ fun PlaylistCard(
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = sheet.artist ?: "QQ 音乐歌单",
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.labelLarge,
                 color = Gray500,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -324,6 +325,50 @@ fun PlaylistCard(
             ) {
                 MetaBadge(text = formatPlayCount(sheet.playCount))
                 sheet.worksNum?.let { MetaBadge(text = "$it 首") }
+            }
+        }
+    }
+}
+
+@Composable
+fun PlaylistArtwork(
+    artwork: String?,
+    title: String,
+    modifier: Modifier = Modifier,
+    shape: Shape = RoundedCornerShape(18.dp),
+) {
+    if (!artwork.isNullOrBlank()) {
+        AsyncImage(
+            model = artwork,
+            contentDescription = title,
+            modifier = modifier,
+            contentScale = ContentScale.Crop,
+        )
+        return
+    }
+
+    Surface(
+        modifier = modifier,
+        shape = shape,
+        color = Color.White,
+        border = BorderStroke(1.dp, Gray100),
+        shadowElevation = 0.dp,
+    ) {
+        Box(contentAlignment = Alignment.Center) {
+            Surface(
+                modifier = Modifier.size(54.dp),
+                shape = RoundedCornerShape(16.dp),
+                color = Aqua500,
+                shadowElevation = 4.dp,
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        imageVector = Icons.Outlined.MusicNote,
+                        contentDescription = null,
+                        tint = Navy900,
+                        modifier = Modifier.size(28.dp),
+                    )
+                }
             }
         }
     }
@@ -385,12 +430,12 @@ fun MiniPlayerBar(
     val song = state.currentSong ?: return
     Surface(
         modifier = modifier
-            .padding(horizontal = 14.dp, vertical = 8.dp)
+            .padding(horizontal = 0.dp)
             .clickable(onClick = onOpen),
-        shape = RoundedCornerShape(30.dp),
-        color = Mint100,
-        tonalElevation = 8.dp,
-        shadowElevation = 6.dp,
+        shape = RoundedCornerShape(0.dp),
+        color = Color.White.copy(alpha = 0.96f),
+        tonalElevation = 0.dp,
+        shadowElevation = 0.dp,
     ) {
         Column {
             LinearProgressIndicator(
@@ -412,7 +457,7 @@ fun MiniPlayerBar(
                     contentDescription = song.title,
                     modifier = Modifier
                         .size(42.dp)
-                        .clip(CircleShape),
+                        .clip(RoundedCornerShape(8.dp)),
                     contentScale = ContentScale.Crop,
                 )
                 Spacer(modifier = Modifier.width(10.dp))

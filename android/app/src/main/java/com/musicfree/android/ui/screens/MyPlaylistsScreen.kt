@@ -1,5 +1,6 @@
 package com.musicfree.android.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -7,9 +8,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -34,18 +37,21 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.musicfree.android.data.model.CustomPlaylist
 import com.musicfree.android.data.model.PlaylistDetail
 import com.musicfree.android.data.model.PlaylistSheet
 import com.musicfree.android.ui.components.EmptyContent
-import com.musicfree.android.ui.components.GlassPanel
-import com.musicfree.android.ui.components.SectionHeader
 import com.musicfree.android.ui.theme.Aqua500
 import com.musicfree.android.ui.theme.Coral400
+import com.musicfree.android.ui.theme.Gold300
+import com.musicfree.android.ui.theme.Gray100
+import com.musicfree.android.ui.theme.Gray300
 import com.musicfree.android.ui.theme.Gray500
 import com.musicfree.android.ui.theme.Navy900
 import com.musicfree.android.ui.viewmodel.MyPlaylistsUiState
@@ -73,52 +79,55 @@ fun MyPlaylistsScreen(
     var localError by rememberSaveable { mutableStateOf<String?>(null) }
 
     LazyColumn(
-        modifier = modifier,
-        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 18.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = modifier
+            .fillMaxSize()
+            .background(Color.White),
+        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
         item {
-            GlassPanel {
-                Column(
-                    modifier = Modifier.padding(18.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                ) {
-                    SectionHeader(title = "我的歌单")
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    ) {
-                        PlaylistActionCard(
-                            modifier = Modifier.weight(1f),
-                            icon = Icons.Outlined.FileDownload,
-                            title = "导入歌单",
-                            subtitle = "支持 QQ 歌单 URL 或纯 ID",
-                            onClick = {
-                                localError = null
-                                importInput = ""
-                                showImportDialog = true
-                            },
-                        )
-                        PlaylistActionCard(
-                            modifier = Modifier.weight(1f),
-                            icon = Icons.Outlined.LibraryAdd,
-                            title = "新建歌单",
-                            subtitle = "创建一个空白本地歌单",
-                            onClick = {
-                                importedDetail = null
-                                createName = ""
-                                showCreateDialog = true
-                            },
-                        )
-                    }
-                    localError?.let { message ->
-                        Text(
-                            text = message,
-                            color = Coral400,
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                    }
-                }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 6.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = "我的歌单",
+                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.titleLarge,
+                    color = Navy900,
+                    fontWeight = FontWeight.Bold,
+                )
+                HeaderAction(
+                    icon = Icons.Outlined.FileDownload,
+                    text = "导入",
+                    onClick = {
+                        localError = null
+                        importInput = ""
+                        showImportDialog = true
+                    },
+                )
+                Spacer(modifier = Modifier.padding(4.dp))
+                HeaderAction(
+                    icon = Icons.Outlined.LibraryAdd,
+                    text = "新建",
+                    onClick = {
+                        importedDetail = null
+                        createName = ""
+                        showCreateDialog = true
+                    },
+                )
+            }
+        }
+
+        localError?.let { message ->
+            item {
+                Text(
+                    text = message,
+                    color = Coral400,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
             }
         }
 
@@ -126,16 +135,27 @@ fun MyPlaylistsScreen(
             item {
                 EmptyContent(
                     title = "还没有我的歌单",
-                    subtitle = "可以先新建一个空歌单，或者像 web 端一样直接粘贴 QQ 歌单链接或 ID 导入。",
+                    subtitle = "可以先新建一个空歌单，或者直接粘贴 QQ 歌单链接或 ID 导入。",
                 )
             }
         } else {
-            items(state.playlists, key = { it.id }) { playlist ->
-                CustomPlaylistRow(
-                    playlist = playlist,
-                    onClick = { onOpenPlaylist(playlist.toSheet()) },
-                    onDelete = { deletingId = playlist.id },
-                )
+            items(state.playlists.chunked(2), key = { chunk -> chunk.joinToString("-") { it.id } }) { rowItems ->
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(14.dp),
+                ) {
+                    rowItems.forEach { playlist ->
+                        CustomPlaylistCard(
+                            playlist = playlist,
+                            modifier = Modifier.weight(1f),
+                            onClick = { onOpenPlaylist(playlist.toSheet()) },
+                            onDelete = { deletingId = playlist.id },
+                        )
+                    }
+                    repeat(2 - rowItems.size) {
+                        Spacer(modifier = Modifier.weight(1f))
+                    }
+                }
             }
         }
     }
@@ -223,8 +243,12 @@ fun MyPlaylistsScreen(
                             color = if (selectedTargetId == playlist.id) {
                                 Aqua500.copy(alpha = 0.12f)
                             } else {
-                                Color.White.copy(alpha = 0.92f)
+                                Color.White
                             },
+                            border = androidx.compose.foundation.BorderStroke(
+                                1.dp,
+                                if (selectedTargetId == playlist.id) Aqua500.copy(alpha = 0.22f) else Gray300,
+                            ),
                         ) {
                             Row(
                                 modifier = Modifier
@@ -352,93 +376,118 @@ fun MyPlaylistsScreen(
 }
 
 @Composable
-private fun PlaylistActionCard(
+private fun HeaderAction(
     icon: ImageVector,
-    title: String,
-    subtitle: String,
+    text: String,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier,
 ) {
-    Surface(
-        modifier = modifier.clickable(onClick = onClick),
-        shape = RoundedCornerShape(24.dp),
-        color = MaterialTheme.colorScheme.surface,
-        shadowElevation = 6.dp,
-        tonalElevation = 2.dp,
+    Row(
+        modifier = Modifier
+            .clickable(onClick = onClick)
+            .padding(horizontal = 4.dp, vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = title,
-                tint = Aqua500,
-                modifier = Modifier.size(24.dp),
-            )
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleMedium,
-                color = Navy900,
-            )
-            Text(
-                text = subtitle,
-                style = MaterialTheme.typography.bodySmall,
-                color = Gray500,
-            )
-        }
+        Icon(
+            imageVector = icon,
+            contentDescription = text,
+            tint = Aqua500,
+        )
+        Text(
+            text = text,
+            color = Aqua500,
+            style = MaterialTheme.typography.labelLarge,
+            fontWeight = FontWeight.SemiBold,
+        )
     }
 }
 
 @Composable
-private fun CustomPlaylistRow(
+private fun CustomPlaylistCard(
     playlist: CustomPlaylist,
     onClick: () -> Unit,
     onDelete: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    GlassPanel {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable(onClick = onClick)
-                .padding(horizontal = 14.dp, vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Surface(
-                modifier = Modifier.size(54.dp),
-                shape = RoundedCornerShape(18.dp),
-                color = Aqua500.copy(alpha = 0.14f),
+    Surface(
+        modifier = modifier.clickable(onClick = onClick),
+        shape = RoundedCornerShape(14.dp),
+        color = Color.White,
+        border = androidx.compose.foundation.BorderStroke(1.dp, Gray100),
+        shadowElevation = 2.dp,
+    ) {
+        Column {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(1f)
+                    .background(
+                        Brush.linearGradient(
+                            colors = listOf(
+                                when (playlist.id.hashCode().mod(4)) {
+                                    0 -> Aqua500
+                                    1 -> Coral400
+                                    2 -> Color(0xFF4ECDC4)
+                                    else -> Gold300
+                                },
+                                when (playlist.id.hashCode().mod(4)) {
+                                    0 -> Color(0xFF2DB87E)
+                                    1 -> Color(0xFFFF8E8E)
+                                    2 -> Color(0xFF44B09E)
+                                    else -> Color(0xFFFFCF48)
+                                },
+                            ),
+                        ),
+                    ),
             ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Icon(
-                        imageVector = Icons.Outlined.LibraryAdd,
-                        contentDescription = null,
-                        tint = Aqua500,
+                Text(
+                    text = "♪",
+                    modifier = Modifier.align(Alignment.Center),
+                    color = Color.White,
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Black,
+                )
+                Surface(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(6.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    color = Color.Black.copy(alpha = 0.55f),
+                ) {
+                    Text(
+                        text = "${playlist.trackCount}首",
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = Color.White,
                     )
                 }
             }
-            Spacer(modifier = Modifier.padding(6.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = playlist.name,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = Navy900,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                Spacer(modifier = Modifier.padding(2.dp))
-                Text(
-                    text = "${playlist.trackCount} 首",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Gray500,
-                )
-            }
-            IconButton(onClick = onDelete) {
-                Icon(
-                    imageVector = Icons.Outlined.DeleteOutline,
-                    contentDescription = "删除歌单",
-                    tint = Gray500,
-                )
+            Column(modifier = Modifier.padding(10.dp)) {
+                Row(verticalAlignment = Alignment.Top) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = playlist.name,
+                            style = MaterialTheme.typography.titleMedium,
+                            color = Navy900,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                        Text(
+                            text = playlist.description ?: "我的歌单",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Gray500,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+                    IconButton(onClick = onDelete) {
+                        Icon(
+                            imageVector = Icons.Outlined.DeleteOutline,
+                            contentDescription = "删除歌单",
+                            tint = Gray500,
+                        )
+                    }
+                }
             }
         }
     }

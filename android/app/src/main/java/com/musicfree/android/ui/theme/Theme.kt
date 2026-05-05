@@ -1,7 +1,5 @@
 package com.musicfree.android.ui.theme
 
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
@@ -15,10 +13,10 @@ private val LightColors = lightColorScheme(
     secondary = Navy700,
     onSecondary = Mint50,
     tertiary = Coral400,
-    background = Mint50,
+    background = Gray100,
     onBackground = Navy900,
     surface = Gray50,
-    surfaceVariant = Mint100,
+    surfaceVariant = Gray100,
     onSurface = Navy900,
     onSurfaceVariant = Gray700,
     outline = Gray300,
@@ -36,7 +34,7 @@ private val DarkColors = darkColorScheme(
 
 @Composable
 fun MusicfreeTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    darkTheme: Boolean = false,
     content: @Composable () -> Unit,
 ) {
     val colorScheme = if (darkTheme) {

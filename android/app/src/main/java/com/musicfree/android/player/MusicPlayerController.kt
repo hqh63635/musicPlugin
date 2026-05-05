@@ -12,8 +12,10 @@ import com.musicfree.android.data.model.Song
 import com.musicfree.android.data.repository.MusicRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,6 +23,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.CancellationException
 
 data class PlayerUiState(
     val queue: List<Song> = emptyList(),
@@ -46,6 +49,7 @@ class MusicPlayerController(
     private val player = ExoPlayer.Builder(context).build()
     private val _uiState = MutableStateFlow(PlayerUiState())
     val uiState: StateFlow<PlayerUiState> = _uiState.asStateFlow()
+    private var activePlaybackJob: Job? = null
 
     init {
         player.addListener(
@@ -99,7 +103,7 @@ class MusicPlayerController(
         }
         scope.launch {
             _uiState.update { it.copy(queue = songs) }
-            playAtIndex(startIndex.coerceIn(0, songs.lastIndex))
+            launchPlayback(startIndex.coerceIn(0, songs.lastIndex))
         }
     }
 
@@ -115,7 +119,7 @@ class MusicPlayerController(
             }
             val targetIndex = workingQueue.indexOfFirst { it.identity == song.identity }.coerceAtLeast(0)
             _uiState.update { it.copy(queue = workingQueue) }
-            playAtIndex(targetIndex)
+            launchPlayback(targetIndex)
         }
     }
 
@@ -134,9 +138,7 @@ class MusicPlayerController(
             return
         }
         val nextIndex = (state.currentIndex + 1).mod(state.queue.size)
-        scope.launch {
-            playAtIndex(nextIndex)
-        }
+        launchPlayback(nextIndex)
     }
 
     fun playPrevious() {
@@ -149,9 +151,7 @@ class MusicPlayerController(
         } else {
             state.currentIndex - 1
         }
-        scope.launch {
-            playAtIndex(previousIndex)
-        }
+        launchPlayback(previousIndex)
     }
 
     fun seekTo(progress: Float) {
@@ -179,13 +179,13 @@ class MusicPlayerController(
         }
         _uiState.update { it.copy(queue = mutable, currentIndex = newIndex) }
         if (index == state.currentIndex) {
-            scope.launch {
-                playAtIndex(newIndex)
-            }
+            launchPlayback(newIndex)
         }
     }
 
     fun clearQueue() {
+        activePlaybackJob?.cancel()
+        activePlaybackJob = null
         player.stop()
         _uiState.value = PlayerUiState(
             quality = _uiState.value.quality,
@@ -220,34 +220,53 @@ class MusicPlayerController(
             )
         }
 
-        val sourceDeferred = scope.async(Dispatchers.IO) {
-            repository.fetchPlaybackSource(song)
-        }
-        val lyricDeferred = scope.async(Dispatchers.IO) {
-            repository.fetchLyric(song)
-        }
-        val source = sourceDeferred.await()
-        val lyrics = lyricDeferred.await()
+        try {
+            val (source, lyrics) = coroutineScope {
+                val sourceDeferred = async(Dispatchers.IO) {
+                    repository.fetchPlaybackSource(song)
+                }
+                val lyricDeferred = async(Dispatchers.IO) {
+                    runCatching { repository.fetchLyric(song) }.getOrNull()
+                }
+                sourceDeferred.await() to lyricDeferred.await()
+            }
 
-        if (source == null) {
+            val latestState = _uiState.value
+            if (latestState.currentSong?.identity != song.identity || latestState.currentIndex != index) {
+                return
+            }
+
+            if (source == null) {
+                _uiState.update { it.copy(loading = false) }
+                return
+            }
+
+            player.setMediaItem(MediaItem.fromUri(source.url))
+            player.prepare()
+            player.playWhenReady = true
+
+            val parsedLyrics = LyricParser.parse(lyrics?.rawLrc.orEmpty())
+            _uiState.update {
+                it.copy(
+                    currentSong = song,
+                    currentIndex = index,
+                    isPlaying = true,
+                    lyrics = parsedLyrics,
+                    currentLyricIndex = if (parsedLyrics.isEmpty()) -1 else 0,
+                    loading = false,
+                )
+            }
+        } catch (exception: CancellationException) {
+            throw exception
+        } catch (_: Exception) {
             _uiState.update { it.copy(loading = false) }
-            return
         }
+    }
 
-        player.setMediaItem(MediaItem.fromUri(source.url))
-        player.prepare()
-        player.playWhenReady = true
-
-        val parsedLyrics = LyricParser.parse(lyrics.rawLrc)
-        _uiState.update {
-            it.copy(
-                currentSong = song,
-                currentIndex = index,
-                isPlaying = true,
-                lyrics = parsedLyrics,
-                currentLyricIndex = if (parsedLyrics.isEmpty()) -1 else 0,
-                loading = false,
-            )
+    private fun launchPlayback(index: Int) {
+        activePlaybackJob?.cancel()
+        activePlaybackJob = scope.launch {
+            playAtIndex(index)
         }
     }
 

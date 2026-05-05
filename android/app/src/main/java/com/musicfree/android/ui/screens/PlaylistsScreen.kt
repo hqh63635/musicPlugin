@@ -1,7 +1,9 @@
 package com.musicfree.android.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,18 +20,23 @@ import com.musicfree.android.ui.components.EmptyContent
 import com.musicfree.android.ui.components.GlassPanel
 import com.musicfree.android.ui.components.SectionHeader
 import com.musicfree.android.ui.components.SongRow
+import com.musicfree.android.ui.theme.Gray100
 import com.musicfree.android.ui.viewmodel.LibraryUiState
 
 @Composable
 fun PlaylistsScreen(
     state: LibraryUiState,
     modifier: Modifier = Modifier,
+    currentPlayingSongId: String?,
+    playerLoading: Boolean,
     onPlaySong: (Int) -> Unit,
     onRemoveSong: (Int) -> Unit,
     onClearQueue: () -> Unit,
 ) {
     LazyColumn(
-        modifier = modifier,
+        modifier = modifier
+            .fillMaxSize()
+            .background(Gray100),
         contentPadding = PaddingValues(horizontal = 20.dp, vertical = 18.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
@@ -75,6 +82,8 @@ fun PlaylistsScreen(
                 SongRow(
                     song = song,
                     onPlay = { onPlaySong(index) },
+                    isActive = currentPlayingSongId == song.identity,
+                    isLoading = playerLoading && currentPlayingSongId == song.identity,
                     trailing = {
                         IconButton(onClick = { onRemoveSong(index) }) {
                             Icon(

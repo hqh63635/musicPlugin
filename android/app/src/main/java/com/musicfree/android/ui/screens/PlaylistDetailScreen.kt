@@ -21,6 +21,7 @@ import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.QueueMusic
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.outlined.GraphicEq
 import androidx.compose.material.icons.outlined.MoreHoriz
 import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material.icons.outlined.Share
@@ -46,8 +47,10 @@ import com.musicfree.android.core.formatPlayCount
 import com.musicfree.android.data.model.Song
 import com.musicfree.android.ui.components.EmptyContent
 import com.musicfree.android.ui.components.GlassPanel
+import com.musicfree.android.ui.components.PlaylistArtwork
 import com.musicfree.android.ui.theme.Aqua500
 import com.musicfree.android.ui.theme.Coral400
+import com.musicfree.android.ui.theme.Gray100
 import com.musicfree.android.ui.theme.Gray500
 import com.musicfree.android.ui.theme.Mint100
 import com.musicfree.android.ui.theme.Mint300
@@ -59,6 +62,8 @@ import com.musicfree.android.ui.viewmodel.PlaylistDetailUiState
 fun PlaylistDetailScreen(
     state: PlaylistDetailUiState,
     modifier: Modifier = Modifier,
+    currentPlayingSongId: String?,
+    playerLoading: Boolean,
     onBack: () -> Unit,
     onPlaySong: (Song, List<Song>) -> Unit,
     onPlayAll: (List<Song>) -> Unit,
@@ -128,13 +133,13 @@ fun PlaylistDetailScreen(
                                     modifier = Modifier.fillMaxWidth(),
                                     verticalAlignment = Alignment.Top,
                                 ) {
-                                    AsyncImage(
-                                        model = detail.sheet.artwork,
-                                        contentDescription = detail.sheet.title,
+                                    PlaylistArtwork(
+                                        artwork = detail.sheet.artwork,
+                                        title = detail.sheet.title,
                                         modifier = Modifier
                                             .size(94.dp)
                                             .clip(RoundedCornerShape(22.dp)),
-                                        contentScale = ContentScale.Crop,
+                                        shape = RoundedCornerShape(22.dp),
                                     )
                                     Spacer(modifier = Modifier.padding(6.dp))
                                     Column(
@@ -188,9 +193,9 @@ fun PlaylistDetailScreen(
                     item {
                         Surface(
                             shape = RoundedCornerShape(24.dp),
-                            color = Color.White.copy(alpha = 0.92f),
+                            color = Color.White,
                             shadowElevation = 6.dp,
-                            tonalElevation = 3.dp,
+                            tonalElevation = 0.dp,
                         ) {
                             Row(
                                 modifier = Modifier
@@ -228,6 +233,8 @@ fun PlaylistDetailScreen(
                         PlaylistSongRow(
                             index = index + 1,
                             song = song,
+                            isActive = currentPlayingSongId == song.identity,
+                            isLoading = playerLoading && currentPlayingSongId == song.identity,
                             onPlay = { onPlaySong(song, detail.songs) },
                             onToggleFavorite = { onToggleFavorite(song) },
                         )
@@ -265,6 +272,8 @@ private fun HeaderStat(
 private fun PlaylistSongRow(
     index: Int,
     song: Song,
+    isActive: Boolean,
+    isLoading: Boolean,
     onPlay: () -> Unit,
     onToggleFavorite: () -> Unit,
 ) {
@@ -273,9 +282,9 @@ private fun PlaylistSongRow(
             .fillMaxWidth()
             .clickable(onClick = onPlay),
         shape = RoundedCornerShape(22.dp),
-        color = Color.White.copy(alpha = 0.92f),
+        color = Color.White,
         shadowElevation = 4.dp,
-        tonalElevation = 2.dp,
+        tonalElevation = 0.dp,
     ) {
         Row(
             modifier = Modifier
@@ -318,18 +327,41 @@ private fun PlaylistSongRow(
             Surface(
                 modifier = Modifier.size(34.dp),
                 shape = CircleShape,
-                color = Mint300.copy(alpha = 0.28f),
+                color = if (isActive || isLoading) Aqua500.copy(alpha = 0.14f) else Color.White,
+                border = androidx.compose.foundation.BorderStroke(
+                    width = 1.dp,
+                    color = if (isActive || isLoading) Aqua500.copy(alpha = 0.24f) else Gray100,
+                ),
             ) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center,
                 ) {
-                    Icon(
-                        imageVector = Icons.Outlined.PlayArrow,
-                        contentDescription = "播放",
-                        tint = Aqua500,
-                        modifier = Modifier.size(18.dp),
-                    )
+                    when {
+                        isLoading -> {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(16.dp),
+                                strokeWidth = 2.dp,
+                                color = Aqua500,
+                            )
+                        }
+                        isActive -> {
+                            Icon(
+                                imageVector = Icons.Outlined.GraphicEq,
+                                contentDescription = "当前播放",
+                                tint = Aqua500,
+                                modifier = Modifier.size(18.dp),
+                            )
+                        }
+                        else -> {
+                            Icon(
+                                imageVector = Icons.Outlined.PlayArrow,
+                                contentDescription = "播放",
+                                tint = Gray500,
+                                modifier = Modifier.size(18.dp),
+                            )
+                        }
+                    }
                 }
             }
             IconButton(onClick = onToggleFavorite) {
