@@ -1,7 +1,9 @@
 // 音乐API服务
 // 导入插件包装器
 import plugin from '../utils/plugin-wrapper.js';
+import hyw from './hyw.js';
 import luoxue from './luoxue.js';
+import zddyr from './zddyr.js';
 
 /**
  * 搜索音乐相关内容
@@ -93,6 +95,38 @@ export async function getMediaSource(song, quality = 'standard', apiSource = 'pl
         console.error('调用luoxue.getMediaSource时发生错误:', luoxueError);
         console.log('luoxue API失败，尝试回退到plugin API');
         // 回退到plugin API
+      }
+    }
+
+    if (apiSource === 'hyw') {
+      try {
+        console.log('使用 HYWmusic API 获取媒体源');
+        const result = await hyw.getMediaSource(normalizedSong, normalizedQuality);
+        if (!result?.url) throw new Error('NOT RETRY');
+        return {
+          url: result.url,
+          headers: result.headers || {},
+          userAgent: result.headers?.['user-agent'] || '',
+        };
+      } catch (hywError) {
+        console.error('调用 HYWmusic API 时发生错误:', hywError);
+        console.log('HYWmusic API 失败，尝试回退到 plugin API');
+      }
+    }
+
+    if (apiSource === 'zddyr') {
+      try {
+        console.log('使用 ZDDYR API 获取媒体源');
+        const result = await zddyr.getMediaSource(normalizedSong, normalizedQuality);
+        if (!result || !result.url) throw new Error('NOT RETRY');
+        return {
+          url: result.url,
+          headers: result.headers || {},
+          userAgent: result.headers?.['user-agent'] || '',
+        };
+      } catch (zddyrError) {
+        console.error('调用 ZDDYR API 时发生错误:', zddyrError);
+        console.log('ZDDYR API 失败，尝试回退到 plugin API');
       }
     }
 

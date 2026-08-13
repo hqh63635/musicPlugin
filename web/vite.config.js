@@ -3,7 +3,6 @@ import vue from '@vitejs/plugin-vue';
 import { resolve } from 'path';
 import svgLoader from 'vite-svg-loader';
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [vue(), svgLoader()],
   resolve: {
@@ -14,9 +13,20 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     port: 5173,
-    // 配置代理解决跨域问题
     proxy: {
-      // 通用QQ音乐API代理 - c.y.qq.com
+      '/api/music': {
+        target: 'http://103.79.184.97',
+        changeOrigin: true,
+        timeout: 60000,
+        proxyTimeout: 60000,
+      },
+      '/zddyr': {
+        target: 'https://yy.zddyr.top',
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/zddyr/, ''),
+        timeout: 60000,
+        proxyTimeout: 60000,
+      },
       '/api': {
         target: 'https://c.y.qq.com',
         changeOrigin: true,
@@ -26,19 +36,16 @@ export default defineConfig({
           Host: 'c.y.qq.com',
         },
       },
-      // QQ Music API proxy for u.y.qq.com (musicu.fcg)
       '/musicu': {
         target: 'https://u.y.qq.com',
         changeOrigin: true,
         rewrite: path => path.replace(/^\/musicu/, '/cgi-bin/musicu.fcg'),
       },
-      // Fallback proxy for any other QQ domains
       '/qqapi': {
         target: 'https://u.y.qq.com',
         changeOrigin: true,
         rewrite: path => path.replace(/^\/qqapi/, ''),
       },
-      // 海棠音乐API代理
       '/haitang': {
         target: 'https://musicapi.haitangw.net',
         changeOrigin: true,
@@ -62,7 +69,6 @@ export default defineConfig({
           Host: 'i.y.qq.com',
         },
       },
-      // 洛雪音乐API代理
       '/luoxue': {
         target: 'https://lxmusicapi.onrender.com',
         changeOrigin: true,
@@ -73,8 +79,8 @@ export default defineConfig({
         },
       },
     },
-    build: {
-      assetsInclude: ['**/*.json'],
-    },
+  },
+  build: {
+    assetsInclude: ['**/*.json'],
   },
 });

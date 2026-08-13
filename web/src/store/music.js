@@ -40,8 +40,12 @@ export const useMusicStore = defineStore(
     const fullLyric = ref([]);
     // 当前歌词行索引
     const currentLyricIndex = ref(-1);
-    // API源设置：'plugin' 或 'luoxue'
+    // API源设置：'plugin'、'luoxue'、'hyw' 或 'zddyr'
     const apiSource = ref('plugin');
+    const supportedApiSources = new Set(['plugin', 'luoxue', 'hyw', 'zddyr']);
+    if (!supportedApiSources.has(apiSource.value)) {
+      apiSource.value = 'plugin';
+    }
 
     // 歌词抽屉状态
     const showLyricDrawer = ref(true);
@@ -318,9 +322,19 @@ export const useMusicStore = defineStore(
     watch(
       () => apiSource.value,
       async (newSource, oldSource) => {
+        if (!supportedApiSources.has(newSource)) {
+          apiSource.value = 'plugin';
+          return;
+        }
         if (newSource !== oldSource && currentSong.value && audioElement.value) {
           try {
-            message.success(`API源切换为 ${newSource === 'luoxue' ? '落雪' : '插件'}`);
+            const sourceNames = {
+              plugin: '插件',
+              luoxue: '落雪',
+              hyw: 'HYWmusic',
+              zddyr: 'ZDDYR',
+            };
+            message.success(`API源切换为 ${sourceNames[newSource] || newSource}`);
             // 获取新API源的媒体源
             const result = await api.getMediaSource(currentSong.value, quality.value, newSource);
             if (result.url) {
