@@ -138,6 +138,13 @@ const handleLanguageChange = e => {
     </div>
 
     <div class="right-part">
+      <div class="header-api-source" title="切换播放音源">
+        <span class="header-api-label">音源</span>
+        <a-radio-group v-model:value="musicStore.apiSource" size="small" button-style="solid">
+          <a-radio-button value="changqing">长青</a-radio-button>
+          <a-radio-button value="cihedai">cihedai</a-radio-button>
+        </a-radio-group>
+      </div>
       <!-- 功能按钮 -->
       <div class="header-button" :title="t('header.theme')" @click="toggleTheme">
         <TShirtLineIcon alt="主题" />
@@ -215,11 +222,8 @@ const handleLanguageChange = e => {
               button-style="solid"
               class="radio-button"
             >
-              <a-radio-button value="plugin">插件API</a-radio-button>
-              <a-radio-button value="luoxue">落雪API</a-radio-button>
-              <a-radio-button value="hyw">HYWmusic API</a-radio-button>
-              <a-radio-button value="zddyr">ZDDYR API</a-radio-button>
               <a-radio-button value="changqing">长青（旧接口）</a-radio-button>
+              <a-radio-button value="cihedai">cihedai QQ</a-radio-button>
             </a-radio-group>
           </div>
         </div>
@@ -415,6 +419,24 @@ const handleLanguageChange = e => {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.header-api-source {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-right: 4px;
+}
+
+.header-api-label {
+  color: var(--theme-text-secondary);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.header-api-source :deep(.ant-radio-button-wrapper) {
+  padding: 0 9px;
+  font-size: 12px;
 }
 
 .header-button {

@@ -11,7 +11,7 @@ export async function getMediaSource(musicItem, quality) {
   const res = (
     await axios.get(`/luoxue/url/tx/${musicItem.songmid}/${qualityLevels[quality]}`, {
       headers: {
-        'X-Request-Key': 'share-v3',
+        'X-Request-Key': 'share-v4',
       },
     })
   ).data;

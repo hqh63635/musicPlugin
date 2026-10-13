@@ -1,10 +1,8 @@
 // 音乐API服务
 // 导入插件包装器
 import plugin from '../utils/plugin-wrapper.js';
-import hyw from './hyw.js';
-import luoxue from './luoxue.js';
-import zddyr from './zddyr.js';
 import changqing from './changqing.js';
+import cihedai from './cihedai.js';
 import { getAllSheets, sameSong, updateSongUrl } from '../composables/useMusicSheetsDB.js';
 
 export async function getMediaSource(song, quality = 'standard', apiSource = 'plugin', force = false) {
@@ -104,6 +102,7 @@ async function requestMediaSource(song, quality = 'standard', apiSource = 'plugi
     if (apiSource === 'changqing') {
       return changqing.getMediaSource(normalizedSong, normalizedQuality);
     }
+    if (apiSource === 'cihedai') return cihedai.getMediaSource(normalizedSong, normalizedQuality);
 
     if (apiSource === 'luoxue') {
       try {

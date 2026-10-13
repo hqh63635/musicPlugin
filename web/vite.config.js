@@ -38,6 +38,13 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 5173,
     proxy: {
+      '/cihedai-api': {
+        target: 'https://tang.api.s01s.cn',
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/cihedai-api/, '/music_open_api.php'),
+        timeout: 30000,
+        proxyTimeout: 30000,
+      },
       '/changqing': {
         target: 'http://175.27.166.236',
         changeOrigin: true,

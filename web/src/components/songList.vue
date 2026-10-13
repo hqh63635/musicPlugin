@@ -41,9 +41,10 @@
       <vxe-column :title="t('songList.artist')" field="artist" />
 
       <!-- 操作 -->
-      <vxe-column :title="t('songList.action')" width="80">
+      <vxe-column :title="t('songList.action')" width="115">
         <template #default="{ row, rowIndex }">
           <slot name="actions" :item="row" :index="rowIndex"></slot>
+          <button class="reset-url" title="清除缓存地址，下次播放重新获取" @click.stop="resetSongUrl(row)">重置地址</button>
 
           <PlusCircleOutlined v-if="isShowAdd" class="icon add" @click="addToPlaylist(row)" />
           <DeleteOutlined
@@ -128,6 +129,16 @@ const scrollToCurrentSong = () => {
 // 播放歌曲
 const playSong = song => {
   musicStore.playSong(song);
+};
+
+const resetSongUrl = async song => {
+  try {
+    await musicStore.resetSongUrl(song);
+    message.success('播放地址已清除，下次播放将重新获取');
+  } catch (error) {
+    console.error('清除播放地址失败:', error);
+    message.error('清除缓存失败，请重试');
+  }
 };
 
 // 触底自动加载更多
@@ -224,6 +235,15 @@ const getRowClassName = ({ row }) => {
   display: flex;
   flex-direction: column;
   background: var(--theme-bg-primary);
+}
+
+.reset-url {
+  border: 0;
+  background: transparent;
+  color: var(--theme-accent-primary);
+  cursor: pointer;
+  padding: 2px;
+  font-size: 12px;
 }
 
 /* ------------ 行 Hover 效果（网易云风格） ------------ */

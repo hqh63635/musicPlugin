@@ -1,7 +1,7 @@
 ﻿import { defineStore } from 'pinia';
 import { ref, computed, watch } from 'vue';
 import api from '@/services/api.js';
-import luoxue from '@/services/luoxue.js';
+import { sameSong, updateSongUrl } from '@/composables/useMusicSheetsDB.js';
 import { message } from 'ant-design-vue';
 
 export const useMusicStore = defineStore(
@@ -41,10 +41,10 @@ export const useMusicStore = defineStore(
     // 当前歌词行索引
     const currentLyricIndex = ref(-1);
     // API源设置
-    const apiSource = ref('plugin');
-    const supportedApiSources = new Set(['plugin', 'luoxue', 'hyw', 'zddyr', 'changqing']);
+    const apiSource = ref('changqing');
+    const supportedApiSources = new Set(['changqing', 'cihedai']);
     if (!supportedApiSources.has(apiSource.value)) {
-      apiSource.value = 'plugin';
+      apiSource.value = 'changqing';
     }
 
     // 歌词抽屉状态
@@ -162,18 +162,60 @@ export const useMusicStore = defineStore(
     let retryUsed = false;
     let retryPending = false;
 
+    const clearSongUrl = async song => {
+      const empty = { url: '', urlSource: '', urlQuality: '' };
+      Object.assign(song, empty);
+      for (const item of playlist.value) if (sameSong(item, song)) Object.assign(item, empty);
+      for (const sheet of musicSheets.value) {
+        for (const item of sheet.musicList || []) if (sameSong(item, song)) Object.assign(item, empty);
+      }
+      if (currentSheet.value) {
+        for (const item of currentSheet.value.musicList || []) if (sameSong(item, song)) Object.assign(item, empty);
+      }
+      if (currentSong.value && sameSong(currentSong.value, song)) Object.assign(currentSong.value, empty);
+      await updateSongUrl(song, empty);
+    };
+
+    const resetSongUrl = async song => {
+      if (currentSong.value && sameSong(currentSong.value, song)) {
+        ++playbackGeneration;
+        audioElement.value.pause();
+        audioElement.value.removeAttribute('src');
+        audioElement.value.load();
+        isPlaying.value = false;
+      }
+      await clearSongUrl(song);
+    };
+
     const loadMedia = async (song, force = false) => {
       const generation = ++playbackGeneration;
       const result = await api.getMediaSource(song, quality.value, apiSource.value, force);
       if (generation !== playbackGeneration || currentSong.value !== song) return;
       if (!result?.url) throw new Error('未获取到播放地址');
+      if (/\.(?:mgg|mgg\d*|qmc\w*|mflac\w*)(?:[?#]|$)/i.test(result.url)) {
+        await clearSongUrl(song);
+        message.error('音源返回加密音频，已清除地址，请切换音源或音质');
+        throw new Error('音源返回加密音频，已清除地址，请切换音源或音质');
+      }
+      for (const item of playlist.value) {
+        if (sameSong(item, song)) {
+          Object.assign(item, {
+            url: song.url,
+            urlSource: song.urlSource,
+            urlQuality: song.urlQuality,
+          });
+        }
+      }
       audioElement.value.src = result.url;
       audioElement.value.load();
       try {
         await audioElement.value.play();
         if (generation === playbackGeneration) isPlaying.value = true;
       } catch (error) {
-        if (error.name !== 'AbortError' && error.name !== 'NotAllowedError') throw error;
+        if (error.name !== 'AbortError' && error.name !== 'NotAllowedError') {
+          if (generation === playbackGeneration) await clearSongUrl(song);
+          throw error;
+        }
       }
     };
 
@@ -181,13 +223,18 @@ export const useMusicStore = defineStore(
       if (!currentSong.value || retryPending) return;
       isPlaying.value = false;
       if (retryUsed) {
+        await clearSongUrl(currentSong.value);
         message.error('音源无法播放，请切换音源或音质');
         return;
       }
       retryUsed = true;
       retryPending = true;
       const generation = playbackGeneration;
-      try { await loadMedia(currentSong.value, true); }
+      const song = currentSong.value;
+      try {
+        await clearSongUrl(song);
+        if (generation === playbackGeneration) await loadMedia(song, true);
+      }
       catch (error) { console.error('重新获取音源失败:', error); }
       finally { if (playbackGeneration === generation + 1) retryPending = false; }
     });
@@ -203,6 +250,11 @@ export const useMusicStore = defineStore(
       retryPending = false;
       setLyric('');
       currentLyricIndex.value = -1;
+      const cached = playlist.value.find(item => sameSong(item, song)
+        && item.url && item.urlSource === apiSource.value && item.urlQuality === quality.value);
+      if (cached) Object.assign(song, {
+        url: cached.url, urlSource: cached.urlSource, urlQuality: cached.urlQuality,
+      });
       currentSong.value = song;
       song = currentSong.value;
       song.playTime = new Date().toISOString();
@@ -513,6 +565,7 @@ export const useMusicStore = defineStore(
       addToPlaylist,
       setPlaylist,
       playSong,
+      resetSongUrl,
       togglePlay,
       previousSong,
       nextSong,
