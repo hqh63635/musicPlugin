@@ -58,6 +58,16 @@
 
 ### 使用说明
 
+长青缓存功能部署时，除了更新 `dist`，还需把 `changqing.nginx.conf` 的内容放入
+实际服务网站的 Nginx `server {}` 内（或在该块中 include 此文件），执行
+`nginx -t` 检查通过后 `nginx -s reload`。Vite 开发代理不会包含在构建产物中。
+不要用项目完整的 `nginx.conf` 覆盖服务器的其他站点配置。
+
+验证地址：`/changqing-resolve?type=mp3&id=0039MnYb0qxYhV&level=exhigh`。
+正确响应应为 `application/json` 和 `{"url":"https://..."}`。
+若返回 `<!doctype html>`，通常是请求落入 SPA 的 `index.html` 回退，
+说明解析路由尚未在当前域名对应的站点生效。
+
 - **播放音乐**：点击歌曲名称或播放按钮
 - **添加到收藏**：点击音乐控制栏中的爱心图标
 - **查看最近播放**：导航到"最近播放"页面

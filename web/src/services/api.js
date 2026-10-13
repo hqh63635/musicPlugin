@@ -4,6 +4,31 @@ import plugin from '../utils/plugin-wrapper.js';
 import hyw from './hyw.js';
 import luoxue from './luoxue.js';
 import zddyr from './zddyr.js';
+import changqing from './changqing.js';
+import { getAllSheets, sameSong, updateSongUrl } from '../composables/useMusicSheetsDB.js';
+
+export async function getMediaSource(song, quality = 'standard', apiSource = 'plugin', force = false) {
+  const matches = item => item?.url && item.urlSource === apiSource && item.urlQuality === quality;
+  if (!force) {
+    if (matches(song)) return { url: song.url };
+    try {
+      const sheets = await getAllSheets();
+      const cached = sheets.flatMap(sheet => sheet.musicList || []).find(item => sameSong(item, song) && matches(item));
+      if (cached) {
+        Object.assign(song, { url: cached.url, urlSource: apiSource, urlQuality: quality });
+        return { url: cached.url };
+      }
+    } catch (error) { console.warn('读取播放缓存失败:', error); }
+  }
+  const result = await requestMediaSource(song, quality, apiSource);
+  if (result?.url && /^https?:\/\//.test(result.url)) {
+    const cache = { url: result.url, urlSource: apiSource, urlQuality: quality };
+    Object.assign(song, cache);
+    try { await updateSongUrl(song, cache); }
+    catch (error) { console.warn('保存播放缓存失败:', error); }
+  }
+  return result;
+}
 
 /**
  * 搜索音乐相关内容
@@ -31,7 +56,7 @@ export async function search(keyword, page = 1, type = 'music') {
  * @param {string} quality - 音质
  * @returns {Promise<Object>} 媒体源信息
  */
-export async function getMediaSource(song, quality = 'standard', apiSource = 'plugin') {
+async function requestMediaSource(song, quality = 'standard', apiSource = 'plugin') {
   try {
     if (!song || typeof song !== 'object') {
       console.error('获取媒体源失败: 歌曲对象必须是有效的对象');
@@ -76,6 +101,10 @@ export async function getMediaSource(song, quality = 'standard', apiSource = 'pl
     console.log('获取媒体源参数:', { song: normalizedSong, quality: normalizedQuality, apiSource });
 
     // 根据API源选择调用方式
+    if (apiSource === 'changqing') {
+      return changqing.getMediaSource(normalizedSong, normalizedQuality);
+    }
+
     if (apiSource === 'luoxue') {
       try {
         console.log('使用luoxue API获取媒体源');

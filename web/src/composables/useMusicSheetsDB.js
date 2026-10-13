@@ -4,6 +4,36 @@ const DB_NAME = 'MusicSheetsDB';
 const DB_VERSION = 1;
 const STORE_NAME = 'sheets';
 
+export const sameSong = (a, b) => {
+  const midA = a.songmid || a.songMid;
+  const midB = b.songmid || b.songMid;
+  if (midA && midB) return String(midA) === String(midB);
+  return a.id != null && b.id != null && String(a.id) === String(b.id) && a.platform === b.platform;
+};
+
+export const updateSongUrl = async (song, cache) => {
+  const db = await initDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, 'readwrite');
+    tx.objectStore(STORE_NAME).openCursor().onsuccess = event => {
+      const cursor = event.target.result;
+      if (!cursor) return;
+      const sheet = cursor.value;
+      let changed = false;
+      for (const item of sheet.musicList || []) {
+        if (sameSong(item, song)) {
+          Object.assign(item, cache);
+          changed = true;
+        }
+      }
+      if (changed) cursor.update(sheet);
+      cursor.continue();
+    };
+    tx.oncomplete = () => { db.close(); resolve(); };
+    tx.onerror = tx.onabort = () => { db.close(); reject(tx.error); };
+  });
+};
+
 /**
  * 初始化数据库连接
  */

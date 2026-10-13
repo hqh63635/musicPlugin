@@ -40,9 +40,9 @@ export const useMusicStore = defineStore(
     const fullLyric = ref([]);
     // 当前歌词行索引
     const currentLyricIndex = ref(-1);
-    // API源设置：'plugin'、'luoxue'、'hyw' 或 'zddyr'
+    // API源设置
     const apiSource = ref('plugin');
-    const supportedApiSources = new Set(['plugin', 'luoxue', 'hyw', 'zddyr']);
+    const supportedApiSources = new Set(['plugin', 'luoxue', 'hyw', 'zddyr', 'changqing']);
     if (!supportedApiSources.has(apiSource.value)) {
       apiSource.value = 'plugin';
     }
@@ -158,73 +158,62 @@ export const useMusicStore = defineStore(
       }
     };
 
-    // 播放歌曲
+    let playbackGeneration = 0;
+    let retryUsed = false;
+    let retryPending = false;
+
+    const loadMedia = async (song, force = false) => {
+      const generation = ++playbackGeneration;
+      const result = await api.getMediaSource(song, quality.value, apiSource.value, force);
+      if (generation !== playbackGeneration || currentSong.value !== song) return;
+      if (!result?.url) throw new Error('未获取到播放地址');
+      audioElement.value.src = result.url;
+      audioElement.value.load();
+      try {
+        await audioElement.value.play();
+        if (generation === playbackGeneration) isPlaying.value = true;
+      } catch (error) {
+        if (error.name !== 'AbortError' && error.name !== 'NotAllowedError') throw error;
+      }
+    };
+
+    audioElement.value.addEventListener('error', async () => {
+      if (!currentSong.value || retryPending) return;
+      isPlaying.value = false;
+      if (retryUsed) {
+        message.error('音源无法播放，请切换音源或音质');
+        return;
+      }
+      retryUsed = true;
+      retryPending = true;
+      const generation = playbackGeneration;
+      try { await loadMedia(currentSong.value, true); }
+      catch (error) { console.error('重新获取音源失败:', error); }
+      finally { if (playbackGeneration === generation + 1) retryPending = false; }
+    });
+
     const playSong = async song => {
       if (!song) return;
-
-      // 重置歌词状态
+      ++playbackGeneration;
+      audioElement.value.pause();
+      audioElement.value.removeAttribute('src');
+      audioElement.value.load();
+      isPlaying.value = false;
+      retryUsed = false;
+      retryPending = false;
       setLyric('');
       currentLyricIndex.value = -1;
-
       currentSong.value = song;
-      // 更新播放时间
+      song = currentSong.value;
       song.playTime = new Date().toISOString();
-      audioElement.value.src = song.url;
-      audioElement.value.load();
-
-      // 获取并设置新歌词
-      try {
-        const lyricResult = await api.getLyric(song);
-        setLyric(lyricResult.lyric || '');
-      } catch (error) {
-        console.error('获取歌词失败:', error);
-        setLyric('');
-      }
-
-      audioElement.value
-        .play()
-        .then(() => {
-          isPlaying.value = true;
-        })
-        .catch(err => {
-          console.error('播放失败:', err);
-        });
-      // 添加timeupdate事件监听以更新播放时间
-      audioElement.value.addEventListener('timeupdate', () => {
-        updateCurrentTime(audioElement.value.currentTime);
-      });
-      // 更新页面标题为当前歌曲名
-      document.title = `${song.title} - ${song.artist}`;
-      // 使用addToPlaylist添加歌曲，确保playTime和isFavorite属性正确设置
+      document.title = song.title + ' - ' + song.artist;
       addToPlaylist(song);
-      const existingIndex = playlist.value.findIndex(item => item.id === song.id);
-      currentIndex.value = existingIndex;
-
-      try {
-        // 获取当前音质设置和API源
-        const currentQuality = quality.value; // 使用store中的音质设置
-        const currentApiSource = apiSource.value; // 使用store中的API源设置
-
-        // 获取音乐资源 - 传入歌曲ID、音质参数和API源
-        const result = await api.getMediaSource(song, currentQuality, currentApiSource);
-
-        if (result.url && audioElement.value) {
-          audioElement.value.src = result.url;
-
-          // 设置请求头（如果有）
-          if (result.headers) {
-            // 注意：浏览器的audio元素不支持直接设置请求头
-            // 在实际项目中，可能需要使用fetch API获取音频流，然后创建blob URL
-            console.log('音频请求头:', result.headers);
-          }
-
-          // 开始播放
-          audioElement.value.play();
-          isPlaying.value = true;
-        }
-      } catch (error) {
-        console.error('播放失败:', error);
-      }
+      currentIndex.value = playlist.value.findIndex(item => item.id === song.id);
+      api.getLyric(song).then(result => {
+        if (currentSong.value === song) setLyric(result?.lyric || '');
+      }).catch(error => console.error('获取歌词失败:', error));
+      try { await loadMedia(song); }
+      catch (error) { console.error('播放失败:', error); }
     };
 
     // 切换播放状态
@@ -290,71 +279,22 @@ export const useMusicStore = defineStore(
       }
     );
 
-    // 监听音质变化，当音质变更时，如果有歌曲正在播放，重新获取媒体源
-    watch(
-      () => quality.value,
-      async (newQuality, oldQuality) => {
-        if (newQuality !== oldQuality && currentSong.value && audioElement.value) {
-          try {
-            // 获取新音质的媒体源
-            const result = await api.getMediaSource(currentSong.value, newQuality, apiSource.value);
-            if (result.url) {
-              message.success(`音质切换为 ${newQuality}`);
-              // 保存当前播放位置
-              const currentPosition = audioElement.value.currentTime;
-              // 更新音频源
-              audioElement.value.src = result.url;
-              // 恢复播放位置
-              audioElement.value.currentTime = currentPosition;
-              // 如果之前是播放状态，继续播放
-              if (isPlaying.value) {
-                audioElement.value.play();
-              }
-            }
-          } catch (error) {
-            console.error('切换音质失败:', error);
-          }
+    watch([quality, apiSource], async ([newQuality, newSource], [oldQuality, oldSource]) => {
+      if (!supportedApiSources.has(newSource)) { apiSource.value = 'plugin'; return; }
+      if (!currentSong.value || (newQuality === oldQuality && newSource === oldSource)) return;
+      const song = currentSong.value;
+      const position = audioElement.value.currentTime;
+      const wasPlaying = isPlaying.value;
+      retryUsed = false;
+      retryPending = false;
+      try {
+        await loadMedia(song);
+        if (currentSong.value === song) {
+          audioElement.value.currentTime = position;
+          if (!wasPlaying) { audioElement.value.pause(); isPlaying.value = false; }
         }
-      }
-    );
-
-    // 监听API源变化，当API源变更时，如果有歌曲正在播放，重新获取媒体源
-    watch(
-      () => apiSource.value,
-      async (newSource, oldSource) => {
-        if (!supportedApiSources.has(newSource)) {
-          apiSource.value = 'plugin';
-          return;
-        }
-        if (newSource !== oldSource && currentSong.value && audioElement.value) {
-          try {
-            const sourceNames = {
-              plugin: '插件',
-              luoxue: '落雪',
-              hyw: 'HYWmusic',
-              zddyr: 'ZDDYR',
-            };
-            message.success(`API源切换为 ${sourceNames[newSource] || newSource}`);
-            // 获取新API源的媒体源
-            const result = await api.getMediaSource(currentSong.value, quality.value, newSource);
-            if (result.url) {
-              // 保存当前播放位置
-              const currentPosition = audioElement.value.currentTime;
-              // 更新音频源
-              audioElement.value.src = result.url;
-              // 恢复播放位置
-              audioElement.value.currentTime = currentPosition;
-              // 如果之前是播放状态，继续播放
-              if (isPlaying.value) {
-                audioElement.value.play();
-              }
-            }
-          } catch (error) {
-            console.error('切换API源失败:', error);
-          }
-        }
-      }
-    );
+      } catch (error) { console.error('切换音源或音质失败:', error); }
+    });
 
     // 更新总时长
     const updateTotalTime = time => {

@@ -219,6 +219,7 @@ const handleLanguageChange = e => {
               <a-radio-button value="luoxue">落雪API</a-radio-button>
               <a-radio-button value="hyw">HYWmusic API</a-radio-button>
               <a-radio-button value="zddyr">ZDDYR API</a-radio-button>
+              <a-radio-button value="changqing">长青（旧接口）</a-radio-button>
             </a-radio-group>
           </div>
         </div>
